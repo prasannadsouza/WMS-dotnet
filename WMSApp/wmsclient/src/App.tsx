@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import { Route, Routes } from 'react-router-dom'
+import { GlobalStateProvider, appStore, appPersistor } from './utilities/store';
 import './App.css';
+import { NavBar } from './components/shared/navbar'
+import { Home } from "./components/home";
+import { Settings } from "./components/settings";
+import { PrivateRoute } from './utilities/privateroute';
+import { Utility } from './utilities/utility';
+import { LinkConstants } from './entities/constants';
+import { Confirm } from './components/shared/confirm';
+import { Message } from './components/shared/message';
+import { Loader } from './components/shared/loader';
+import { Provider } from 'react-redux';
+import { Login } from './components/login';
+import { PersistGate } from 'redux-persist/integration/react'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+    return (
+        <Provider store={appStore}>
+            <PersistGate loading={null} persistor={appPersistor}>
+                <GlobalStateProvider>
+                    <div className="App">
+                        <NavBar />
+                        <Routes>
+                            <Route path={Utility.getLink(LinkConstants.LOGIN)} element={<Login />} />
+                            <Route path={Utility.getLink(LinkConstants.HOME)} element={<PrivateRoute />}>
+                                <Route path={Utility.getLink(LinkConstants.HOME)} element={<Home />} />
+                                <Route path={Utility.getLink(LinkConstants.SETTINGS)} element={<Settings />} />
+                            </Route>
+                        </Routes>
+                    </div>
+                    <Confirm></Confirm>
+                    <Message></Message>
+                    <Loader></Loader>
+                </GlobalStateProvider>
+            </PersistGate>
+        </Provider>
+    )
 }
 
 export default App;

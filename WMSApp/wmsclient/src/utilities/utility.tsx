@@ -54,7 +54,7 @@ export class Utility {
         const locale = new Locale();
 
         const systemConfig: SystemConfig = {
-            appTitle: "My React TS App",
+            appTitle: "WMS",
             defaultLocaleCode: "se",
             languages: locale.getLanguages(),
             validationLocaleStrings: locale.getValidationStrings(),

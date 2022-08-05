@@ -1,13 +1,60 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.fieldsetLabel {
+    position: relative;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+    .fieldsetLabel label:before {
+        margin-top: 1rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .fieldsetLabel label:after {
+        margin-top: 1rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .fieldsetLabel label {
+        position: absolute;
+        top: -13px;
+        left: 20px;
+        padding: 2px;
+        z-index: 1;
+        font-size: small;
+        font-weight: bold;
+        background-color: #fff;
+    }
+
+        .fieldsetLabel label:after {
+            content: " ";
+            background-color: #fff;
+            width: 100%;
+            height: 13px;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
+.form-control {
+    box-shadow: none !important;
+    margin-top: 0.25rem !important;
+    padding: 0.1rem 0.5rem;
+}
+
+.modal-show {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.4);
+    pointer-events: none;
 }
