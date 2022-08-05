@@ -1,4 +1,4 @@
-namespace WMSApp
+namespace WMS.WebApp
 {
     public class WeatherForecast
     {

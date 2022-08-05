@@ -19,6 +19,8 @@
     <SpaProxyServerUrl>https://localhost:44433</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>WMS.WebApp</AssemblyName>
+    <RootNamespace>WMS.WebApp</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

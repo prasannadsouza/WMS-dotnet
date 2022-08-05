@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useTrackedGlobalState, useUpdateGlobalState } from '../utilities/store';
+import { useEffect, useState } from 'react';
 
 export const FetchData = () => {
 
@@ -7,17 +8,25 @@ export const FetchData = () => {
         temperatureC: number,
         temperatureF: number,
         summary: string,
-
     };
 
-    const [model, setModel] = useState({ forecasts: [], loading: true });
+    const [model, setModel] = useState({ forecasts: [], loading: true});
     
     const populateWeatherData = async () => {
         const response = await fetch('weatherforecast');
         const data = await response.json();
         setModel({ forecasts: data, loading: false })
     }
-    populateWeatherData();
+
+    const updateAppConfig = useUpdateGlobalState();
+    const appConfig = useTrackedGlobalState();
+    let title = appConfig.globalStrings!.fetchdata;
+        
+
+    useEffect(() => {
+        populateWeatherData();
+        if (appConfig.currentTitle !== title) updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
+    }, []);
 
     const renderForecastsTable = (forecasts: forecast[]) => {
         return (
