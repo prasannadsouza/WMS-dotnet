@@ -31,6 +31,7 @@ export class Locale {
             message: "Message",
             error: "Error",
             close: "Close",
+            fetchdata: "Fetch Data"
         };
 
         const se: GlobalStrings = {
@@ -53,6 +54,7 @@ export class Locale {
             message: "Meddelande",
             error: "Fel",
             close: "Stänga",
+            fetchdata: "Fetch Data"
         };
         const languageLocale: GlobalLocaleStrings = {
             en: en,

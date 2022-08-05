@@ -113,6 +113,8 @@ export class Utility {
                 return "/settings";
             case LinkConstants.LOGIN:
                 return "/login";
+            case LinkConstants.FETCHDATA:
+                return "/fetchdata";
             default:
                 return "/";
         }

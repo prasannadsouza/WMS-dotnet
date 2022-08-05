@@ -151,6 +151,7 @@ export const NavBar = () => {
                     aria-labelledby="navbarDropdown">
                     {getNavLink(appState.globalStrings!.home, LinkConstants.HOME)}
                     {getNavLink(appState.globalStrings!.settings, LinkConstants.SETTINGS)}
+                    {getNavLink(appState.globalStrings!.fetchdata, LinkConstants.FETCHDATA)}
                 </ul>
             </div>);
     };

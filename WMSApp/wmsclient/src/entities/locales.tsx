@@ -39,6 +39,7 @@ export type GlobalStrings = {
     message: string;
     error: string;
     close: string;
+    fetchdata: string
 } 
 
 export type ValidationStrings = {

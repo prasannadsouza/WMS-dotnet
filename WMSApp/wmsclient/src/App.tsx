@@ -13,6 +13,7 @@ import { Loader } from './components/shared/loader';
 import { Provider } from 'react-redux';
 import { Login } from './components/login';
 import { PersistGate } from 'redux-persist/integration/react'
+import { FetchData } from './components/FetchData';
 
 const App = () => {
     return (
@@ -26,6 +27,7 @@ const App = () => {
                             <Route path={Utility.getLink(LinkConstants.HOME)} element={<PrivateRoute />}>
                                 <Route path={Utility.getLink(LinkConstants.HOME)} element={<Home />} />
                                 <Route path={Utility.getLink(LinkConstants.SETTINGS)} element={<Settings />} />
+                                <Route path={Utility.getLink(LinkConstants.FETCHDATA)} element={<FetchData />} />
                             </Route>
                         </Routes>
                     </div>

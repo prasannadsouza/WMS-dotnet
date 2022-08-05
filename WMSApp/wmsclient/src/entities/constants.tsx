@@ -2,7 +2,7 @@ export const LinkConstants = {
     HOME: "HOME",
     SETTINGS: "SETTINGS",
     LOGIN: "LOGIN",
-    REDUX: "REDUX",
+    FETCHDATA: "FETCHDATA",
     LOGOUT: "LOGOUT",
 };
 
