@@ -32,16 +32,21 @@
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
-    <Content Remove="wmsclient\src\components\**" />
+    <Content Remove="clientapp\**" />
+    <Content Remove="wmsclient1\**" />
     <None Remove="$(SpaRoot)**" />
-    <None Remove="wmsclient\src\components\**" />
+    <None Remove="clientapp\**" />
+    <None Remove="wmsclient1\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="wmsclient\src\components\**" />
-    <EmbeddedResource Remove="wmsclient\src\components\**" />
-    <TypeScriptCompile Remove="wmsclient\src\components\**" />
+    <Compile Remove="clientapp\**" />
+    <Compile Remove="wmsclient1\**" />
+    <EmbeddedResource Remove="clientapp\**" />
+    <EmbeddedResource Remove="wmsclient1\**" />
+    <TypeScriptCompile Remove="clientapp\**" />
+    <TypeScriptCompile Remove="wmsclient1\**" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
