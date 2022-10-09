@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
@@ -49,6 +49,12 @@
     <EmbeddedResource Remove="wmsclient1\**" />
     <TypeScriptCompile Remove="clientapp\**" />
     <TypeScriptCompile Remove="wmsclient1\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WMS.BusinessService\WMS.BusinessService.csproj" />
+    <ProjectReference Include="..\WMS.Entity\WMS.Entity.csproj" />
+    <ProjectReference Include="..\WMS.Language\WMS.Language.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

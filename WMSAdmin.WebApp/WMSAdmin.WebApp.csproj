@@ -1,0 +1,103 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <SpaRoot>webclient\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <SpaProxyServerUrl>https://localhost:44434</SpaProxyServerUrl>
+    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>WMSAdmin.WebApp</AssemblyName>
+    <RootNamespace>WMSAdmin.WebApp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.7" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Content Remove="$(SpaRoot)**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="webclient\package-lock.json" />
+    <None Include="webclient\package.json" />
+    <None Include="webclient\public\manifest.json" />
+    <None Include="webclient\src\App.test.tsx" />
+    <None Include="webclient\src\App.tsx" />
+    <None Include="webclient\src\components\FetchData.tsx" />
+    <None Include="webclient\src\components\home.tsx" />
+    <None Include="webclient\src\components\login.tsx" />
+    <None Include="webclient\src\components\settings.tsx" />
+    <None Include="webclient\src\components\shared\confirm.tsx" />
+    <None Include="webclient\src\components\shared\loader.tsx" />
+    <None Include="webclient\src\components\shared\message.tsx" />
+    <None Include="webclient\src\components\shared\navbar.tsx" />
+    <None Include="webclient\src\entities\configs.tsx" />
+    <None Include="webclient\src\entities\constants.tsx" />
+    <None Include="webclient\src\entities\entities.tsx" />
+    <None Include="webclient\src\entities\locales.tsx" />
+    <None Include="webclient\src\entities\models.tsx" />
+    <None Include="webclient\src\entities\response.tsx" />
+    <None Include="webclient\src\index.tsx" />
+    <None Include="webclient\src\react-app-env.d.ts" />
+    <None Include="webclient\src\reportWebVitals.ts" />
+    <None Include="webclient\src\setupTests.ts" />
+    <None Include="webclient\src\utilities\locale.tsx" />
+    <None Include="webclient\src\utilities\privateroute.tsx" />
+    <None Include="webclient\src\utilities\store.tsx" />
+    <None Include="webclient\src\utilities\uihelper.tsx" />
+    <None Include="webclient\src\utilities\utility.tsx" />
+    <None Include="webclient\tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WMSAdmin.BusinessService\WMSAdmin.BusinessService.csproj" />
+    <ProjectReference Include="..\WMSAdmin.Entity\WMSAdmin.Entity.csproj" />
+    <ProjectReference Include="..\WMSAdmin.Language\WMSAdmin.Language.csproj" />
+  </ItemGroup>
+
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)build\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

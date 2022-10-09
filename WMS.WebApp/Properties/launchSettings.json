@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "WMSApp": {
+    "WMS.WebApp": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7102;http://localhost:5102",

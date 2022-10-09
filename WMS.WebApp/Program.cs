@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace WMS.WebApp
 {
     public class Program
@@ -9,9 +11,13 @@ namespace WMS.WebApp
             // Add services to the container.
 
             builder.Services.AddControllersWithViews();
-
+            //builder.Services.AddDbContext<BusinessService.Repository.Context.RepoContext>(options =>
+            //{
+            //    options.UseSqlServer(builder.Configuration["ConnectionString"]);
+            //});
+            
             var app = builder.Build();
-
+            
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
