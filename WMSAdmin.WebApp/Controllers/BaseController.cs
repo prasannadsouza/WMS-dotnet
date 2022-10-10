@@ -4,18 +4,17 @@ using System.Net;
 
 namespace WMSAdmin.WebApp.Controllers
 {
-    public class BaseController:ControllerBase
+    public class BaseController:Controller
     {
         private Utility _utility;
-        public IConfiguration Configuration { get; }
-        protected IMemoryCache _memoryCache;
+        public IConfiguration Configuration { get; private set; }
+        public IServiceProvider ServiceProvider { get; private set; }
         protected ILogger _logger;
 
-        public BaseController(IConfiguration configuration, IMemoryCache memoryCache, ILogger logger)
+        public BaseController(IServiceProvider serviceProvider, ILogger logger)
         {
-            Configuration = configuration;
-            _memoryCache = memoryCache;
-            _utility = new Utility(HttpContext, memoryCache, logger);
+            ServiceProvider = serviceProvider;
+            _utility = new Utility( HttpContext, serviceProvider,logger);
             _logger = logger;
         }
         public Utility Utility

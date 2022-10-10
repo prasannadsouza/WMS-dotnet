@@ -29,9 +29,10 @@ namespace WMSAdmin.WebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller}/{action=Index}/{id?}");
+            app.MapControllers();
+            //app.MapControllerRoute(
+            //    name: "default",
+            //    pattern: "{controller}/{action=Index}/{id?}");
 
             app.MapFallbackToFile("index.html"); ;
 

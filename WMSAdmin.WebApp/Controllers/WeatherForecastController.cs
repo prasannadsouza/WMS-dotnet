@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace WMSAdmin.WebApp.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class WeatherForecastController : BaseController
     {
         private static readonly string[] Summaries = new[]
@@ -12,12 +10,15 @@ namespace WMSAdmin.WebApp.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        public WeatherForecastController(IConfiguration configuration, IMemoryCache memoryCache, ILogger<WeatherForecastController> logger): base(configuration,memoryCache,logger)
+        public WeatherForecastController(IServiceProvider serviceProvider, ILogger<WeatherForecastController> logger): 
+            base(serviceProvider, logger)
         {
             
         }
 
-        [HttpGet]
+        [HttpGet ]
+        [Route("[controller]")]
+        [Route("[controller]/[action]")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -30,6 +31,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
+        [Route("[controller]/[action]")]
         public Entity.Entities.ConfigSetting GetConfigSetting()
         {
             return Utility.GetConfigSetting();

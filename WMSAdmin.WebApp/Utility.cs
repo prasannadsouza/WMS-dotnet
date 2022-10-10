@@ -4,13 +4,15 @@ namespace WMSAdmin.WebApp
 {
     public class Utility
     {
+        private IServiceProvider _serviceProvider; 
         private HttpContext _httpContext;
         private IMemoryCache _memoryCache;
         protected ILogger _logger;
-        public Utility(HttpContext httpContext, IMemoryCache memoryCache, ILogger logger)
+        public Utility(HttpContext httpContext, IServiceProvider serviceProvider, ILogger logger)
         {
             _httpContext = httpContext;
-            _memoryCache = memoryCache;
+            _serviceProvider = serviceProvider;
+            _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>(); ;
             _logger = logger;
         }
 
@@ -21,12 +23,11 @@ namespace WMSAdmin.WebApp
             if (isCached) return cacheValue;
 
             
-                var appService = new BusinessService.Application(new BusinessService.BusinessServiceConfiguration());
+                var appService = new BusinessService.Application(new BusinessService.BusinessServiceConfiguration { ServiceProvider = _serviceProvider } );
                 cacheValue = appService.GetConfigSetting();
-            
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(3));
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(60));
 
             _memoryCache.Set(Entity.Constants.Cache.CONFIGSETTING, cacheValue, cacheEntryOptions);
             return cacheValue;
