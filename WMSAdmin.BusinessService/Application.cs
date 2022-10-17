@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,12 +26,14 @@ namespace WMSAdmin.BusinessService
 
         public List<Entity.Entities.AppConfigGroup> GetAppConfigGroup()
         {
-            return RepoAppConfigGroup.GetAll();
+            var repoAppConfigGroup = GetRepository<Repository.AppConfigGroup>();
+            return repoAppConfigGroup.GetAll();
         }
 
         public List<Entity.Entities.AppConfig> GetAppConfig(bool includeGroups)
         {
-            var appConfigs = RepoAppConfig.GetAll();
+            var repoAppConfig = GetRepository<Repository.AppConfig>();
+            var appConfigs = repoAppConfig.GetAll();
 
             if (includeGroups)
             {
@@ -47,9 +48,9 @@ namespace WMSAdmin.BusinessService
             var settings = GetAppConfig(true);
 
             var setting = new Entity.Entities.ConfigSetting();
-            setting.System = new Entity.Entities.SystemConfig();
-            setting.DebugTest = new Entity.Entities.DebugTestConfig();
-            setting.Email = new Entity.Entities.EmailConfig();
+            setting.System = new Entity.Entities.Config.System();
+            setting.DebugTest = new Entity.Entities.Config.DebugTest();
+            setting.Email = new Entity.Entities.Config.Email();
 
             foreach (var item in settings)
             {
@@ -94,7 +95,7 @@ namespace WMSAdmin.BusinessService
             return setting;
         }
 
-        private void SetDebugTestConfig(Entity.Entities.AppConfig from, Entity.Entities.DebugTestConfig to)
+        private void SetDebugTestConfig(Entity.Entities.AppConfig from, Entity.Entities.Config.DebugTest to)
         {
             switch (from.Code)
             {
@@ -141,7 +142,7 @@ namespace WMSAdmin.BusinessService
             }
         }
 
-        private void SetEmailConfig(Entity.Entities.AppConfig from, Entity.Entities.EmailConfig to)
+        private void SetEmailConfig(Entity.Entities.AppConfig from, Entity.Entities.Config.Email to)
         {
 
             switch (from.Code)
@@ -233,7 +234,7 @@ namespace WMSAdmin.BusinessService
             }
         }
 
-        private void SetSytemConfig(Entity.Entities.AppConfig from, Entity.Entities.SystemConfig to)
+        private void SetSytemConfig(Entity.Entities.AppConfig from, Entity.Entities.Config.System to)
         {
 
             switch (from.Code)

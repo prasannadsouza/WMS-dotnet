@@ -5,16 +5,23 @@ namespace WMSAdmin.BusinessService
 {
     public class BaseBusinessService
     {
+        protected BusinessServiceConfiguration Configuration { get; private set; }
+        private Repository.RepoConfiguration _repoConfiguration;
+        private Dictionary<System.Type, Repository.BaseRepository> _repositories;
+        protected ILogger Logger { get; private set; }
+
         protected BaseBusinessService(BusinessServiceConfiguration configuration)
         {
             Configuration = configuration;
-            _entitySortFieldMapper = GetEntitySortFieldMapper();
-             Logger = Configuration.ServiceProvider.GetService<ILogger>();
+            _repositories = new Dictionary<Type, Repository.BaseRepository>();
+            _repoConfiguration = new Repository.RepoConfiguration
+            {
+                ServiceProvider = Configuration.ServiceProvider,
+                Setting = Configuration.Setting,
+                Logger = Configuration.Logger,
+            }; ;
         }
-
-        internal BusinessServiceConfiguration Configuration { get; set; }
-        private Dictionary<string, string> _entitySortFieldMapper;
-        protected ILogger Logger { get; private set; }
+        
         private string _className;
         private string ClassName
         {
@@ -26,44 +33,14 @@ namespace WMSAdmin.BusinessService
             }
         }
 
-        #region Repositories
-        private Repository.RepoConfiguration GetRepoConfiguration()
+        protected T GetRepository<T>() where T : Repository.BaseRepository
         {
-            return new Repository.RepoConfiguration
-            {
-                Setting = Configuration.Setting,
-                ServiceProvider = Configuration.ServiceProvider,
-            };
+            var type = typeof(T);
+            _repositories.TryGetValue(type, out var repository);
+            if (repository != null) return (T)repository;
+            repository = (T)Activator.CreateInstance(typeof(T), _repoConfiguration);
+            _repositories.Add(type, repository);
+            return (T)repository;
         }
-
-        private Repository.AppConfig _repoAppConfig;
-        protected Repository.AppConfig RepoAppConfig
-        {
-            get
-            {
-                if (_repoAppConfig != null) return _repoAppConfig;
-                _repoAppConfig = new Repository.AppConfig(GetRepoConfiguration());
-                return _repoAppConfig;
-            }
-        }
-
-        private Repository.AppConfigGroup _repoAppConfigGroup;
-        protected Repository.AppConfigGroup RepoAppConfigGroup
-        {
-            get
-            {
-                if (_repoAppConfigGroup != null) return _repoAppConfigGroup;
-                _repoAppConfigGroup = new Repository.AppConfigGroup(GetRepoConfiguration());
-                return _repoAppConfigGroup;
-            }
-        }
-        #endregion
-
-        private Dictionary<string, string> GetEntitySortFieldMapper()
-        {
-            var sortFieldMapper = new Dictionary<string, string>();
-            return sortFieldMapper;
-        }
-
     }
 }

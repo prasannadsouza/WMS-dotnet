@@ -35,7 +35,7 @@ namespace WMSAdmin.Repository
         protected Context.RepoContext GetDbContext()
         {
             var configuration = Configuration.ServiceProvider.GetService<IConfiguration>();
-            var connectionString = configuration.GetConnectionString("WMSAdmin");
+            var connectionString = configuration.GetConnectionString(Entity.Constants.AppSetting.ConnectionStrings_BaseConnection);
             var contextOptions = new DbContextOptionsBuilder<Context.RepoContext>()
                 .UseSqlServer(connectionString)
                 .Options;

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMSAdmin.Entity.Entities
+namespace WMSAdmin.Entity.Entities.Config
 {
-    public class SystemConfig
+    public class System
     {
         public string Locale { get; set; }
         public string UILocale { get; set; }

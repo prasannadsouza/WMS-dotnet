@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMSAdmin.Entity.Entities
+namespace WMSAdmin.Entity.Entities.Config
 {
-    public class EmailConfig
+    public class Email
     {
         public string FromEmailAdddress { get; set; }
         public string FromEmailDisplayName { get; set; }

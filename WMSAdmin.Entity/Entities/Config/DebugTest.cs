@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMSAdmin.Entity.Entities
+namespace WMSAdmin.Entity.Entities.Config
 {
-    public class DebugTestConfig
+    public class DebugTest
     {
         public bool IsTestMode { get; set; }
         public bool DevAutoLogin { get; set; }

@@ -7,7 +7,6 @@ namespace WMSAdmin.WebApp.Controllers
     public class BaseController:Controller
     {
         private Utility _utility;
-        public IConfiguration Configuration { get; private set; }
         public IServiceProvider ServiceProvider { get; private set; }
         protected ILogger _logger;
 

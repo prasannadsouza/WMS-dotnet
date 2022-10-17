@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WMSAdmin.Entity.Entities;
 
 namespace WMSAdmin.WebApp.Controllers
 {
@@ -32,9 +33,10 @@ namespace WMSAdmin.WebApp.Controllers
 
         [HttpGet]
         [Route("[controller]/[action]")]
-        public Entity.Entities.ConfigSetting GetConfigSetting()
+        public ConfigSetting GetConfigSetting()
         {
-            return Utility.GetConfigSetting();
+            var configsetting = Utility.GetConfigSetting();
+            return configsetting;
         }
     }
 }
