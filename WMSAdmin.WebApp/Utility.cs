@@ -26,7 +26,7 @@ namespace WMSAdmin.WebApp
             {
                 Setting = new Entity.Entities.ConfigSetting
                 {
-                    System = new Entity.Entities.Config.System
+                    System = new Entity.Entities.Config.Application
                     {
                         SessionId = _httpContext.Session.Id,
                     }

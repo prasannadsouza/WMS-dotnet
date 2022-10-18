@@ -17,3 +17,8 @@ IF Not EXISTS (SELECT * FROM [dbo].[AppConfigGroup] WHERE [Code] = 'PAGINATION')
 BEGIN
 INSERT [dbo].[AppConfigGroup] ([Code],[GroupName], [Description]) VALUES (N'PAGINATION', N'PAGINATION', N'Group for Pagination')
 END
+
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfigGroup] WHERE [Code] = 'CONFIG_TIMESTAMP')
+BEGIN
+INSERT [dbo].[AppConfigGroup] ([Code],[GroupName], [Description]) VALUES (N'CONFIG_TIMESTAMP', N'CONFIG_TIMESTAMP', N'Group for Config Timestamps')
+END

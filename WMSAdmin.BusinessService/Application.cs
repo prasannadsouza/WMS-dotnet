@@ -48,7 +48,7 @@ namespace WMSAdmin.BusinessService
             var settings = GetAppConfig(true);
 
             var setting = new Entity.Entities.ConfigSetting();
-            setting.System = new Entity.Entities.Config.System();
+            setting.System = new Entity.Entities.Config.Application();
             setting.DebugTest = new Entity.Entities.Config.DebugTest();
             setting.Email = new Entity.Entities.Config.Email();
 
@@ -58,7 +58,7 @@ namespace WMSAdmin.BusinessService
                 {
                     case Entity.Constants.Config.GROUP_APPLICATION:
                         {
-                            SetSytemConfig(item, setting.System);
+                            SetApplicationConfig(item, setting.System);
                             break;
                         }
                     case Entity.Constants.Config.GROUP_EMAIL:
@@ -104,19 +104,19 @@ namespace WMSAdmin.BusinessService
                         to.IsTestMode = from.Value == Entity.Constants.Config.TRUE_VALUE;
                         break;
                     }
-                case Entity.Constants.Config.DEBUGTEST_TEST_CUSTOMERNUMBER:
+                case Entity.Constants.Config.DEBUGTEST_CUSTOMERNUMBER:
                     {
-                        to.TestCustomerNumber = from.Value;
+                        to.CustomerNumber = from.Value;
                         break;
                     }
-                case Entity.Constants.Config.DEBUGTEST_TEST_USERNAME:
+                case Entity.Constants.Config.DEBUGTEST_USERNAME:
                     {
-                        to.TestUserName = from.Value;
+                        to.UserName = from.Value;
                         break;
                     }
-                case Entity.Constants.Config.DEBUGTEST_TEST_IMPERSONATING_USERNAME:
+                case Entity.Constants.Config.DEBUGTEST_IMPERSONATING_USERNAME:
                     {
-                        to.TestImpersonatingUserName = from.Value;
+                        to.ImpersonatingUserName = from.Value;
                         break;
                     }
                 case Entity.Constants.Config.DEBUGTEST_DEV_AUTO_LOGIN:
@@ -234,34 +234,29 @@ namespace WMSAdmin.BusinessService
             }
         }
 
-        private void SetSytemConfig(Entity.Entities.AppConfig from, Entity.Entities.Config.System to)
+        private void SetApplicationConfig(Entity.Entities.AppConfig from, Entity.Entities.Config.Application to)
         {
 
             switch (from.Code)
             {
-                case Entity.Constants.Config.APPLICATION_UI_LOCALE:
+                case Entity.Constants.Config.APPLICATION_LOCALE:
                     {
                         to.Locale = from.Value;
+                        break;
+                    }
+                case Entity.Constants.Config.APPLICATION_UI_LOCALE:
+                    {
+                        to.UILocale = from.Value;
+                        break;
+                    }
+                case Entity.Constants.Config.APPLICATION_TITLE:
+                    {
+                        to.ApplicationTitle = from.Value;
                         break;
                     }
                 case Entity.Constants.Config.APPLICATION_LOG_DATABASEQUERIES:
                     {
                         to.LogDatabaseQueries = from.Value == Entity.Constants.Config.TRUE_VALUE;
-                        break;
-                    }
-                case Entity.Constants.Config.APPLICATION_PAGINATION_RECORDSPERPAGE:
-                    {
-                        to.Pagination_RecordsPerPage = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.APPLICATION_PAGINATION_MAXIMUM_RECORDSPERPAGE:
-                    {
-                        to.Pagination_MaxRecordsPerPage = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.APPLICATION_PAGINATION_TOTALPAGESTOJUMP:
-                    {
-                        to.Pagination_TotalPagesToJump = int.Parse(from.Value,System.Globalization.CultureInfo.InvariantCulture);
                         break;
                     }
                 case Entity.Constants.Config.APPLICATION_CURRENT_VERSION:
@@ -272,16 +267,6 @@ namespace WMSAdmin.BusinessService
                 case Entity.Constants.Config.APPLICATION_APPCODE:
                     {
                         to.AppCode = from.Value;
-                        break;
-                    }
-                case Entity.Constants.Config.APPLICATION_MAXSECONDSTO_RETAINDOWNLOADFILES:
-                    {
-                        to.MaxSecondsTo_RetainDownloadFiles = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.APPLICATION_SESSIONEXPIRESINMINUTES:
-                    {
-                        to.SessionExpiresInMinutes = System.Convert.ToInt32(from.Value);
                         break;
                     }
                 case Entity.Constants.Config.APPLICATION_LOCALFILES_BASEPATH:
@@ -304,14 +289,9 @@ namespace WMSAdmin.BusinessService
                         to.AppAPIKey = from.Value;
                         break;
                     }
-                case Entity.Constants.Config.APPLICATION_ADMINURL:
+                case Entity.Constants.Config.APPLICATION_CONFIG_TIMESTAMP:
                     {
-                        to.AdminURL = from.Value;
-                        break;
-                    }
-                case Entity.Constants.Config.APPLICATION_ADMINURL_INTERNAL:
-                    {
-                        to.AdminURL_Internal = from.Value;
+                        to.ConfigTimeStamp = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
                         break;
                     }
                 default:
@@ -336,19 +316,66 @@ namespace WMSAdmin.BusinessService
 
             switch (from.Code)
             {
-                case Entity.Constants.Config.CONFIGTIMESTAMP_CONFIGSETTING:
-                    {
-                        to.ConfigSetting = DateTime.Parse(from.Value,System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.CONFIGTIMESTAMP_LANGUAGETEXT:
-                    {
-                        to.LanguagetText = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
                 case Entity.Constants.Config.CONFIGTIMESTAMP_APPLICATION:
                     {
                         to.Application = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                case Entity.Constants.Config.CONFIGTIMESTAMP_EMAIL:
+                    {
+                        to.Email = DateTime.Parse(from.Value,System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                case Entity.Constants.Config.CONFIGTIMESTAMP_DEBUGTEST:
+                    {
+                        to.DebugTest = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                case Entity.Constants.Config.CONFIGTIMESTAMP_PAGINATION:
+                    {
+                        to.Pagination = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                default:
+                    {
+                        var loginfo = new
+                        {
+                            SesssionId = Configuration.Setting.System.SessionId,
+                            Class = ClassName,
+                            Method = "SetConfigTimestamp",
+                            AppConfigGroup = from.AppConfigGroup.Code,
+                            AppConfig = from.Code,
+                        };
+
+                        Logger.LogError($"AppConfig is not handled", new { LogInfo = loginfo });
+                        break;
+                    }
+            }
+        }
+
+        private void SetPaginationConfig(Entity.Entities.AppConfig from, Entity.Entities.Config.Pagination to)
+        {
+
+            switch (from.Code)
+            {
+                case Entity.Constants.Config.PAGINATION_TOTALPAGESTOJUMP:
+                    {
+                        to.TotalPagesToJump = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                case Entity.Constants.Config.PAGINATION_MAXIMUM_RECORDSPERPAGE:
+                    {
+                        to.MaxRecordsPerPage = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                case Entity.Constants.Config.PAGINATION_RECORDSPERPAGE:
+                    {
+                        to.RecordsPerPage = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                        break;
+                    }
+                case Entity.Constants.Config.PAGINATION_MAXIMUM_RECORDSALLOWEDPERPAGE:
+                    {
+                        to.MaxRecordsAllowedPerPage = int.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
                         break;
                     }
                 default:

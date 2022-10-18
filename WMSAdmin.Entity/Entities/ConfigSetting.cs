@@ -8,7 +8,7 @@ namespace WMSAdmin.Entity.Entities
 {
     public class ConfigSetting
     {
-        public Config.System System { get; set; }
+        public Config.Application System { get; set; }
         public Config.Email Email { get; set; }
         public Config.DebugTest DebugTest { get; set; }
         public ConfigTimestamp ConfigTimestamp { get; set; }

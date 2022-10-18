@@ -9,7 +9,9 @@ namespace WMSAdmin.Entity.Entities
     public class ConfigTimestamp
     {
         public DateTime Application { get; set; }
-        public DateTime ConfigSetting { get; set; }
         public DateTime LanguagetText { get; set; }
+        public DateTime Email { get; set; }
+        public DateTime Pagination { get; set; }
+        public DateTime DebugTest { get; set; }
     }
 }

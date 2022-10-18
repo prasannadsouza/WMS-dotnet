@@ -10,8 +10,8 @@ namespace WMSAdmin.Entity.Entities.Config
     {
         public bool IsTestMode { get; set; }
         public bool DevAutoLogin { get; set; }
-        public string TestUserName { get; set; }
-        public string TestImpersonatingUserName { get; set; }
-        public string TestCustomerNumber { get; set; }
+        public string UserName { get; set; }
+        public string ImpersonatingUserName { get; set; }
+        public string CustomerNumber { get; set; }
     }
 }
