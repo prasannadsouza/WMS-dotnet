@@ -1,25 +1,32 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace WMSAdmin.BusinessService
 {
-    public class BaseBusinessService
+    public class BaseService
     {
-        protected BusinessServiceConfiguration Configuration { get; private set; }
+        protected Configuration Configuration { get; private set; }
         private Repository.RepoConfiguration _repoConfiguration;
         private Dictionary<System.Type, Repository.BaseRepository> _repositories;
+        protected IMemoryCache MemoryCache { get; private set; }
         protected ILogger Logger { get; private set; }
 
-        protected BaseBusinessService(BusinessServiceConfiguration configuration)
+        protected BaseService(Configuration configuration)
         {
             Configuration = configuration;
+            Logger = configuration.Logger;
+            MemoryCache = configuration.ServiceProvider.GetRequiredService<IMemoryCache>();
             _repositories = new Dictionary<Type, Repository.BaseRepository>();
+            
             _repoConfiguration = new Repository.RepoConfiguration
             {
                 ServiceProvider = Configuration.ServiceProvider,
                 Setting = Configuration.Setting,
                 Logger = Configuration.Logger,
-            }; ;
+            };
         }
         
         private string _className;

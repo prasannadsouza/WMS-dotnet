@@ -16,6 +16,13 @@ namespace WMSAdmin.WebApp
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddMemoryCache();
+            
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
             
@@ -30,6 +37,7 @@ namespace WMSAdmin.WebApp
             app.UseStaticFiles();
             app.UseRouting();
             app.MapControllers();
+            app.UseSession();
             //app.MapControllerRoute(
             //    name: "default",
             //    pattern: "{controller}/{action=Index}/{id?}");

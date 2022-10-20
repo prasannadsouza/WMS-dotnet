@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMSAdmin.Entity.Entities
+namespace WMSAdmin.Entity.Entities.Config
 {
-    public class ConfigTimestamp
+    public class Timestamp
     {
         public DateTime Application { get; set; }
         public DateTime LanguagetText { get; set; }

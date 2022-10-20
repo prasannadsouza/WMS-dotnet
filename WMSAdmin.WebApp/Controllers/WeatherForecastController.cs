@@ -33,7 +33,7 @@ namespace WMSAdmin.WebApp.Controllers
 
         [HttpGet]
         [Route("[controller]/[action]")]
-        public ConfigSetting GetConfigSetting()
+        public Entity.Entities.Config.ConfigSetting GetConfigSetting()
         {
             var configsetting = Utility.GetConfigSetting();
             return configsetting;

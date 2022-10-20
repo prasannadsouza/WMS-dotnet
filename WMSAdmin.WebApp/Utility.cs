@@ -12,35 +12,28 @@ namespace WMSAdmin.WebApp
         {
             _httpContext = httpContext;
             _serviceProvider = serviceProvider;
-            _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>(); ;
+            _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>(); 
             _logger = logger;
         }
 
-        public Entity.Entities.ConfigSetting GetConfigSetting()
+        public Entity.Entities.Config.ConfigSetting GetConfigSetting()
         {
-            var key = Entity.Constants.Cache.CONFIGSETTING;
-            var isCached = _memoryCache.TryGetValue(key, out Entity.Entities.ConfigSetting cacheValue);
-            if (isCached) return cacheValue;
-
-            var bsConfig = new BusinessService.BusinessServiceConfiguration
+            
+            var bsConfig = new BusinessService.Configuration
             {
-                Setting = new Entity.Entities.ConfigSetting
+                Setting = new Entity.Entities.Config.ConfigSetting
                 {
                     System = new Entity.Entities.Config.Application
                     {
-                        SessionId = _httpContext.Session.Id,
+                        SessionId = $"{_httpContext.TraceIdentifier}:{_httpContext.Session.Id}",
                     }
                 },
                 ServiceProvider = _serviceProvider,
                 Logger = _logger
             };
-            var appService = new BusinessService.Application(bsConfig);
-            cacheValue = appService.GetConfigSetting();
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromMinutes(60));
-            _memoryCache.Set(Entity.Constants.Cache.CONFIGSETTING, cacheValue, cacheEntryOptions);
-            return cacheValue;
-
+            var appService = new BusinessService.ConfigService(bsConfig);
+            var setting  = appService.GetConfigSetting();
+            return setting;
         }
     }
 }
