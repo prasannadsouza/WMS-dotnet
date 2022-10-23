@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WMSAdmin.Entity.Entities
+namespace WMSAdmin.Repository.POCO
 {
     public class AppConfig
     {

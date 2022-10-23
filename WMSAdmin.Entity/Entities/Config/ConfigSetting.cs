@@ -8,10 +8,10 @@ namespace WMSAdmin.Entity.Entities.Config
 {
     public class ConfigSetting
     {
-        public Application System { get; set; }
+        public Application Application { get; set; }
         public Email Email { get; set; }
         public DebugTest DebugTest { get; set; }
-        public Timestamp ConfigTimestamp { get; set; }
+        public Timestamp Timestamp { get; set; }
         public Pagination Pagination { get; set; }
     }
 }

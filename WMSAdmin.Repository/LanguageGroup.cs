@@ -4,24 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WMSAdmin.Entity.Entities.Config;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WMSAdmin.Repository
 {
-    public class AppConfigGroup: BaseRepository
+    public class LanguageGroup:BaseRepository
     {
-        public AppConfigGroup(RepoConfiguration configuration) : base(configuration)
+        public LanguageGroup(RepoConfiguration configuration) : base(configuration)
         {
+
         }
 
-        internal IQueryable<POCO.AppConfigGroup> GetQuery(Context.RepoContext db, Entity.Filter.AppConfigGroup filter)
+        internal IQueryable<POCO.LanguageGroup> GetQuery(Context.RepoContext db, Entity.Filter.LanguageGroup filter)
         {
-            var query = db.AppConfigGroup.AsNoTracking();
+            var query = db.LanguageGroup.AsNoTracking();
             if (filter == null) return query;
 
             if (filter.Id.HasValue) query = query.Where(p => filter.Id.Value == p.Id.Value);
             if (filter.Ids?.Any() == true) query = query.Where(p => filter.Ids.Contains(p.Id.Value));
-
+            
             filter.Code = filter?.Code?.Trim();
             if (string.IsNullOrEmpty(filter?.Code) == false)
             {
@@ -29,6 +30,7 @@ namespace WMSAdmin.Repository
                 else query = query.Where(e => e.Code == filter.Code);
             }
 
+            filter.Name = filter?.Name?.Trim();
             if (string.IsNullOrEmpty(filter?.Name) == false)
             {
                 if (filter.Name.Contains("%")) query = query.Where(p => EF.Functions.Like(p.Name, filter.Name));
@@ -41,59 +43,75 @@ namespace WMSAdmin.Repository
             return query;
         }
 
-        public List<Entity.Entities.AppConfigGroup> GetAll()
+        public Entity.Entities.Response<List<Entity.Entities.LanguageGroup>> Get(Entity.Filter.LanguageGroup filter)
         {
-            using (var db = GetDbContext())
-            {
-                return ConvertTo(db.AppConfigGroup);
-            }
-        }
-
-        public Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>> Get(Entity.Filter.AppConfigGroup filter)
-        {
-            var responseData = new Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>>()
+            var responseData = new Entity.Entities.Response<List<Entity.Entities.LanguageGroup>>()
             {
                 Errors = new List<Entity.Entities.Error>(),
             };
-
+            
             using (var db = GetDbContext())
             {
-                var query = GetQuery(db, filter);
+                var lgq = GetQuery(db, filter);
+                var waRepo = new WMSApplication(Configuration);
+                var waq = waRepo.GetQuery(db, filter?.WMSApplication);
+
+                var query = from lg in lgq
+                            join wa in waq on lg.WMSApplicationId equals wa.Id
+                            select lg;
+
                 responseData.Data = ConvertTo(GetOrderedResult(null, query, filter?.Pagination, out Entity.Entities.Pagination newPagination));
                 responseData.Pagination = filter.Pagination = newPagination;
                 return responseData;
             }
         }
-
-        internal static List<Entity.Entities.AppConfigGroup> ConvertTo(IEnumerable<POCO.AppConfigGroup> fromList)
+        public void Save(Entity.Entities.LanguageGroup item)
         {
-            var toList = new List<Entity.Entities.AppConfigGroup>();
+            using (var dbContext = GetDbContext())
+            {
+                POCO.LanguageGroup dbItem = null;
+
+                if (item.Id.HasValue)
+                {
+                    dbItem = dbContext.LanguageGroup.First(e => e.Id == item.Id.Value);
+                    ConvertTo(item, dbItem);
+                    dbContext.SaveChanges();
+                    return;
+                }
+
+                dbItem = ConvertTo(item, dbItem);
+                dbContext.LanguageGroup.Add(dbItem);
+                dbContext.SaveChanges();
+                item.Id = dbItem.Id;
+                return;
+            }
+        }
+        internal static List<Entity.Entities.LanguageGroup> ConvertTo(IEnumerable<POCO.LanguageGroup> fromList)
+        {
+            var toList = new List<Entity.Entities.LanguageGroup>();
             foreach (var from in fromList)
             {
                 toList.Add(ConvertTo(from));
             }
             return toList;
         }
-        internal static Entity.Entities.AppConfigGroup ConvertTo(POCO.AppConfigGroup from)
+        internal static Entity.Entities.LanguageGroup ConvertTo(POCO.LanguageGroup from)
         {
-            var to = new Entity.Entities.AppConfigGroup
+            var to = new Entity.Entities.LanguageGroup
             {
                 Id = from.Id,
                 Code = from.Code,
                 Name = from.Name,
-                Description = from.Description,
-                TimeStamp = from.TimeStamp,
-                
+
             };
+
             return to;
         }
-        internal static POCO.AppConfigGroup ConvertTo(Entity.Entities.AppConfigGroup from, POCO.AppConfigGroup to)
+        internal static POCO.LanguageGroup ConvertTo(Entity.Entities.LanguageGroup from, POCO.LanguageGroup to)
         {
-            if (to == null) to = new POCO.AppConfigGroup();
+            if (to == null) to = new POCO.LanguageGroup();
             to.Code = from.Code;
             to.Name = from.Name;
-            to.Description = from.Description;
-            to.TimeStamp = from.TimeStamp;
             return to;
         }
     }

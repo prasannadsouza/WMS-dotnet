@@ -20,11 +20,14 @@ namespace WMSAdmin.Entity.Constants
         public const string APPLICATION_APP_APIKEY = "APP_APIKEY";
         public const string APPLICATION_LOCALFILES_BASEPATH = "LOCALFILES_BASEPATH";
         public const string APPLICATION_CONFIG_TIMESTAMP = "CONFIG_TIMESTAMP";
+        public const string APPLICATION_CONFIG_BASEURL = "BASEURL";
+        public const string APPLICATION_BASEURL_INTERNAL = "BASEURL_INTERNAL";
+        public const string APPLICATION_CACHEEXPIRY_INMINUTES = "CACHEEXPIRY_INMINUTES";
 
         public const string GROUP_PAGINATION = "PAGINATION";
-        public const string PAGINATION_RECORDSPERPAGE = "PAGINATION_RECORDSPERPAGE";
-        public const string PAGINATION_MAXIMUM_RECORDSPERPAGE = "PAGINATION_MAXIMUM_RECORDSPERPAGE";
-        public const string PAGINATION_TOTALPAGESTOJUMP = "PAGINATION_TOTALPAGESTOJUMP";
+        public const string PAGINATION_RECORDSPERPAGE = "RECORDSPERPAGE";
+        public const string PAGINATION_MAXIMUM_RECORDSPERPAGE = "MAXIMUM_RECORDSPERPAGE";
+        public const string PAGINATION_TOTALPAGESTOJUMP = "TOTALPAGESTOJUMP";
         public const string PAGINATION_MAXIMUM_RECORDSALLOWEDPERPAGE = "MAXIMUM_RECORDSALLOWEDPERPAGE";
 
         public const string GROUP_EMAIL = "EMAIL";
@@ -50,7 +53,7 @@ namespace WMSAdmin.Entity.Constants
         public const string DEBUGTEST_IMPERSONATING_USERNAME = "IMPERSONATING_USERNAME";
         public const string DEBUGTEST_DEV_AUTO_LOGIN = "DEV_AUTO_LOGIN";
 
-        public const string GROUP_CONFIGTIMESTAMP = "GROUP_CONFIGTIMESTAMP";
+        public const string GROUP_CONFIGTIMESTAMP = "CONFIG_TIMESTAMP";
         public const string CONFIGTIMESTAMP_APPLICATION = "APPLICATION";
         public const string CONFIGTIMESTAMP_EMAIL = "EMAIL";
         public const string CONFIGTIMESTAMP_PAGINATION = "PAGINATION";

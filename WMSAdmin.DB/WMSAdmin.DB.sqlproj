@@ -62,11 +62,17 @@
     <Folder Include="Script\Deploy" />
     <Folder Include="Script\MasterData" />
     <Folder Include="Script\MasterData\AppConfig" />
+    <Folder Include="Script\Dev" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AppConfigGroup.sql" />
     <Build Include="dbo\Tables\AppConfig.sql" />
     <Build Include="dbo\Tables\Role.sql" />
+    <Build Include="dbo\Tables\LanguageCulture.sql" />
+    <Build Include="dbo\Tables\WMSApplication.sql" />
+    <Build Include="dbo\Tables\LanguageGroup.sql" />
+    <Build Include="dbo\Tables\LanguageText.sql" />
+    <None Include="Script\MasterData\AppConfig\ConfigTimestamp.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\MasterData\AppConfigGroup.sql" />
@@ -76,6 +82,8 @@
     <None Include="Script\MasterData\AppConfig\Pagination.sql" />
     <None Include="Script\MasterData\AppConfig\DebugTest.sql" />
     <None Include="Script\MasterData\AppConfig\Email.sql" />
-    <None Include="Script\MasterData\AppConfig\ConfigTimestamp.sql" />
+    <None Include="WMSAdmin.DB.publish.xml" />
+    <None Include="Script\Dev\CreatePOCOClass.sql" />
+    <None Include="Script\MasterData\WMSApplication.sql" />
   </ItemGroup>
 </Project>

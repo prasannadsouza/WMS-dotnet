@@ -19,6 +19,8 @@ namespace WMSAdmin.Entity.Entities.Config
         public string LocalFilesBasePath { get; set; }
         public string TemplateFilesPath { get; set; }
         public string AppAPIKey { get; set; }
+        public string BaseUrl { get; set; }
+        public int CacheExpiryInMinutes { get; set; }
         public DateTime ConfigTimeStamp { get; set; }
     }
 }

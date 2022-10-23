@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace WMSAdmin.Entity.Entities
 {
-    public class AppConfig
+    public class LanguageText
     {
         public long? Id { get; set; }
-        public long? AppConfigGroupId { get; set; }
+        public long? LanguageGroupId { get; set; }
+        public long? LanguageCultureId { get; set; }
         public string Code { get; set; }
         public string Value { get; set; }
         public string Description { get; set; }

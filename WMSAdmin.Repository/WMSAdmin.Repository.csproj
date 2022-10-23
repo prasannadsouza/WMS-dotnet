@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WMSAdmin.Entity\WMSAdmin.Entity.csproj" />
+    <ProjectReference Include="..\WMSAdmin.Utility\WMSAdmin.Utility.csproj" />
   </ItemGroup>
 
 </Project>

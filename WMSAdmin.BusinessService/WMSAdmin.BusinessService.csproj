@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WMSAdmin.Entity\WMSAdmin.Entity.csproj" />
-    <ProjectReference Include="..\WMSAdmin.Language\WMSAdmin.Language.csproj" />
     <ProjectReference Include="..\WMSAdmin.Repository\WMSAdmin.Repository.csproj" />
   </ItemGroup>
 

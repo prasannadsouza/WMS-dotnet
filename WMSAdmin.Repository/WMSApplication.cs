@@ -8,15 +8,15 @@ using WMSAdmin.Entity.Entities.Config;
 
 namespace WMSAdmin.Repository
 {
-    public class AppConfigGroup: BaseRepository
+    public class WMSApplication : BaseRepository
     {
-        public AppConfigGroup(RepoConfiguration configuration) : base(configuration)
+        public WMSApplication(RepoConfiguration configuration) : base(configuration)
         {
         }
 
-        internal IQueryable<POCO.AppConfigGroup> GetQuery(Context.RepoContext db, Entity.Filter.AppConfigGroup filter)
+        internal IQueryable<POCO.WMSApplication> GetQuery(Context.RepoContext db, Entity.Filter.WMSApplication filter)
         {
-            var query = db.AppConfigGroup.AsNoTracking();
+            var query = db.WMSApplication.AsNoTracking();
             if (filter == null) return query;
 
             if (filter.Id.HasValue) query = query.Where(p => filter.Id.Value == p.Id.Value);
@@ -41,17 +41,17 @@ namespace WMSAdmin.Repository
             return query;
         }
 
-        public List<Entity.Entities.AppConfigGroup> GetAll()
+        public List<Entity.Entities.WMSApplication> GetAll()
         {
             using (var db = GetDbContext())
             {
-                return ConvertTo(db.AppConfigGroup);
+                return ConvertTo(db.WMSApplication);
             }
         }
 
-        public Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>> Get(Entity.Filter.AppConfigGroup filter)
+        public Entity.Entities.Response<List<Entity.Entities.WMSApplication>> Get(Entity.Filter.WMSApplication filter)
         {
-            var responseData = new Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>>()
+            var responseData = new Entity.Entities.Response<List<Entity.Entities.WMSApplication>>()
             {
                 Errors = new List<Entity.Entities.Error>(),
             };
@@ -65,31 +65,31 @@ namespace WMSAdmin.Repository
             }
         }
 
-        internal static List<Entity.Entities.AppConfigGroup> ConvertTo(IEnumerable<POCO.AppConfigGroup> fromList)
+        internal static List<Entity.Entities.WMSApplication> ConvertTo(IEnumerable<POCO.WMSApplication> fromList)
         {
-            var toList = new List<Entity.Entities.AppConfigGroup>();
+            var toList = new List<Entity.Entities.WMSApplication>();
             foreach (var from in fromList)
             {
                 toList.Add(ConvertTo(from));
             }
             return toList;
         }
-        internal static Entity.Entities.AppConfigGroup ConvertTo(POCO.AppConfigGroup from)
+        internal static Entity.Entities.WMSApplication ConvertTo(POCO.WMSApplication from)
         {
-            var to = new Entity.Entities.AppConfigGroup
+            var to = new Entity.Entities.WMSApplication
             {
                 Id = from.Id,
                 Code = from.Code,
                 Name = from.Name,
                 Description = from.Description,
                 TimeStamp = from.TimeStamp,
-                
+
             };
             return to;
         }
-        internal static POCO.AppConfigGroup ConvertTo(Entity.Entities.AppConfigGroup from, POCO.AppConfigGroup to)
+        internal static POCO.WMSApplication ConvertTo(Entity.Entities.WMSApplication from, POCO.WMSApplication to)
         {
-            if (to == null) to = new POCO.AppConfigGroup();
+            if (to == null) to = new POCO.WMSApplication();
             to.Code = from.Code;
             to.Name = from.Name;
             to.Description = from.Description;

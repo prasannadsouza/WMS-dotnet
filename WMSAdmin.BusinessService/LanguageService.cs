@@ -1,8 +1,14 @@
-﻿namespace WMSAdmin.BusinessService
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace WMSAdmin.BusinessService
 {
-    public class Application : BaseService
+    public class LanguageService : BaseService
     {
-        public Application(Configuration configuration) : base(configuration)
+        public LanguageService(Configuration configuration) : base(configuration)
         {
         }
 
@@ -18,3 +24,4 @@
         }
     }
 }
+

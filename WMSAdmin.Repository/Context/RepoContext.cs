@@ -18,10 +18,18 @@ namespace WMSAdmin.Repository.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Domain.AppConfig>().ToTable("AppConfig");
-            modelBuilder.Entity<Domain.AppConfigGroup>().ToTable("AppConfigGroup");
+            modelBuilder.Entity<POCO.AppConfig>().ToTable("AppConfig");
+            modelBuilder.Entity<POCO.AppConfigGroup>().ToTable("AppConfigGroup");
+            modelBuilder.Entity<POCO.LanguageGroup>().ToTable("LanguageGroup");
+            modelBuilder.Entity<POCO.LanguageCulture>().ToTable("LanguageCulture");
+            modelBuilder.Entity<POCO.LanguageText>().ToTable("LanguageText");
+            modelBuilder.Entity<POCO.WMSApplication>().ToTable("WMSApplication");
         }
-        public DbSet<Domain.AppConfig> AppConfig {get; set;}
-        public DbSet<Domain.AppConfigGroup> AppConfigGroup { get; set; }
+        public DbSet<POCO.AppConfig> AppConfig {get; set;}
+        public DbSet<POCO.AppConfigGroup> AppConfigGroup { get; set; }
+        public DbSet<POCO.LanguageGroup> LanguageGroup { get; set; }
+        public DbSet<POCO.LanguageCulture> LanguageCulture { get; set; }
+        public DbSet<POCO.LanguageText> LanguageText { get; set; }
+        public DbSet<POCO.WMSApplication> WMSApplication { get; set; }
     }
 }
