@@ -19,7 +19,7 @@ namespace WMSAdmin.Repository
             var query = db.AppConfigGroup.AsNoTracking();
             if (filter == null) return query;
 
-            if (filter.Id.HasValue) query = query.Where(p => filter.Id.Value == p.Id.Value);
+            if (filter.Id != null) query = query.Where(p => filter.Id.Value == p.Id.Value);
             if (filter.Ids?.Any() == true) query = query.Where(p => filter.Ids.Contains(p.Id.Value));
 
             filter.Code = filter?.Code?.Trim();

@@ -1,21 +1,23 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WMSAdmin.WebApp
+namespace WMSAdmin.Console
 {
-    public class Utility
+    internal class Utility
     {
-        private IServiceProvider _serviceProvider; 
-        private HttpContext _httpContext;
+        private IServiceProvider _serviceProvider;
         private ILogger _logger;
         private Entity.Entities.Config.ConfigSetting _configSetting;
         private BusinessService.Configuration _bsConfig;
         private Language.Configuration _langConfig;
         private Dictionary<Type, BusinessService.BaseService> _businessServices;
-        public Utility(HttpContext httpContext, IServiceProvider serviceProvider, ILogger logger)
+        internal Utility(IServiceProvider serviceProvider, ILogger logger)
         {
-            _httpContext = httpContext;
             _serviceProvider = serviceProvider;
             _logger = logger;
             _businessServices = new Dictionary<Type, BusinessService.BaseService>();
@@ -39,7 +41,7 @@ namespace WMSAdmin.WebApp
         {
             var type = typeof(T);
             _businessServices.TryGetValue(type, out var businessService);
-            if (businessService != null) return (T) businessService;
+            if (businessService != null) return (T)businessService;
 
             businessService = (T)Activator.CreateInstance(typeof(T), _bsConfig);
             _businessServices.Add(type, businessService);
@@ -57,7 +59,7 @@ namespace WMSAdmin.WebApp
                 {
                     Application = new Entity.Entities.Config.Application
                     {
-                        SessionId = $"{_httpContext.TraceIdentifier}:{_httpContext.Session.Id}",
+                        SessionId = $"{DateTime.Now.Ticks}",
                         CacheExpiryInMinutes = Entity.Constants.Default.CacheExpiryInMinutes,
                     },
                     Pagination = new Entity.Entities.Config.Pagination
@@ -65,17 +67,15 @@ namespace WMSAdmin.WebApp
                         MaxRecordsPerPage = Entity.Constants.Default.Pagination_Max_RecordsPerpage,
                         RecordsPerPage = Entity.Constants.Default.Pagination_Max_RecordsPerpage,
                         MaxRecordsAllowedPerPage = Entity.Constants.Default.Pagination_Max_AllowedRecordsPerpage,
-                    }    
+                    }
                 },
-                
+
                 ServiceProvider = _serviceProvider,
                 Logger = _logger
             };
             var configService = new BusinessService.ConfigService(bsConfig);
-            var setting  = configService.GetConfigSetting();
+            var setting = configService.GetConfigSetting();
             return setting;
         }
-
-        
     }
 }

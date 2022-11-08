@@ -113,7 +113,7 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.DebugTest = to;
-            SaveToCache(key, to);
+            SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Email GetEmail()
@@ -231,7 +231,7 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Email = to;
-            SaveToCache(key, to);
+            SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Application GetApplication()
@@ -349,7 +349,7 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Application = to;
-            SaveToCache(key, to);
+            SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Timestamp GetTimestamp()
@@ -418,7 +418,7 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Timestamp = to;
-            SaveToCache(key, to);
+            SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Pagination GetPagination()
@@ -486,7 +486,7 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Pagination = to;
-            SaveToCache(key, to);
+            SaveToCache(key, to, true);
             return to;
         }
     }

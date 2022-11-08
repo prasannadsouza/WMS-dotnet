@@ -72,6 +72,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WMSAdmin.BusinessService\WMSAdmin.BusinessService.csproj" />
     <ProjectReference Include="..\WMSAdmin.Entity\WMSAdmin.Entity.csproj" />
+    <ProjectReference Include="..\WMSAdmin.Language\WMSAdmin.Language.csproj" />
   </ItemGroup>
 
   <ItemGroup>

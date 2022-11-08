@@ -21,14 +21,15 @@ export const Login = () => {
     const model: LoginModel = appData.loginModel;
 
     const appState = useTrackedGlobalState();
-    const globalStrings = appState.globalStrings;
+    const generalString = appState.GeneralString;
+    const loginString = appState.LoginString;
 
     let passwordInput = useRef<HTMLInputElement>(null);
     let usernameInput = useRef<HTMLInputElement>(null);
     let emailInput = useRef<HTMLInputElement>(null);
 
-    let title = globalStrings!.login;
-    if (model?.showForgotPassword === true) title = globalStrings!.forgotPassword
+    let title = loginString!.login;
+    if (model?.showForgotPassword === true) title = loginString!.forgotPassword
 
     const getCurrentModel = (): LoginModel => {
         return {
@@ -71,7 +72,7 @@ export const Login = () => {
         messageModel.message = unhandledErrors[0].message;
         messageModel.show = true;
         messageModel.isError = true;
-        messageModel.title = globalStrings?.error;
+        messageModel.title = generalString?.error;
         messageModel!.onClose = () => emailInput.current?.focus();
         updateAppConfig((prev) => ({ ...prev, messageModel: messageModel }));
         return true;
@@ -116,7 +117,7 @@ export const Login = () => {
         messageModel.message = unhandledErrors[0].message;
         messageModel.show = true;
         messageModel.isError = true;
-        messageModel.title = globalStrings?.error;
+        messageModel.title = generalString?.error;
         messageModel!.onClose = () => {
             usernameInput.current?.focus();
         };
@@ -218,7 +219,7 @@ export const Login = () => {
             dispatch(setLoginModel(currentModel));
         }
 
-        updateAppConfig((prev) => ({ ...prev, currentTitle: globalStrings!.forgotPassword }));
+        updateAppConfig((prev) => ({ ...prev, currentTitle: loginString!.forgotPassword }));
 
     };
 
@@ -238,7 +239,7 @@ export const Login = () => {
 
         }
         dispatch(setLoginModel(currentModel));
-        updateAppConfig((prev) => ({ ...prev, currentTitle: globalStrings!.login }));
+        updateAppConfig((prev) => ({ ...prev, currentTitle: loginString!.login }));
         
     };
 
@@ -259,7 +260,7 @@ export const Login = () => {
         return (
             <section className='col-12 col-md-5 col-lg-4 bg-white  border border-warning rounded-3 p-2'>
                 <fieldset className='col-12 fieldsetLabel'>
-                    <label>{globalStrings!.username}<span className='text-danger'> *</span></label>
+                    <label>{loginString!.username}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.usernameFeedBack!)}>
                         <input name="username" ref={usernameInput} type="text" className={"form-control border-0 me-1 rounded" + UIHelper.getclassIsInvalid(model?.usernameFeedBack!)}
                             onChange={(e) => {
@@ -287,7 +288,7 @@ export const Login = () => {
                     <div className="invalid-feedback">{model?.usernameFeedBack}</div>
                 </fieldset>
                 <fieldset className='col-12 fieldsetLabel'>
-                    <label>{globalStrings!.password}<span className='text-danger'> *</span></label>
+                    <label>{loginString!.password}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.passwordFeedback!)}>
                         <input name="password" ref={passwordInput} type={model?.showPassword ? "text" : "password"}
                             className={"form-control border-0 rounded" + UIHelper.getclassIsInvalid(model?.passwordFeedback!)}
@@ -327,8 +328,8 @@ export const Login = () => {
                     <div className="invalid-feedback">{model?.passwordFeedback}</div>
                 </fieldset>
                 <div className="mt-3 d-flex justify-content-around">
-                    <button className='btn btn-secondary' onClick={(e) => showForgotPassword(false)} >{globalStrings?.forgotPassword}</button>
-                    <button className='btn btn-primary' onClick={(e) => handleLoginClick(e)} >{globalStrings?.login}</button>
+                    <button className='btn btn-secondary' onClick={(e) => showForgotPassword(false)} >{loginString?.forgotPassword}</button>
+                    <button className='btn btn-primary' onClick={(e) => handleLoginClick(e)} >{loginString?.login}</button>
                 </div>
             </section>
         );
@@ -338,7 +339,7 @@ export const Login = () => {
         return (
             <section className='col-12 col-md-6 col-lg-4 bg-white  border border-warning rounded-3 p-2'>
                 <fieldset className='col-12 fieldsetLabel'>
-                    <label>{globalStrings!.email}<span className='text-danger'> *</span></label>
+                    <label>{generalString!.email}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.emailFeedback!)}>
                         <input name="email" ref={emailInput} type="text" className={'form-control border-0 me-1 rounded' + UIHelper.getclassIsInvalid(model?.emailFeedback!)}
                             onChange={(e) => {
@@ -367,8 +368,8 @@ export const Login = () => {
                     <div className="invalid-feedback">{model?.emailFeedback}</div>
                 </fieldset>
                 <div className="mt-3 d-flex justify-content-around">
-                    <button className='btn btn-secondary' onClick={(e) => showLogin(false)}>{globalStrings?.cancel}</button>
-                    <button className='btn btn-primary' onClick={(e) => handleForgotPasswordClick(e)} >{globalStrings?.sendPasswordResetLink}</button>
+                    <button className='btn btn-secondary' onClick={(e) => showLogin(false)}>{generalString?.cancel}</button>
+                    <button className='btn btn-primary' onClick={(e) => handleForgotPasswordClick(e)} >{loginString?.sendPasswordResetLink}</button>
                 </div>
             </section>
         );

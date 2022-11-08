@@ -56,10 +56,15 @@ namespace WMSAdmin.BusinessService
             return default(T);
         }
 
-        public void SaveToCache<T>(string key, T value, int? cacheExpiryInMinutes = null)
+        public void SaveToCache<T>(string key, T value, bool noexpiry = false, int? cacheExpiryInMinutes = null)
         {
             if (cacheExpiryInMinutes == null) cacheExpiryInMinutes = Configuration.Setting.Application.CacheExpiryInMinutes;
 
+            if (noexpiry)
+            {
+                MemoryCache.Set(key, value);
+                return;
+            }
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                .SetSlidingExpiration(TimeSpan.FromMinutes(cacheExpiryInMinutes.Value));
             MemoryCache.Set(key, value, cacheEntryOptions);

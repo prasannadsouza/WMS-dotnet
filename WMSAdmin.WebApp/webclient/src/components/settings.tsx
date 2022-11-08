@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 export const Settings = () => {
     const updateAppConfig = useUpdateGlobalState();
     const appConfig = useTrackedGlobalState();
-    var globalStrings = appConfig.globalStrings;
+    var globalStrings = appConfig.GeneralString;
     let title = globalStrings!.settings;
 
     useEffect(() => {

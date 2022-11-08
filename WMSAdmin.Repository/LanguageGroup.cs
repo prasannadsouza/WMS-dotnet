@@ -20,9 +20,9 @@ namespace WMSAdmin.Repository
             var query = db.LanguageGroup.AsNoTracking();
             if (filter == null) return query;
 
-            if (filter.Id.HasValue) query = query.Where(p => filter.Id.Value == p.Id.Value);
+            if (filter.Id != null) query = query.Where(p => filter.Id.Value == p.Id.Value);
             if (filter.Ids?.Any() == true) query = query.Where(p => filter.Ids.Contains(p.Id.Value));
-            
+
             filter.Code = filter?.Code?.Trim();
             if (string.IsNullOrEmpty(filter?.Code) == false)
             {
@@ -36,10 +36,13 @@ namespace WMSAdmin.Repository
                 if (filter.Name.Contains("%")) query = query.Where(p => EF.Functions.Like(p.Name, filter.Name));
                 else query = query.Where(e => e.Name == filter.Name);
             }
-
+           
             if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
             if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp <= p.TimeStamp.Value);
 
+            if (filter.WMSApplication?.Id.HasValue == true) query = query.Where(p => filter.WMSApplication.Id.Value == p.WMSApplicationId.Value);
+            if (filter.WMSApplication?.Ids?.Any() == true) query = query.Where(p => filter.WMSApplication.Ids.Contains(p.WMSApplicationId.Value));
+            
             return query;
         }
 

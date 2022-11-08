@@ -1,17 +1,3 @@
-export type GlobalLocaleStrings = {
-    en:  GlobalStrings;
-    se: GlobalStrings;
-}
-
-export type ValidationLocaleStrings = {
-    en: ValidationStrings;
-    se: ValidationStrings;
-}
-
-export type MessageLocaleStrings = {
-    en: MessageStrings;
-    se: MessageStrings;
-}
 
 export type Language = {
     id?: number;
@@ -19,39 +5,50 @@ export type Language = {
     name: string;
 }
 
-export type GlobalStrings = {
-    home: string;
-    settings: string;
-    login: string;
-    logout: string;
-    language: string;
-    username: string;
-    password: string;
-    forgotPassword: string;
-    sendPasswordResetLink: string;
+export type GeneralLocaleString = {
+    sv_SE: GeneralString;
+    en_SE: GeneralString;
+}
+
+export type GeneralString = {
+    all: string;
     cancel: string;
-    email: string;
-    yes: string;
-    no: string;
-    confirmTitle: string;
-    confirmMessage: string;
-    ok: string;
-    message: string;
-    error: string;
     close: string;
-    fetchdata: string
-} 
+    confirmMessage: string;
+    confirmTitle: string;
+    email: string;
+    error: string;
+    fetchData: string;
+    home: string;
+    language: string;
+    message: string;
+    no: string;
+    ok: string;
+    settings: string;
+    to: string;
+    yes: string;
+}
 
-export type ValidationStrings = {
-    usernameCannotBeBlank: string;
-    passwordCannotBeBlank: string;
-    usernameOrPasswordIsInvalid: string;
+export type LoginLocaleString = {
+    sv_SE: LoginString;
+    en_SE: LoginString;
+}
+
+export type LoginString = {
     emailCannotBeBlank: string;
+    forgotPassword: string;
+    login: string;
+    loginTitle: string;
+    logout: string;
+    password: string;
+    passwordCannotBeBlank: string;
+    resetEmailLinkSent: string;
+    sendPasswordResetLink: string;
+    username: string;
+    usernameCannotBeBlank: string;
+    usernameOrPasswordIsInvalid: string;
 }
 
-export type MessageStrings = {
-    resetEmailLinkSent: string;
-}
 
 
 

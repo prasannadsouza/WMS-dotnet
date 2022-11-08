@@ -21,7 +21,7 @@ export const FetchData = () => {
 
     const updateAppConfig = useUpdateGlobalState();
     const appConfig = useTrackedGlobalState();
-    let title = appConfig.globalStrings!.fetchdata;
+    let title = appConfig.GeneralString!.fetchData;
         
 
     useEffect(() => {

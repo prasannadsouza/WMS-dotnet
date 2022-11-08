@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 export const Home = () => {
     const updateAppConfig = useUpdateGlobalState();
     const appConfig = useTrackedGlobalState();
-    let title = appConfig.globalStrings!.home;
+    let title = appConfig.GeneralString!.home;
     
     useEffect(() => {
         updateAppConfig((prev) => ({ ...prev, currentTitle: title }));

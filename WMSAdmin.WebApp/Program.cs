@@ -1,5 +1,9 @@
 
 
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
+
 namespace WMSAdmin.WebApp
 {
     public class Program
@@ -16,6 +20,27 @@ namespace WMSAdmin.WebApp
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddMemoryCache();
+
+            var defaultRequestCulture = new RequestCulture("en-SE");
+            var testCulture = "da-DK";
+            var cultureinfo =  new CultureInfo(testCulture);
+            var supportedCultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en-SE"),
+                    new CultureInfo("sv-SE"),
+                };
+            
+
+            builder.Services.AddRequestLocalization(opt =>
+            {
+                opt.DefaultRequestCulture = defaultRequestCulture;
+                opt.SupportedCultures = supportedCultures;
+                opt.SupportedUICultures = supportedCultures;
+                opt.FallBackToParentCultures = true;
+                opt.FallBackToParentUICultures = true;
+                opt.RequestCultureProviders.Add(new AcceptLanguageHeaderRequestCultureProvider());
+            });
+
             
             builder.Services.AddSession(options =>
             {
@@ -38,6 +63,7 @@ namespace WMSAdmin.WebApp
             app.UseRouting();
             app.MapControllers();
             app.UseSession();
+            app.UseRequestLocalization();
             //app.MapControllerRoute(
             //    name: "default",
             //    pattern: "{controller}/{action=Index}/{id?}");

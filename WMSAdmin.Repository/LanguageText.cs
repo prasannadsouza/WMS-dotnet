@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace WMSAdmin.Repository
             var query = db.LanguageText.AsNoTracking();
             if (filter == null) return query;
 
-            if (filter.Id.HasValue) query = query.Where(p => filter.Id.Value == p.Id.Value);
+            if (filter.Id != null) query = query.Where(p => filter.Id.Value == p.Id.Value);
             if (filter.Ids?.Any() == true) query = query.Where(p => filter.Ids.Contains(p.Id.Value));
 
             filter.Code = filter?.Code?.Trim();
@@ -38,6 +39,12 @@ namespace WMSAdmin.Repository
 
             if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
             if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp <= p.TimeStamp.Value);
+
+            if (filter.LanguageGroup?.Id != null) query = query.Where(p => filter.LanguageGroup.Id.Value == p.LanguageGroupId.Value);
+            if (filter.LanguageGroup?.Ids?.Any() == true) query = query.Where(p => filter.LanguageGroup.Ids.Contains(p.LanguageGroupId.Value));
+
+            if (filter.LanguageCulture?.Id != null) query = query.Where(p => filter.LanguageCulture.Id.Value == p.LanguageCultureId.Value);
+            if (filter.LanguageCulture?.Ids?.Any() == true) query = query.Where(p => filter.LanguageCulture.Ids.Contains(p.LanguageCultureId.Value));
 
             return query;
         }
@@ -59,10 +66,14 @@ namespace WMSAdmin.Repository
                 var waRepo = new WMSApplication(Configuration);
                 var waq = waRepo.GetQuery(db, filter?.LanguageGroup?.WMSApplication);
 
-                var query = from ac in ltq
-                            join lg in lgq on ac.LanguageGroupId equals lg.Id
+                var lcRepo = new LanguageCulture(Configuration);
+                var lcq = lcRepo.GetQuery(db, filter.LanguageCulture);
+
+                var query = from lt in ltq
+                            join lg in lgq on lt.LanguageGroupId equals lg.Id
+                            join lc in lcq on lt.LanguageCultureId equals lc.Id
                             join wa in waq on lg.WMSApplicationId equals wa.Id
-                            select ac;
+                            select lt;
 
                 responseData.Data = ConvertTo(GetOrderedResult(null, query, filter?.Pagination, out Entity.Entities.Pagination newPagination));
                 responseData.Pagination = filter.Pagination = newPagination;

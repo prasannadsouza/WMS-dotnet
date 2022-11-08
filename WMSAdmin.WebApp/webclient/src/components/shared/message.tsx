@@ -8,7 +8,7 @@ export const Message = () => {
     const updateAppConfig = useUpdateGlobalState();
     const appConfig = useTrackedGlobalState();
     const model = appConfig.messageModel;
-    const globalStrings = appConfig.globalStrings;
+    const generalString = appConfig.GeneralString;
     let okButton = useRef<HTMLButtonElement>(null);
     let showModal = model?.show === true;
 
@@ -33,15 +33,15 @@ export const Message = () => {
             <div className="modal-dialog" role="document">
                 <div className="modal-content mt-5 border border-warning">
                     <div className={"modal-header" + getClassName()}>
-                        <h5 className="modal-title">{model?.title ?? (model?.isError === true ? globalStrings?.error : globalStrings?.message)}</h5>
-                        <button ref={okButton} type="button" className="btn btn-close border border-dark" onClick={() => handleClose()} data-bs-dismiss="modal" aria-label={model?.okTitle ?? globalStrings?.ok}></button>
+                        <h5 className="modal-title">{model?.title ?? (model?.isError === true ? generalString?.error : generalString?.message)}</h5>
+                        <button ref={okButton} type="button" className="btn btn-close border border-dark" onClick={() => handleClose()} data-bs-dismiss="modal" aria-label={model?.okTitle ?? generalString?.ok}></button>
                     </div>
                     <div className="modal-body">
-                        <p>{model?.message ?? (model?.isError === true ? globalStrings?.error : globalStrings?.message)}</p>
+                        <p>{model?.message ?? (model?.isError === true ? generalString?.error : generalString?.message)}</p>
                     </div>
                     <div className="modal-footer">
                         <div className='d-flex justify-content.end'>
-                            <button type="button" onClick={() => handleClose()} className="btn btn-primary" data-bs-dismiss="modal">{model?.okTitle ?? globalStrings?.ok}</button>
+                            <button type="button" onClick={() => handleClose()} className="btn btn-primary" data-bs-dismiss="modal">{model?.okTitle ?? generalString?.ok}</button>
                         </div>
                     </div>
                 </div>

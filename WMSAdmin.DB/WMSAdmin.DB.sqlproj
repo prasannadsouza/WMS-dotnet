@@ -63,6 +63,8 @@
     <Folder Include="Script\MasterData" />
     <Folder Include="Script\MasterData\AppConfig" />
     <Folder Include="Script\Dev" />
+    <Folder Include="Script\MasterData\Language" />
+    <Folder Include="Script\MasterData\Language\WMSAdmin" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AppConfigGroup.sql" />
@@ -85,5 +87,8 @@
     <None Include="WMSAdmin.DB.publish.xml" />
     <None Include="Script\Dev\CreatePOCOClass.sql" />
     <None Include="Script\MasterData\WMSApplication.sql" />
+    <None Include="Script\MasterData\Language\WMSAdmin\General.sql" />
+    <None Include="Script\MasterData\Language\WMSAdmin\Login.sql" />
+    <None Include="Script\MasterData\Language\LanguageCulture.sql" />
   </ItemGroup>
 </Project>

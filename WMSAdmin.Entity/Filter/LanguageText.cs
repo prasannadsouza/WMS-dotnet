@@ -14,7 +14,6 @@ namespace WMSAdmin.Entity.Filter
         public string Value { get; set; }
         public DateTime? FromTimeStamp { get; set; }
         public DateTime? ToTimeStamp { get; set; }
-        public WMSApplication WMSApplication { get; set; }
         public LanguageGroup LanguageGroup { get; set; }
         public LanguageCulture LanguageCulture { get; set; }
         public Entities.Pagination Pagination { get; set; }

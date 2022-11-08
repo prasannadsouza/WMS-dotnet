@@ -18,8 +18,9 @@ namespace WMSAdmin.Repository
         internal IQueryable<POCO.AppConfig> GetQuery(Context.RepoContext db, Entity.Filter.AppConfig filter)
         {
             var query = db.AppConfig.AsNoTracking();
+            if (filter == null) return query;
 
-            if (filter.Id.HasValue) query = query.Where(p => filter.Id.Value == p.Id.Value);
+            if (filter.Id != null) query = query.Where(p => filter.Id.Value == p.Id.Value);
             if (filter.Ids?.Any() == true) query = query.Where(p => filter.Ids.Contains(p.Id.Value));
 
             filter.Code = filter?.Code?.Trim();
@@ -38,6 +39,9 @@ namespace WMSAdmin.Repository
 
             if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
             if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp <= p.TimeStamp.Value);
+
+            if (filter.AppConfigGroup?.Id.HasValue == true) query = query.Where(p => filter.AppConfigGroup.Id.Value == p.AppConfigGroupId.Value);
+            if (filter.AppConfigGroup?.Ids?.Any() == true) query = query.Where(p => filter.AppConfigGroup.Ids.Contains(p.AppConfigGroupId.Value));
 
             return query;
         }

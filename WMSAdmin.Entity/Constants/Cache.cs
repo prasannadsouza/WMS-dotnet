@@ -13,5 +13,6 @@ namespace WMSAdmin.Entity.Constants
         public const string CONFIGSETTING_DEBUGTEST = "CONFIGSETTING_DEBUGTEST";
         public const string CONFIGSETTING_EMAIL = "CONFIGSETTING_EMAIL";
         public const string CONFIGSETTING_TIMESTAMP = "CONFIGSETTING_TIMESTAMP";
+        public const string CONFIGSETTING_LANGUAGETEXT = "CONFIGSETTING_LANGUAGETEXT";
     }
 }

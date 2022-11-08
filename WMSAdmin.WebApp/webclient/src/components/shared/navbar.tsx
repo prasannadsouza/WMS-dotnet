@@ -48,21 +48,18 @@ export const NavBar = () => {
         )[0];
 
         const locale = new Locale();
-        var localeStrings = new LocalizedStrings(locale.getGlobalStrings());
-        localeStrings.setLanguage(code);
-        var validationStrings = new LocalizedStrings(locale.getValidationStrings());
-        validationStrings.setLanguage(code);
-        var messageStrings = new LocalizedStrings(locale.getMessageStrings());
-        messageStrings.setLanguage(code);
+        var generalString = new LocalizedStrings(locale.getGeneralString());
+        generalString.setLanguage(code);
+        var loginString = new LocalizedStrings(locale.getLoginString());
+        loginString.setLanguage(code);
 
         updateAppConfig((prev) => (
             {
                 ...prev,
                 language: userLanguage,
                 currentTitle: "",
-                globalStrings: localeStrings,
-                validationStrings: validationStrings,
-                messageStrings: messageStrings,
+                GeneralString: generalString,
+                LoginString: loginString,
             }));
     };
 
@@ -89,7 +86,7 @@ export const NavBar = () => {
                         className="btn bg-secondary text-white"
                         onClick={performUserLogout.bind(this)}
                     >
-                        {appState.globalStrings?.logout}
+                        {appState.LoginString?.logout}
                     </button>
                 </li>
             );
@@ -149,9 +146,9 @@ export const NavBar = () => {
                 <ul
                     className="dropdown-menu nav-item  p-0 border-0"
                     aria-labelledby="navbarDropdown">
-                    {getNavLink(appState.globalStrings!.home, LinkConstants.HOME)}
-                    {getNavLink(appState.globalStrings!.settings, LinkConstants.SETTINGS)}
-                    {getNavLink(appState.globalStrings!.fetchdata, LinkConstants.FETCHDATA)}
+                    {getNavLink(appState.GeneralString!.home, LinkConstants.HOME)}
+                    {getNavLink(appState.GeneralString!.settings, LinkConstants.SETTINGS)}
+                    {getNavLink(appState.GeneralString!.fetchData, LinkConstants.FETCHDATA)}
                 </ul>
             </div>);
     };

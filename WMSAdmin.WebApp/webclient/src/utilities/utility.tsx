@@ -28,9 +28,8 @@ export class Utility {
     static getAppState(appConfig: AppConfig, appState: AppState): AppState {
         
         let newAppState: AppState = {
-            globalStrings: new LocalizedStrings(appConfig.system.globalLocaleStrings),
-            validationStrings: new LocalizedStrings(appConfig.system.validationLocaleStrings),
-            messageStrings: new LocalizedStrings(appConfig.system.messageLocaleStrings),
+            GeneralString: new LocalizedStrings(appConfig.system.GeneralLocaleString),
+            LoginString: new LocalizedStrings(appConfig.system.LoginLocaleString),
             language: appConfig.system!.languages[0],
         };
 
@@ -44,9 +43,8 @@ export class Utility {
             (language) => language.code === localeCode
         )[0];
 
-        newAppState.globalStrings.setLanguage(newAppState.language.code);
-        newAppState.validationStrings.setLanguage(newAppState.language.code);
-        newAppState.messageStrings.setLanguage(newAppState.language.code);
+        newAppState.GeneralString.setLanguage(newAppState.language.code);
+        newAppState.LoginString.setLanguage(newAppState.language.code);
         return newAppState;
     };
 
@@ -57,9 +55,8 @@ export class Utility {
             appTitle: "WMS",
             defaultLocaleCode: "se",
             languages: locale.getLanguages(),
-            validationLocaleStrings: locale.getValidationStrings(),
-            globalLocaleStrings: locale.getGlobalStrings(),
-            messageLocaleStrings: locale.getMessageStrings(),
+            LoginLocaleString: locale.getLoginString(),
+            GeneralLocaleString: locale.getGeneralString(),
         };
         return systemConfig;
     }
@@ -85,10 +82,10 @@ export class Utility {
 
     static getConfirmModel = (appState: AppState): ConfirmModel => {
         return {
-            title: appState.globalStrings?.confirmTitle,
-            cancelTitle: appState.globalStrings?.no,
-            message: appState.globalStrings?.confirmMessage,
-            confirmTitle: appState.globalStrings?.yes,
+            title: appState.GeneralString?.confirmTitle,
+            cancelTitle: appState.GeneralString?.no,
+            message: appState.GeneralString?.confirmMessage,
+            confirmTitle: appState.GeneralString?.yes,
             onClose: undefined,
             show: false,
         };
@@ -96,8 +93,8 @@ export class Utility {
 
     static getMessageModel = (appState: AppState): MessageModel => {
         return {
-            title: appState.globalStrings?.message,
-            okTitle: appState.globalStrings?.ok,
+            title: appState.GeneralString?.message,
+            okTitle: appState.GeneralString?.ok,
             onClose: undefined,
             show: false,
             isError: false,
@@ -135,21 +132,21 @@ export class Utility {
         if ((username?.trim()?.length > 0) !== true) {
             response.errors?.push({
                 errorCode: ErrorConstants.USERNAME_CANNOTBE_BLANK,
-                message: appState.validationStrings?.usernameCannotBeBlank,
+                message: appState.LoginString?.usernameCannotBeBlank,
             });
         }
 
         if ((password?.trim()?.length > 0) !== true) {
             response.errors?.push({
                 errorCode: ErrorConstants.PASSWORD_CANNOTBE_BLANK,
-                message: appState.validationStrings?.passwordCannotBeBlank,
+                message: appState.LoginString?.passwordCannotBeBlank,
             });
         }
 
         if (username === "prasanna") {
             response.errors?.push({
                 errorCode: ErrorConstants.USERNAME_OR_PASSWORD_ISINVALID,
-                message: appState.validationStrings?.usernameOrPasswordIsInvalid,
+                message: appState.LoginString?.usernameOrPasswordIsInvalid,
             });
         }
 
@@ -173,7 +170,7 @@ export class Utility {
         if ((email?.trim()?.length > 0) !== true) {
             response.errors?.push({
                 errorCode: ErrorConstants.EMAIL_CANNOTBE_BLANK,
-                message: appState.validationStrings?.emailCannotBeBlank,
+                message: appState.LoginString?.emailCannotBeBlank,
             });
         }
 

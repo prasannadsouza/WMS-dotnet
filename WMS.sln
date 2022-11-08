@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMSAdmin.Repository", "WMSA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMSAdmin.Utility", "WMSAdmin.Utility\WMSAdmin.Utility.csproj", "{6B64F8B8-4CA4-40EE-894F-06E3EC832392}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMSAdmin.Language", "WMSAdmin.Language\WMSAdmin.Language.csproj", "{5E8A8C1C-3DDB-4158-99D0-66E06746CF3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMSAdmin.Language", "WMSAdmin.Language\WMSAdmin.Language.csproj", "{5E8A8C1C-3DDB-4158-99D0-66E06746CF3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMSAdmin.Console", "WMSAdmin.Console\WMSAdmin.Console.csproj", "{8A99FC5F-8CDC-4859-9E97-8039933C8842}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,10 @@ Global
 		{5E8A8C1C-3DDB-4158-99D0-66E06746CF3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E8A8C1C-3DDB-4158-99D0-66E06746CF3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E8A8C1C-3DDB-4158-99D0-66E06746CF3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A99FC5F-8CDC-4859-9E97-8039933C8842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A99FC5F-8CDC-4859-9E97-8039933C8842}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A99FC5F-8CDC-4859-9E97-8039933C8842}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A99FC5F-8CDC-4859-9E97-8039933C8842}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{4D4160E9-EBAB-4D30-9ADD-CE21B8E1B860} = {90F33341-D1EE-4EDE-B97D-0CE4D7D2E10C}
 		{6B64F8B8-4CA4-40EE-894F-06E3EC832392} = {90F33341-D1EE-4EDE-B97D-0CE4D7D2E10C}
 		{5E8A8C1C-3DDB-4158-99D0-66E06746CF3C} = {90F33341-D1EE-4EDE-B97D-0CE4D7D2E10C}
+		{8A99FC5F-8CDC-4859-9E97-8039933C8842} = {90F33341-D1EE-4EDE-B97D-0CE4D7D2E10C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A795E2B6-A3B8-4F25-9D66-DECF75C54956}

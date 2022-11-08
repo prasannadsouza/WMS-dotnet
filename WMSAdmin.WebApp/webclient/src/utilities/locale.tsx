@@ -1,4 +1,4 @@
-import { Language, GlobalStrings, GlobalLocaleStrings, ValidationStrings, ValidationLocaleStrings, MessageStrings, MessageLocaleStrings } from "../entities/locales"
+import { Language, GeneralString, GeneralLocaleString, LoginString, LoginLocaleString } from "../entities/locales"
 
 export class Locale {
 
@@ -10,17 +10,11 @@ export class Locale {
         return languages;
     };
 
-    getGlobalStrings = () => {
-        const en: GlobalStrings = {
+    getGeneralString = () => {
+        const en_SE: GeneralString = {
             home: "Home",
             settings: "Settings",
-            login: "Login",
-            logout: "Logout",
             language: "Language",
-            username: "Username",
-            password: "Password",
-            forgotPassword: "Forgot Password",
-            sendPasswordResetLink: "Send Reset Link",
             cancel: "Cancel",
             email: "Email",
             yes: "Yes",
@@ -31,19 +25,16 @@ export class Locale {
             message: "Message",
             error: "Error",
             close: "Close",
-            fetchdata: "Fetch Data"
+            fetchData: "Fetch Data",
+            all: "All",
+            to: "To",
+            
         };
 
-        const se: GlobalStrings = {
+        const sv_SE: GeneralString = {
             home: "Hem",
             settings: "Installingar",
-            login: "Logga in",
-            logout: "Logga ut",
             language: "Språk",
-            username: "Användarnamn",
-            password: "Lösenord",
-            forgotPassword: "Glömt lösenord",
-            sendPasswordResetLink: "Skicka återställningslänk",
             cancel: "Avbryt",
             email: "E-post",
             yes: "Ja",
@@ -54,48 +45,50 @@ export class Locale {
             message: "Meddelande",
             error: "Fel",
             close: "Stänga",
-            fetchdata: "Fetch Data"
+            fetchData: "Fetch Data",
+            all: "All",
+            to: "To",
         };
-        const languageLocale: GlobalLocaleStrings = {
-            en: en,
-            se: se,
+        const languageLocale: GeneralLocaleString = {
+            en_SE: en_SE,
+            sv_SE: sv_SE,
         };
         return languageLocale;
     };
 
-    getValidationStrings = () => {
-        const en: ValidationStrings = {
+    getLoginString = () => {
+        const en_SE: LoginString = {
             usernameCannotBeBlank: "Username is required",
             passwordCannotBeBlank: "Password is required",
             usernameOrPasswordIsInvalid: "Username or password is invalid",
             emailCannotBeBlank: "Email is required",
+            resetEmailLinkSent: "Reset Email Link Sent",
+            forgotPassword: "Forgot Password",
+            sendPasswordResetLink: "Send Reset Link",
+            login: "Login",
+            logout: "Logout",
+            username: "Username",
+            password: "Password",
+            loginTitle: "Login"
         };
 
-        const se: ValidationStrings = {
+        const sv_SE: LoginString = {
             usernameCannotBeBlank: "Användarnamn krävs",
             passwordCannotBeBlank: "Lösenord krävs",
             usernameOrPasswordIsInvalid: "Användarnamnet eller lösenordet är ogiltigt",
             emailCannotBeBlank: "E-Post krävs",
+            resetEmailLinkSent: "Reset Email Link Sent",
+            login: "Logga in",
+            logout: "Logga ut",
+            username: "Användarnamn",
+            password: "Lösenord",
+            forgotPassword: "Glömt lösenord",
+            sendPasswordResetLink: "Skicka återställningslänk",
+            loginTitle: "Logga in"
         };
-        const languageLocale: ValidationLocaleStrings = {
-            en: en,
-            se: se,
-        };
-        return languageLocale;
-    };
-
-    getMessageStrings = () => {
-        const en: MessageStrings = {
-            resetEmailLinkSent: "Username is required",
-        };
-
-        const se: MessageStrings = {
-            resetEmailLinkSent: "Användarnamn krävs",
-        };
-        
-        const languageLocale: MessageLocaleStrings = {
-            en: en,
-            se: se,
+        const languageLocale: LoginLocaleString = {
+            en_SE: en_SE,
+            sv_SE: sv_SE,
         };
         return languageLocale;
     };

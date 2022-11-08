@@ -22,6 +22,8 @@ namespace WMSAdmin.BusinessService
                 return _className;
             }
         }
+
+        
     }
 }
 
