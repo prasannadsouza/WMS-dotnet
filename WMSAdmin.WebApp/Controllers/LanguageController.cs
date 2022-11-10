@@ -15,7 +15,7 @@ namespace WMSAdmin.WebApp.Controllers
         [Route("api/[controller]/[action]")]
         public JsonResult GetGeneralString([FromQuery] string cultureCode)
         {
-            var generalResource = new Language.ResourceManager.GeneralString(Utility.LanguageConfiguration, new System.Globalization.CultureInfo(cultureCode));
+            var generalResource = new Language.ResourceManager.GeneralString(AppUtility.Configuration, new System.Globalization.CultureInfo(cultureCode));
             return Json( generalResource.GetString());
         }
 
@@ -23,7 +23,7 @@ namespace WMSAdmin.WebApp.Controllers
         [Route("api/[controller]/[action]")]
         public JsonResult GetLoginString([FromQuery] string cultureCode)
         {
-            var generalResource = new Language.ResourceManager.LoginString(Utility.LanguageConfiguration, new System.Globalization.CultureInfo(cultureCode));
+            var generalResource = new Language.ResourceManager.LoginString(AppUtility.Configuration, new System.Globalization.CultureInfo(cultureCode));
             return Json(generalResource.GetString());
         }
 
@@ -37,11 +37,11 @@ namespace WMSAdmin.WebApp.Controllers
                 Pagination = new Entity.Entities.Pagination
                 {
                     CurrentPage = 1,
-                    RecordsPerPage = Utility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
+                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
                 }
             };
             var languageCultures = new List<Entity.Entities.LanguageCulture>();
-            var repoService = Utility.GetBusinessService<BusinessService.RepoService>();
+            var repoService = AppUtility.GetBusinessService<BusinessService.RepoService>();
             do
             {
                 languageCultures.AddRange(repoService.Get(languageCultureFilter).Data);
@@ -56,7 +56,7 @@ namespace WMSAdmin.WebApp.Controllers
                 Pagination = new Entity.Entities.Pagination
                 {
                     CurrentPage = 1,
-                    RecordsPerPage = Utility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
+                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
                 }
             };
 
@@ -78,7 +78,7 @@ namespace WMSAdmin.WebApp.Controllers
                 Pagination = new Entity.Entities.Pagination
                 {
                     CurrentPage = 1,
-                    RecordsPerPage = Utility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
+                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
                 }
             };
 
@@ -95,7 +95,7 @@ namespace WMSAdmin.WebApp.Controllers
                 LanguageTexts = e.OrderBy(f=> f.Code).ToList(),
             }).ToList();
 
-            var defaultLanguageTexts = languageTexts.Where(e => e.LanguageCultureId == languageCultures.First(f=> f.Code == Utility.ConfigSetting.Application.Locale).Id).ToList();
+            var defaultLanguageTexts = languageTexts.Where(e => e.LanguageCultureId == languageCultures.First(f=> f.Code == AppUtility.ConfigSetting.Application.Locale).Id).ToList();
 
             var className = languageGroupCode.First().ToString().ToUpper() + languageGroupCode.ToLower().Substring(1,languageGroupCode.Length -1);
 

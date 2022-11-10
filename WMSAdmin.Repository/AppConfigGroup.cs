@@ -10,7 +10,7 @@ namespace WMSAdmin.Repository
 {
     public class AppConfigGroup: BaseRepository
     {
-        public AppConfigGroup(RepoConfiguration configuration) : base(configuration)
+        public AppConfigGroup(Utility.Configuration configuration) : base(configuration)
         {
         }
 

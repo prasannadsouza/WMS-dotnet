@@ -8,7 +8,7 @@ namespace WMSAdmin.WebApp.Controllers
 {
     public class BaseController:Controller
     {
-        private Utility? _utility;
+        private WebUtility? _appUtility;
         public IServiceProvider ServiceProvider { get; private set; }
         protected ILogger Logger { get; private set; }
 
@@ -20,12 +20,12 @@ namespace WMSAdmin.WebApp.Controllers
 
 
 
-        public Utility Utility
+        public WebUtility AppUtility
         {
             get
             {
-                if (_utility == null) _utility = new Utility(HttpContext, ServiceProvider, Logger);
-                return _utility;
+                if (_appUtility == null) _appUtility = new WebUtility(HttpContext, ServiceProvider, Logger);
+                return _appUtility;
             }
         }
     }

@@ -6,27 +6,23 @@ namespace WMSAdmin.BusinessService
 {
     public class BaseService
     {
-        protected Configuration Configuration { get; private set; }
-        private Repository.RepoConfiguration _repoConfiguration;
+        protected Utility.Configuration Configuration { get; private set; }
+        
         private Dictionary<System.Type, Repository.BaseRepository> _repositories;
         protected IMemoryCache MemoryCache { get; private set; }
         protected ILogger Logger { get; private set; }
 
-        protected BaseService(Configuration configuration)
+        protected Utility.Cache CacheUtility { get; private set; }
+
+        protected BaseService(Utility.Configuration configuration)
         {
             Configuration = configuration;
             Logger = configuration.Logger;
+            CacheUtility = new Utility.Cache(configuration);
             MemoryCache = configuration.ServiceProvider.GetRequiredService<IMemoryCache>();
             _repositories = new Dictionary<Type, Repository.BaseRepository>();
-            
-            _repoConfiguration = new Repository.RepoConfiguration
-            {
-                ServiceProvider = Configuration.ServiceProvider,
-                Setting = Configuration.Setting,
-                Logger = Configuration.Logger,
-            };
         }
-        
+
         private string _className;
         private string ClassName
         {
@@ -44,30 +40,31 @@ namespace WMSAdmin.BusinessService
             _repositories.TryGetValue(type, out var repository);
             if (repository != null) return (T)repository;
 
-            repository = Activator.CreateInstance(typeof(T), _repoConfiguration) as T;
-            _repositories.Add(type, repository);    
-            return (T) repository;
+            repository = Activator.CreateInstance(typeof(T), Configuration) as T;
+            _repositories.Add(type, repository);
+            return (T)repository;
         }
 
-        public T GetFromCache<T>(string key, out bool isCached)
+        
+
+        public DateTime GetConfigTimeStamp()
         {
-            isCached = MemoryCache.TryGetValue(key, out T cacheValue);
-            if (isCached) return cacheValue;
-            return default(T);
+            return GetTimeStamp(Entity.Constants.Config.CONFIGTIMESTAMP_CONFIGTIMESTAMP);
         }
-
-        public void SaveToCache<T>(string key, T value, bool noexpiry = false, int? cacheExpiryInMinutes = null)
+        public DateTime GetTimeStamp(string code)
         {
-            if (cacheExpiryInMinutes == null) cacheExpiryInMinutes = Configuration.Setting.Application.CacheExpiryInMinutes;
-
-            if (noexpiry)
+            var repo = GetRepository<Repository.AppConfig>();
+            var data = repo.Get(new Entity.Filter.AppConfig
             {
-                MemoryCache.Set(key, value);
-                return;
-            }
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetSlidingExpiration(TimeSpan.FromMinutes(cacheExpiryInMinutes.Value));
-            MemoryCache.Set(key, value, cacheEntryOptions);
+                Code = code,
+                AppConfigGroup = new Entity.Filter.AppConfigGroup
+                {
+                    Code = Entity.Constants.Config.GROUP_CONFIGTIMESTAMP
+                },
+            }).Data.FirstOrDefault();
+
+            if (data == null) return DateTime.MinValue;
+            return DateTime.Parse(data.Value, System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 }

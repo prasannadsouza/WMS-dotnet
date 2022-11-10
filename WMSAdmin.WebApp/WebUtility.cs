@@ -1,39 +1,24 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace WMSAdmin.Console
+namespace WMSAdmin.WebApp
 {
-    internal class Utility
+    public class WebUtility
     {
-        private IServiceProvider _serviceProvider;
-        private ILogger _logger;
-        private Entity.Entities.Config.ConfigSetting _configSetting;
-        private BusinessService.Configuration _bsConfig;
-        private Language.Configuration _langConfig;
+        private HttpContext _httpContext;
+        public Utility.Configuration Configuration { get; private set; }
         private Dictionary<Type, BusinessService.BaseService> _businessServices;
-        internal Utility(IServiceProvider serviceProvider, ILogger logger)
+        public WebUtility(HttpContext httpContext, IServiceProvider serviceProvider, ILogger logger)
         {
-            _serviceProvider = serviceProvider;
-            _logger = logger;
+            _httpContext = httpContext;
             _businessServices = new Dictionary<Type, BusinessService.BaseService>();
-            _configSetting = GetConfigSetting();
-            _bsConfig = new BusinessService.Configuration
+            Configuration = new Utility.Configuration
             {
-                Setting = _configSetting,
+                Setting = GetConfigSetting(),
                 ServiceProvider = serviceProvider,
-                Logger = _logger
-            };
-
-            _langConfig = new Language.Configuration
-            {
-                Logger = _logger,
-                ServiceProvider = serviceProvider,
-                Setting = _configSetting,
+                Logger = logger,
+                Culture = System.Globalization.CultureInfo.CurrentCulture,
             };
         }
 
@@ -43,23 +28,22 @@ namespace WMSAdmin.Console
             _businessServices.TryGetValue(type, out var businessService);
             if (businessService != null) return (T)businessService;
 
-            businessService = (T)Activator.CreateInstance(typeof(T), _bsConfig);
+            businessService = (T)Activator.CreateInstance(typeof(T), Configuration);
             _businessServices.Add(type, businessService);
             return (T)businessService;
         }
 
-        public Entity.Entities.Config.ConfigSetting ConfigSetting => _configSetting;
-        public Language.Configuration LanguageConfiguration => _langConfig;
+        public Entity.Entities.Config.ConfigSetting ConfigSetting => Configuration.Setting;
 
         public Entity.Entities.Config.ConfigSetting GetConfigSetting()
         {
-            var bsConfig = new BusinessService.Configuration
+            var configuration = new Utility.Configuration
             {
                 Setting = new Entity.Entities.Config.ConfigSetting
                 {
                     Application = new Entity.Entities.Config.Application
                     {
-                        SessionId = $"{DateTime.Now.Ticks}",
+                        SessionId = $"{_httpContext.TraceIdentifier}:{_httpContext.Session.Id}",
                         CacheExpiryInMinutes = Entity.Constants.Default.CacheExpiryInMinutes,
                     },
                     Pagination = new Entity.Entities.Config.Pagination
@@ -70,11 +54,12 @@ namespace WMSAdmin.Console
                     }
                 },
 
-                ServiceProvider = _serviceProvider,
-                Logger = _logger
-            };
-            var configService = new BusinessService.ConfigService(bsConfig);
+                ServiceProvider = Configuration.ServiceProvider,
+                Logger = Configuration.Logger,
+                Culture = System.Globalization.CultureInfo.CurrentCulture,
+            };var configService = new BusinessService.ConfigService(configuration);
             var setting = configService.GetConfigSetting();
+            
             return setting;
         }
     }

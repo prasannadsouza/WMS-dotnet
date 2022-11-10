@@ -1,6 +1,12 @@
 ﻿DECLARE @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'CONFIG_TIMESTAMP')
 PRINT 'Creating data for AppConfig CONFIG_TIMESTAMP'
 
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'CONFIG_TIMESTAMP')
+BEGIN
+INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
+VALUES (GETDATE(), @AppConfigGroupId, N'CONFIG_TIMESTAMP', convert(varchar, GETDATE() ,121) , N'The date time in invariant format upto seconds if config timestamp is changed')
+END
+
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'APPLICATION')
 BEGIN
 INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  

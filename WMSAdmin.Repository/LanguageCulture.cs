@@ -9,7 +9,7 @@ namespace WMSAdmin.Repository
 {
     public class LanguageCulture : BaseRepository
     {
-        public LanguageCulture(RepoConfiguration configuration) : base(configuration)
+        public LanguageCulture(Utility.Configuration configuration) : base(configuration)
         {
 
         }

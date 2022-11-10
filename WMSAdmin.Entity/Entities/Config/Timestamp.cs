@@ -8,6 +8,7 @@ namespace WMSAdmin.Entity.Entities.Config
 {
     public class Timestamp
     {
+        public DateTime Config_TimeStamp { get; set; }
         public DateTime Application { get; set; }
         public DateTime LanguagetText { get; set; }
         public DateTime Email { get; set; }

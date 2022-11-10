@@ -4,7 +4,7 @@ namespace WMSAdmin.BusinessService
 {
     public class RepoService : BaseService
     {
-        public RepoService(Configuration configuration) : base(configuration)
+        public RepoService(Utility.Configuration configuration) : base(configuration)
         {
         }
 

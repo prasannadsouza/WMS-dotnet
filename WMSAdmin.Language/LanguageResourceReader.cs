@@ -17,7 +17,7 @@ namespace WMSAdmin.Language
         private string? _className;
         private string _cultureCode;
         private string _languageGroupCode;
-        private Configuration _configuration;
+        private Utility.Configuration _configuration;
         private string ClassName
         {
             get
@@ -28,7 +28,7 @@ namespace WMSAdmin.Language
             }
         }
 
-        public LanguageResourceReader(Configuration configuration, CultureInfo culture, string languageGroupCode)
+        public LanguageResourceReader(Utility.Configuration configuration, CultureInfo culture, string languageGroupCode)
         {
             _cultureCode = culture.Name;
             _languageGroupCode = languageGroupCode;
@@ -71,12 +71,7 @@ namespace WMSAdmin.Language
 
             cachedValue = new Hashtable();
 
-            var repo = new Repository.LanguageText(new Repository.RepoConfiguration
-            {
-                Logger = _configuration.Logger,
-                ServiceProvider = _configuration.ServiceProvider,
-                Setting = _configuration.Setting,
-            });
+            var repo = new Repository.LanguageText(_configuration);
 
             do
             {

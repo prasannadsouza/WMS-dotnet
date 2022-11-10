@@ -25,6 +25,12 @@ INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Descr
 VALUES (GETDATE(), @AppConfigGroupId,  N'LOG_DATABASEQUERIES', N'0', N'1 will log database queries to the logger')
 END
 
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'LOCALE')
+BEGIN
+INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
+VALUES (GETDATE(), @AppConfigGroupId,  N'LOCALE', N'sv-SE', N'The locale of the application')
+END
+
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'UI_LOCALE')
 BEGIN
 INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  

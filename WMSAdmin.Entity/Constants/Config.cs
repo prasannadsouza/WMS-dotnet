@@ -54,6 +54,7 @@ namespace WMSAdmin.Entity.Constants
         public const string DEBUGTEST_DEV_AUTO_LOGIN = "DEV_AUTO_LOGIN";
 
         public const string GROUP_CONFIGTIMESTAMP = "CONFIG_TIMESTAMP";
+        public const string CONFIGTIMESTAMP_CONFIGTIMESTAMP = "CONFIG_TIMESTAMP";
         public const string CONFIGTIMESTAMP_APPLICATION = "APPLICATION";
         public const string CONFIGTIMESTAMP_EMAIL = "EMAIL";
         public const string CONFIGTIMESTAMP_PAGINATION = "PAGINATION";

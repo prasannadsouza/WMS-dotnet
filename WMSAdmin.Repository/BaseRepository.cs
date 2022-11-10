@@ -13,9 +13,9 @@ namespace WMSAdmin.Repository
 {
     public class BaseRepository
     {
-        internal RepoConfiguration Configuration { get; private set; }
+        internal Configuration Configuration { get; private set; }
 
-        internal BaseRepository(RepoConfiguration configuration)
+        internal BaseRepository(Utility.Configuration configuration)
         {
             Configuration = configuration;
         }

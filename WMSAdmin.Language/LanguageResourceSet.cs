@@ -10,7 +10,7 @@ namespace WMSAdmin.Language
 {
     public class LanguageResourceSet : ResourceSet
     {
-        public LanguageResourceSet(Configuration configuration, CultureInfo culture, string languageGroupCode) : base(new LanguageResourceReader(configuration, culture, languageGroupCode))
+        public LanguageResourceSet(Utility.Configuration configuration, CultureInfo culture, string languageGroupCode) : base(new LanguageResourceReader(configuration, culture, languageGroupCode))
         {
         }
 

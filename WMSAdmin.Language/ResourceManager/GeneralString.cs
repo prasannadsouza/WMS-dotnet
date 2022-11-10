@@ -2,7 +2,7 @@ namespace WMSAdmin.Language.ResourceManager
 {
     public class GeneralString : BaseResourceManager
     {
-        public GeneralString(Configuration configuration, System.Globalization.CultureInfo culture) : base(configuration, culture, Entity.Constants.Language.LANGUAGEGROUP_GENERAL)
+        public GeneralString(Utility.Configuration configuration, System.Globalization.CultureInfo culture) : base(configuration, culture, Entity.Constants.Language.LANGUAGEGROUP_GENERAL)
         {
         }
         public string All => GetResourceString(nameof(All));

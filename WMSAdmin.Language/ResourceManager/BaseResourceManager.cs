@@ -15,8 +15,8 @@ namespace WMSAdmin.Language.ResourceManager
 {
     public class BaseResourceManager : System.Resources.ResourceManager
     {
-        private string _className;
-        private string ClassName
+        private string? _className = null;
+        private string? ClassName
         {
             get
             {
@@ -32,9 +32,9 @@ namespace WMSAdmin.Language.ResourceManager
         private string _languageGroupCode { get; set; }
         protected IMemoryCache MemoryCache { get; private set; }
         protected ILogger Logger { get; private set; }
-        protected Configuration Configuration { get; private set; }
+        protected Utility.Configuration Configuration { get; private set; }
 
-        internal BaseResourceManager(Configuration configuration,CultureInfo culture, string languageGroupCode)
+        internal BaseResourceManager(Utility.Configuration configuration,CultureInfo culture, string languageGroupCode)
         {
             Culture = culture;
             _languageGroupCode = languageGroupCode;
@@ -44,9 +44,9 @@ namespace WMSAdmin.Language.ResourceManager
             Logger = configuration.Logger;
         }
 
-        protected override ResourceSet InternalGetResourceSet(CultureInfo culture, bool createIfNotExists, bool tryParents)
+        protected override ResourceSet? InternalGetResourceSet(CultureInfo culture, bool createIfNotExists, bool tryParents)
         {
-            LanguageResourceSet resourceSet = null;
+            LanguageResourceSet? resourceSet = null;
 
             // Check the resource set cache.
             if (this._resources.Contains(culture.Name))

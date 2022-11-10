@@ -12,7 +12,7 @@ namespace WMSAdmin.Console
 {
     internal class LanguageTextService : ConsoleService
     {
-        public LanguageTextService(IServiceProvider serviceProvider, ILogger<LanguageTextService> logger):  base(serviceProvider, logger)
+        public LanguageTextService(IServiceProvider serviceProvider):  base(serviceProvider)
         {
             // Constructor's parameters validations...
         }
@@ -39,11 +39,11 @@ namespace WMSAdmin.Console
                 Pagination = new Entity.Entities.Pagination
                 {
                     CurrentPage = 1,
-                    RecordsPerPage = Utility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
+                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
                 }
             };
             var languageCultures = new List<Entity.Entities.LanguageCulture>();
-            var repoService = Utility.GetBusinessService<BusinessService.RepoService>();
+            var repoService = AppUtility.GetBusinessService<BusinessService.RepoService>();
             do
             {
                 languageCultures.AddRange(repoService.Get(languageCultureFilter).Data);
@@ -58,7 +58,7 @@ namespace WMSAdmin.Console
                 Pagination = new Entity.Entities.Pagination
                 {
                     CurrentPage = 1,
-                    RecordsPerPage = Utility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
+                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
                 }
             };
 
@@ -80,7 +80,7 @@ namespace WMSAdmin.Console
                 Pagination = new Entity.Entities.Pagination
                 {
                     CurrentPage = 1,
-                    RecordsPerPage = Utility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
+                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
                 }
             };
 
@@ -92,7 +92,7 @@ namespace WMSAdmin.Console
             }
             while (languageTextFilter.Pagination.CurrentPage <= languageTextFilter.Pagination.TotalPages);
 
-            var defaultLanguageTexts = languageTexts.Where(e => e.LanguageCultureId == languageCultures.First(f => f.Code == Utility.ConfigSetting.Application.UILocale).Id).ToList();
+            var defaultLanguageTexts = languageTexts.Where(e => e.LanguageCultureId == languageCultures.First(f => f.Code == AppUtility.ConfigSetting.Application.UILocale).Id).ToList();
             GenerateCSEntity(languageGroupCode, defaultLanguageTexts);
             GenerateCSResource(languageGroupCode, defaultLanguageTexts);
             GenerateCSTSX(languageGroupCode, defaultLanguageTexts, languageCultures);

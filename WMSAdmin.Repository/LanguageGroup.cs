@@ -10,7 +10,7 @@ namespace WMSAdmin.Repository
 {
     public class LanguageGroup:BaseRepository
     {
-        public LanguageGroup(RepoConfiguration configuration) : base(configuration)
+        public LanguageGroup(Utility.Configuration configuration) : base(configuration)
         {
 
         }

@@ -13,5 +13,6 @@ namespace WMSAdmin.Entity.Entities.Config
         public DebugTest DebugTest { get; set; }
         public Timestamp Timestamp { get; set; }
         public Pagination Pagination { get; set; }
+        public DateTime Config_TimeStamp { get; set; }
     }
 }

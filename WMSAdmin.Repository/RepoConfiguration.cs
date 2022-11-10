@@ -8,10 +8,10 @@ using WMSAdmin.Entity.Entities;
 
 namespace WMSAdmin.Repository
 {
-    public class RepoConfiguration
-    {
-        public Entity.Entities.Config.ConfigSetting Setting { get; set; }
-        public IServiceProvider ServiceProvider { get; set; }
-        public ILogger Logger { get; set; }
-    }
+    //public class RepoConfiguration
+    //{
+    //    public Entity.Entities.Config.ConfigSetting Setting { get; set; }
+    //    public IServiceProvider ServiceProvider { get; set; }
+    //    public ILogger Logger { get; set; }
+    //}
 }

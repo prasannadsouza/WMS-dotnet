@@ -35,7 +35,7 @@ namespace WMSAdmin.WebApp.Controllers
         [Route("[controller]/[action]")]
         public Entity.Entities.Config.ConfigSetting GetConfigSetting()
         {
-            var configsetting = Utility.ConfigSetting;
+            var configsetting = AppUtility.ConfigSetting;
             return configsetting;
         }
     }

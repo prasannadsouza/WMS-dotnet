@@ -10,7 +10,7 @@ namespace WMSAdmin.BusinessService
     public class ConfigService : BaseService
     {
         RepoService _repoService;
-        public ConfigService(Configuration configuration) : base(configuration)
+        public ConfigService(Utility.Configuration configuration) : base(configuration)
         {
             _repoService = new RepoService(configuration);
         }
@@ -33,7 +33,7 @@ namespace WMSAdmin.BusinessService
             setting.Pagination = GetPagination();
             setting.DebugTest = GetDebugTest();
             setting.Email = GetEmail();
-            setting.Timestamp = GetTimestamp();
+            setting.Timestamp= GetTimestamp();
             return setting;
         }
 
@@ -45,7 +45,7 @@ namespace WMSAdmin.BusinessService
         private Entity.Entities.Config.DebugTest GetDebugTest()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_DEBUGTEST;
-            var to = GetFromCache<Entity.Entities.Config.DebugTest>(key, out _);
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.DebugTest>(key, out _);
             if (to != null) return to;
             to = new Entity.Entities.Config.DebugTest();
 
@@ -113,13 +113,13 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.DebugTest = to;
-            SaveToCache(key, to, true);
+            CacheUtility.SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Email GetEmail()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_EMAIL;
-            var to = GetFromCache<Entity.Entities.Config.Email>(key, out _);
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Email>(key, out _);
             if (to != null) return to;
             to = new Entity.Entities.Config.Email();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_EMAIL);
@@ -231,13 +231,13 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Email = to;
-            SaveToCache(key, to, true);
+            CacheUtility.SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Application GetApplication()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_APPLICATION;
-            var to = GetFromCache<Entity.Entities.Config.Application>(key, out _);
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Application>(key, out _);
             if (to != null) return to;
             to = new Entity.Entities.Config.Application(); 
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_APPLICATION);
@@ -349,15 +349,12 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Application = to;
-            SaveToCache(key, to, true);
+            CacheUtility.SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Timestamp GetTimestamp()
         {
-            var key = Entity.Constants.Cache.CONFIGSETTING_TIMESTAMP;
-            var to = GetFromCache<Entity.Entities.Config.Timestamp>(key, out _);
-            if (to != null) return to;
-            to = new Entity.Entities.Config.Timestamp();
+            var to = new Entity.Entities.Config.Timestamp();
 
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_CONFIGTIMESTAMP);
 
@@ -377,54 +374,59 @@ namespace WMSAdmin.BusinessService
                 foreach (var from in items)
                 {
                     switch (from.Code)
-            {
-                case Entity.Constants.Config.CONFIGTIMESTAMP_APPLICATION:
                     {
-                        to.Application = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.CONFIGTIMESTAMP_EMAIL:
-                    {
-                        to.Email = DateTime.Parse(from.Value,System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.CONFIGTIMESTAMP_DEBUGTEST:
-                    {
-                        to.DebugTest = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                case Entity.Constants.Config.CONFIGTIMESTAMP_PAGINATION:
-                    {
-                        to.Pagination = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                        break;
-                    }
-                default:
-                    {
-                        var loginfo = new
-                        {
-                            SesssionId = Configuration.Setting.Application.SessionId,
-                            Class = ClassName,
-                            Method = "SetConfigTimestamp",
-                            AppConfigGroup = appConfigGroup.Code,
-                            AppConfig = from.Code,
-                        };
 
-                        Logger.LogError($"AppConfig is not handled", new { LogInfo = loginfo });
-                        break;
+                        case Entity.Constants.Config.CONFIGTIMESTAMP_CONFIGTIMESTAMP:
+                            {
+                                to.Config_TimeStamp = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                                break;
+                            }
+                        case Entity.Constants.Config.CONFIGTIMESTAMP_APPLICATION:
+                            {
+                                to.Application = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                                break;
+                            }
+                        case Entity.Constants.Config.CONFIGTIMESTAMP_EMAIL:
+                            {
+                                to.Email = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                                break;
+                            }
+                        case Entity.Constants.Config.CONFIGTIMESTAMP_DEBUGTEST:
+                            {
+                                to.DebugTest = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                                break;
+                            }
+                        case Entity.Constants.Config.CONFIGTIMESTAMP_PAGINATION:
+                            {
+                                to.Pagination = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
+                                break;
+                            }
+                        default:
+                            {
+                                var loginfo = new
+                                {
+                                    SesssionId = Configuration.Setting.Application.SessionId,
+                                    Class = ClassName,
+                                    Method = "SetConfigTimestamp",
+                                    AppConfigGroup = appConfigGroup.Code,
+                                    AppConfig = from.Code,
+                                };
+
+                                Logger.LogError($"AppConfig is not handled", new { LogInfo = loginfo });
+                                break;
+                            }
                     }
-            }
                 }
                 filter.Pagination.CurrentPage++;
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Timestamp = to;
-            SaveToCache(key, to, true);
             return to;
         }
         private Entity.Entities.Config.Pagination GetPagination()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_PAGINATION;
-            var to = GetFromCache<Entity.Entities.Config.Pagination>(key, out _);
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Pagination>(key, out _);
             if (to != null) return to;
             to = new Entity.Entities.Config.Pagination();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_PAGINATION);
@@ -486,7 +488,7 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Pagination = to;
-            SaveToCache(key, to, true);
+            CacheUtility.SaveToCache(key, to, true);
             return to;
         }
     }

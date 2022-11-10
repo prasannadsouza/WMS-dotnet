@@ -8,7 +8,7 @@ namespace WMSAdmin.BusinessService
 {
     public class LanguageService : BaseService
     {
-        public LanguageService(Configuration configuration) : base(configuration)
+        public LanguageService(Utility.Configuration configuration) : base(configuration)
         {
         }
 
@@ -22,8 +22,6 @@ namespace WMSAdmin.BusinessService
                 return _className;
             }
         }
-
-        
     }
 }
 
