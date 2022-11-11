@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WMSAdmin.Entity.Entities.Config;
+
 
 namespace WMSAdmin.Repository
 {
@@ -62,6 +62,28 @@ namespace WMSAdmin.Repository
                 responseData.Data = ConvertTo(GetOrderedResult(null, query, filter?.Pagination, out Entity.Entities.Pagination newPagination));
                 responseData.Pagination = filter.Pagination = newPagination;
                 return responseData;
+            }
+        }
+
+        public void Save(Entity.Entities.AppConfigGroup item)
+        {
+            using (var dbContext = GetDbContext())
+            {
+                POCO.AppConfigGroup dbItem = null;
+
+                if (item.Id.HasValue)
+                {
+                    dbItem = dbContext.AppConfigGroup.First(e => e.Id == item.Id.Value);
+                    ConvertTo(item, dbItem);
+                    dbContext.SaveChanges();
+                    return;
+                }
+
+                dbItem = ConvertTo(item, dbItem);
+                dbContext.AppConfigGroup.Add(dbItem);
+                dbContext.SaveChanges();
+                item.Id = dbItem.Id;
+                return;
             }
         }
 

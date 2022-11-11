@@ -8,17 +8,6 @@ namespace WMSAdmin.BusinessService
         {
         }
 
-        private string _className;
-        private string ClassName
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_className) == false) return _className;
-                _className = this.GetType().FullName;
-                return _className;
-            }
-        }
-
         public Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>> Get(Entity.Filter.AppConfigGroup filter)
             => GetRepository<Repository.AppConfigGroup>().Get(filter);
 
@@ -33,5 +22,8 @@ namespace WMSAdmin.BusinessService
 
         public Entity.Entities.Response<List<Entity.Entities.LanguageCulture>> Get(Entity.Filter.LanguageCulture filter)
             => GetRepository<Repository.LanguageCulture>().Get(filter);
+
+        public void Save(Entity.Entities.AppConfig item) => GetRepository<Repository.AppConfig>().Save(item);
+        public void Save(Entity.Entities.AppConfigGroup item) => GetRepository<Repository.AppConfigGroup>().Save(item);
     }
 }

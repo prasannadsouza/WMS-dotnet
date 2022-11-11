@@ -77,6 +77,28 @@ namespace WMSAdmin.Repository
             }
         }
 
+        public void Save(Entity.Entities.AppConfig item)
+        {
+            using (var dbContext = GetDbContext())
+            {
+                POCO.AppConfig dbItem = null;
+
+                if (item.Id.HasValue)
+                {
+                    dbItem = dbContext.AppConfig.First(e => e.Id == item.Id.Value);
+                    ConvertTo(item, dbItem);
+                    dbContext.SaveChanges();
+                    return;
+                }
+
+                dbItem = ConvertTo(item, dbItem);
+                dbContext.AppConfig.Add(dbItem);
+                dbContext.SaveChanges();
+                item.Id = dbItem.Id;
+                return;
+            }
+        }
+
         internal static List<Entity.Entities.AppConfig> ConvertTo(IEnumerable<POCO.AppConfig> fromList)
         {
             var toList = new List<Entity.Entities.AppConfig>();
@@ -112,5 +134,7 @@ namespace WMSAdmin.Repository
             to.TimeStamp = from.TimeStamp;
             return to;
         }
+
+        
     }
 }

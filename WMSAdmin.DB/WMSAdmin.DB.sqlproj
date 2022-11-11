@@ -74,7 +74,6 @@
     <Build Include="dbo\Tables\WMSApplication.sql" />
     <Build Include="dbo\Tables\LanguageGroup.sql" />
     <Build Include="dbo\Tables\LanguageText.sql" />
-    <None Include="Script\MasterData\AppConfig\ConfigTimestamp.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\MasterData\AppConfigGroup.sql" />

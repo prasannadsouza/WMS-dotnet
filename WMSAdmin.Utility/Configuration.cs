@@ -12,8 +12,7 @@ namespace WMSAdmin.Utility
     {
         public Entity.Entities.Config.ConfigSetting Setting { get; set; }
         public IServiceProvider ServiceProvider { get; set; }
-        public ILogger Logger { get; set; }
+        //public ILogger Logger { get; set; }
         public System.Globalization.CultureInfo Culture { get; set; }
-        //public IServiceCollection ServiceProvider { get; set; }
     }
 }

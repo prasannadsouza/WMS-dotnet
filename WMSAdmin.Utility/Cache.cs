@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace WMSAdmin.Utility
 {
@@ -8,30 +8,19 @@ namespace WMSAdmin.Utility
     {
         private Configuration Configuration { get; set; }
         private IMemoryCache MemoryCache { get; set; }
-        protected ILogger Logger { get; private set; }
 
         public Cache(Configuration configuration)
         {
             Configuration = configuration;
-            Logger = configuration.Logger;
             MemoryCache = configuration.ServiceProvider.GetRequiredService<IMemoryCache>();
-        }
-
-        private string _className;
-        private string ClassName
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_className) == false) return _className;
-                _className = this.GetType().FullName;
-                return _className;
-            }
         }
 
         public T GetFromCache<T>(string key, out bool isCached)
         {
+            
             isCached = MemoryCache.TryGetValue(key, out T cacheValue);
             if (isCached) return cacheValue;
+            
             RemoveCacheKey(key);
             return default(T);
         }
@@ -60,18 +49,18 @@ namespace WMSAdmin.Utility
         private void SaveCacheKey(string cacheKey)
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var isCached = MemoryCache.TryGetValue(key, out List<string> cacheValue);
-            if (isCached == false) cacheValue = new List<string>();
-            if (cacheValue.Contains(cacheKey) == false) cacheValue.Add(cacheKey);
+            var isCached = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
+            if (isCached == false) cacheValue = new Dictionary<string, DateTime>();
+            if (cacheValue.ContainsKey(cacheKey) == false) cacheValue.Add(cacheKey, DateTime.Now);
             MemoryCache.Set(key, cacheValue);
         }
 
         public void RemoveCacheKey(string cacheKey)
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var isCached = MemoryCache.TryGetValue(key, out List<string> cacheValue);
+            var isCached = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
             if (isCached == false) return;
-            if (cacheValue.Contains(cacheKey) == false) return;
+            if (cacheValue.ContainsKey(cacheKey) == false) return;
             cacheValue.Remove(cacheKey);
             if (cacheValue.Any() == false)
             {
@@ -81,11 +70,21 @@ namespace WMSAdmin.Utility
             MemoryCache.Set(key, cacheValue);
         }
 
-        public List<string> GetCacheKeys()
+        public Dictionary<string, DateTime> GetCacheKeys()
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var _ = MemoryCache.TryGetValue(key, out List<string> cacheValue);
+            var _ = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
             return cacheValue;
+        }
+
+        public DateTime? GetCachedTime(string cacheKey)
+        {
+            var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
+            var isCached = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
+            
+            if (isCached == false) return null;
+            if (cacheValue.ContainsKey(cacheKey) == false) return null;
+            return cacheValue[cacheKey];
         }
     }
 }

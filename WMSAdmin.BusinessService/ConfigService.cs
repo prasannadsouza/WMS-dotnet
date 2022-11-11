@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,20 +11,11 @@ namespace WMSAdmin.BusinessService
     public class ConfigService : BaseService
     {
         RepoService _repoService;
+        private ILogger _logger;
         public ConfigService(Utility.Configuration configuration) : base(configuration)
         {
             _repoService = new RepoService(configuration);
-        }
-
-        private string _className;
-        private string ClassName
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_className) == false) return _className;
-                _className = this.GetType().FullName;
-                return _className;
-            }
+            _logger = configuration.ServiceProvider.GetRequiredService<ILogger<BaseService>>();
         }
 
         public Entity.Entities.Config.ConfigSetting GetConfigSetting()
@@ -33,7 +25,6 @@ namespace WMSAdmin.BusinessService
             setting.Pagination = GetPagination();
             setting.DebugTest = GetDebugTest();
             setting.Email = GetEmail();
-            setting.Timestamp= GetTimestamp();
             return setting;
         }
 
@@ -45,8 +36,10 @@ namespace WMSAdmin.BusinessService
         private Entity.Entities.Config.DebugTest GetDebugTest()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_DEBUGTEST;
-            var to = CacheUtility.GetFromCache<Entity.Entities.Config.DebugTest>(key, out _);
-            if (to != null) return to;
+            
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.DebugTest>(key, out bool isCached);
+            if (isCached && IsCacheChanged(key) == false) return to;
+            
             to = new Entity.Entities.Config.DebugTest();
 
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_DEBUGTEST);
@@ -98,13 +91,12 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Class = ClassName,
                                     Method = "SetDebugTestConfig",
                                     AppConfigGroup = appConfigGroup.Code,
                                     AppConfig = from.Code,
                                 };
 
-                                Logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
+                                _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
                                 break;
                             }
                     }
@@ -119,8 +111,10 @@ namespace WMSAdmin.BusinessService
         private Entity.Entities.Config.Email GetEmail()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_EMAIL;
-            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Email>(key, out _);
-            if (to != null) return to;
+            
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Email>(key, out bool isCached);
+            if (isCached && IsCacheChanged(key) == false) return to;
+
             to = new Entity.Entities.Config.Email();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_EMAIL);
 
@@ -216,13 +210,12 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Class = ClassName,
                                     Method = "SetEmailConfig",
                                     AppConfigGroup = appConfigGroup.Code,
                                     AppConfig = from.Code,
                                 };
 
-                                Logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
+                                _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
                                 break;
                             }
                     }
@@ -237,8 +230,10 @@ namespace WMSAdmin.BusinessService
         private Entity.Entities.Config.Application GetApplication()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_APPLICATION;
-            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Application>(key, out _);
-            if (to != null) return to;
+           
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Application>(key, out bool isCached);
+            if (isCached && IsCacheChanged(key) == false) return to;
+            
             to = new Entity.Entities.Config.Application(); 
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_APPLICATION);
 
@@ -309,11 +304,6 @@ namespace WMSAdmin.BusinessService
                                 to.AppAPIKey = from.Value;
                                 break;
                             }
-                        case Entity.Constants.Config.APPLICATION_CONFIG_TIMESTAMP:
-                            {
-                                to.ConfigTimeStamp = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                                break;
-                            }
                         case Entity.Constants.Config.APPLICATION_CONFIG_BASEURL:
                             {
                                 to.BaseUrl = from.Value;
@@ -334,13 +324,12 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Class = ClassName,
                                     Method = "SetSystemConfig",
                                     AppConfigGroup = appConfigGroup.Code,
                                     AppConfig = from.Code,
                                 };
 
-                                Logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
+                                _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
                                 break;
                             }
                     }
@@ -352,82 +341,13 @@ namespace WMSAdmin.BusinessService
             CacheUtility.SaveToCache(key, to, true);
             return to;
         }
-        private Entity.Entities.Config.Timestamp GetTimestamp()
-        {
-            var to = new Entity.Entities.Config.Timestamp();
-
-            var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_CONFIGTIMESTAMP);
-
-            var filter = new Entity.Filter.AppConfig
-            {
-                AppConfigGroup = new Entity.Filter.AppConfigGroup
-                {
-                    Id = appConfigGroup.Id,
-                },
-            };
-
-            var repo = GetRepository<Repository.AppConfig>();
-
-            do
-            {
-                var items = repo.Get(filter).Data;
-                foreach (var from in items)
-                {
-                    switch (from.Code)
-                    {
-
-                        case Entity.Constants.Config.CONFIGTIMESTAMP_CONFIGTIMESTAMP:
-                            {
-                                to.Config_TimeStamp = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                                break;
-                            }
-                        case Entity.Constants.Config.CONFIGTIMESTAMP_APPLICATION:
-                            {
-                                to.Application = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                                break;
-                            }
-                        case Entity.Constants.Config.CONFIGTIMESTAMP_EMAIL:
-                            {
-                                to.Email = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                                break;
-                            }
-                        case Entity.Constants.Config.CONFIGTIMESTAMP_DEBUGTEST:
-                            {
-                                to.DebugTest = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                                break;
-                            }
-                        case Entity.Constants.Config.CONFIGTIMESTAMP_PAGINATION:
-                            {
-                                to.Pagination = DateTime.Parse(from.Value, System.Globalization.CultureInfo.InvariantCulture);
-                                break;
-                            }
-                        default:
-                            {
-                                var loginfo = new
-                                {
-                                    SesssionId = Configuration.Setting.Application.SessionId,
-                                    Class = ClassName,
-                                    Method = "SetConfigTimestamp",
-                                    AppConfigGroup = appConfigGroup.Code,
-                                    AppConfig = from.Code,
-                                };
-
-                                Logger.LogError($"AppConfig is not handled", new { LogInfo = loginfo });
-                                break;
-                            }
-                    }
-                }
-                filter.Pagination.CurrentPage++;
-            }
-            while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
-            Configuration.Setting.Timestamp = to;
-            return to;
-        }
         private Entity.Entities.Config.Pagination GetPagination()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_PAGINATION;
-            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Pagination>(key, out _);
-            if (to != null) return to;
+            
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.Pagination>(key, out bool isCached);
+            if (isCached && IsCacheChanged(key) == false) return to;
+            
             to = new Entity.Entities.Config.Pagination();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_PAGINATION);
 
@@ -473,13 +393,12 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Class = ClassName,
                                     Method = "GetPaginationConfig",
                                     AppConfigGroup = appConfigGroup.Code,
                                     AppConfig = from.Code,
                                 };
 
-                                Logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
+                                _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
                                 break;
                             }
                     }

@@ -12,5 +12,6 @@ namespace WMSAdmin.Entity.Constants
         public const int Pagination_RecordsPerpage = 15;
         public const int Pagination_Max_RecordsPerpage = 250;
         public const int Pagination_Max_AllowedRecordsPerpage = 2500;
+        public const string APPLICATION_CACHEKEYS = "APPLICATION_CACHEKEYS";
     }
 }

@@ -21,6 +21,5 @@ namespace WMSAdmin.Entity.Entities.Config
         public string AppAPIKey { get; set; }
         public string BaseUrl { get; set; }
         public int CacheExpiryInMinutes { get; set; }
-        public DateTime ConfigTimeStamp { get; set; }
     }
 }

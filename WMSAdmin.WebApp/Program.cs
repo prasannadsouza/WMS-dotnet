@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace WMSAdmin.WebApp
@@ -20,7 +21,8 @@ namespace WMSAdmin.WebApp
             });
 
             var app = builder.Build();
-            
+            app.Logger.LogInformation("Starting App");
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -33,11 +35,15 @@ namespace WMSAdmin.WebApp
             app.MapControllers();
             app.UseSession();
 
+            var serviceProvider = app.Services;
+            app.Logger.LogInformation("Getting App Configuration");
             var configuration = GetAppConfiguration(app.Services);
-            
-            var supportedCultures = GetSupportedCultures(configuration); 
 
-            app.UseRequestLocalization(opt => {
+            app.Logger.LogInformation("Configuring Cultures");
+            var supportedCultures = GetSupportedCultures(configuration);
+
+            app.UseRequestLocalization(opt =>
+            {
                 opt.DefaultRequestCulture = new RequestCulture(configuration.Culture);
                 opt.SupportedCultures = supportedCultures;
                 opt.SupportedUICultures = supportedCultures;
@@ -49,36 +55,28 @@ namespace WMSAdmin.WebApp
             app.MapFallbackToFile("index.html"); ;
 
             app.Run();
+            app.Logger.LogInformation("App is Running");
         }
+
 
         private static Utility.Configuration GetAppConfiguration(IServiceProvider serviceProvider)
-        {
-            var setting = GetConfigSetting(serviceProvider);
-            var configuration = new Utility.Configuration
-            {
-                Setting = setting,
-                ServiceProvider = serviceProvider,
-                Logger = serviceProvider.GetRequiredService<ILogger>(),
-                Culture = new System.Globalization.CultureInfo(setting.Application.Locale),
-            };
-            return configuration;
-        }
-
-        private static Entity.Entities.Config.ConfigSetting GetConfigSetting(IServiceProvider serviceProvider)
         {
             var configuration = new Utility.Configuration
             {
                 Setting = Utility.AppHelper.GetDefaultConfigSetting(),
                 ServiceProvider = serviceProvider,
-                Logger = serviceProvider.GetRequiredService<ILogger>(),
                 Culture = System.Globalization.CultureInfo.CurrentCulture,
             };
 
             var configService = new BusinessService.ConfigService(configuration);
             var setting = configService.GetConfigSetting();
-            return setting;
+            return new Utility.Configuration
+            {
+                Setting = setting,
+                ServiceProvider = serviceProvider,
+                Culture = new System.Globalization.CultureInfo(setting.Application.Locale),
+            };
         }
-
         private static List<System.Globalization.CultureInfo> GetSupportedCultures(Utility.Configuration configuration)
         {
             var supportedCultures = new List<System.Globalization.CultureInfo>();

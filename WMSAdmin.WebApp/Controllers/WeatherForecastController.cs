@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using WMSAdmin.Entity.Entities;
 
 namespace WMSAdmin.WebApp.Controllers
@@ -11,8 +12,7 @@ namespace WMSAdmin.WebApp.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        public WeatherForecastController(IServiceProvider serviceProvider, ILogger<WeatherForecastController> logger): 
-            base(serviceProvider, logger)
+        public WeatherForecastController(IServiceProvider serviceProvider): base(serviceProvider)
         {
             
         }

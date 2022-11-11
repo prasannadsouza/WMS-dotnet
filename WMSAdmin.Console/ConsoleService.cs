@@ -16,6 +16,8 @@ namespace WMSAdmin.Console
         internal AppUtility AppUtility { get; private set; }
         public IServiceProvider ServiceProvider { get; private set; }
         public ILogger Logger { get; private set; }
+
+        protected bool RunService { get; set; }
         public ConsoleService(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,17 +16,6 @@ namespace WMSAdmin.Language.ResourceManager
 {
     public class BaseResourceManager : System.Resources.ResourceManager
     {
-        private string? _className = null;
-        private string? ClassName
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_className) == false) return _className;
-                _className = this.GetType().FullName;
-                return _className;
-            }
-        }
-        
         public CultureInfo Culture { get; set; }
 
         private Hashtable _resources;
@@ -34,14 +24,14 @@ namespace WMSAdmin.Language.ResourceManager
         protected ILogger Logger { get; private set; }
         protected Utility.Configuration Configuration { get; private set; }
 
-        internal BaseResourceManager(Utility.Configuration configuration,CultureInfo culture, string languageGroupCode)
+        internal BaseResourceManager(Utility.Configuration configuration, CultureInfo culture, string languageGroupCode)
         {
             Culture = culture;
             _languageGroupCode = languageGroupCode;
             _resources = new Hashtable();
             Configuration = configuration;
+            Logger = configuration.ServiceProvider.GetRequiredService<ILogger<BaseResourceManager>>();
             MemoryCache = configuration.ServiceProvider.GetRequiredService<IMemoryCache>();
-            Logger = configuration.Logger;
         }
 
         protected override ResourceSet? InternalGetResourceSet(CultureInfo culture, bool createIfNotExists, bool tryParents)
@@ -93,7 +83,6 @@ namespace WMSAdmin.Language.ResourceManager
             var logdata = new
             {
                 SesssionId = Configuration.Setting.Application.SessionId,
-                Class = ClassName,
                 Method = "GetResourceString",
                 LanguageGroupCode = _languageGroupCode,
                 Resource = code,
@@ -111,7 +100,7 @@ namespace WMSAdmin.Language.ResourceManager
             }
             catch (Exception ex)
             {
-                Configuration.Logger.LogError(ex, $"Error", logdata);
+                Logger.LogError(ex, $"Error", logdata);
             }
 
             if (string.IsNullOrWhiteSpace(languageText) == false) return languageText;

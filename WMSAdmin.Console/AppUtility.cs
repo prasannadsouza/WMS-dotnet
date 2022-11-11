@@ -26,7 +26,6 @@ namespace WMSAdmin.Console
             {
                 Setting = setting,
                 ServiceProvider = serviceProvider,
-                Logger = _logger,
                 Culture = new System.Globalization.CultureInfo(setting.Application.Locale),
             };
         }
@@ -37,7 +36,7 @@ namespace WMSAdmin.Console
             _businessServices.TryGetValue(type, out var businessService);
             if (businessService != null) return (T)businessService;
 
-            businessService = (T)Activator.CreateInstance(typeof(T), Configuration);
+            businessService = (T)Activator.CreateInstance(typeof(T), Configuration)!;
             _businessServices.Add(type, businessService);
             return (T)businessService;
         }
@@ -50,7 +49,6 @@ namespace WMSAdmin.Console
             {
                 Setting = Utility.AppHelper.GetDefaultConfigSetting(),
                 ServiceProvider = _serviceProvider,
-                Logger = _logger,
                 Culture = System.Globalization.CultureInfo.CurrentCulture,
             };
             var configService = new BusinessService.ConfigService(configuration);

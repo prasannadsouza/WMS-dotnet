@@ -19,17 +19,17 @@ namespace WMSAdmin.Console
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Logger.LogDebug($"LanguageTextService is starting.");
+            Logger.LogInformation($"LanguageTextService is starting.");
 
-            stoppingToken.Register(() => Logger.LogDebug($" LanguageTextService background task is stopping."));
+            stoppingToken.Register(() => Logger.LogInformation($" LanguageTextService background task is stopping."));
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                GenerateLanguageClass("WMSAdmin", "Login");
+                if (RunService) GenerateLanguageClass("WMSAdmin", "Login");
                 break;
             }
 
-            Logger.LogDebug($"LanguageTextService background task is stopping.");
+            Logger.LogInformation($"LanguageTextService background task is stopping.");
         }
 
         public void GenerateLanguageClass(string wmsApplicationCode, string languageGroupCode)
@@ -113,7 +113,7 @@ namespace WMSAdmin.Console
 
             //C:\Prasanna\Personal\code\WMS\WMSAdmin.Entity\Entities\LanguageStrings\GeneralString.cs
             var cdInfo = new System.IO.DirectoryInfo(Environment.CurrentDirectory);
-            var savePath = Path.Combine(cdInfo.Parent.Parent.Parent.Parent.FullName, "WMSAdmin.Entity", "Entities", "LanguageStrings",$"{languageGroupCode}String.cs");
+            var savePath = Path.Combine(cdInfo.Parent!.Parent!.Parent!.Parent!.FullName, "WMSAdmin.Entity", "Entities", "LanguageStrings",$"{languageGroupCode}String.cs");
             File.WriteAllText(savePath, sb_cs.ToString());
         }
 
@@ -147,7 +147,7 @@ namespace WMSAdmin.Console
 
             //C:\Prasanna\Personal\code\WMS\WMSAdmin.Language\ResourceManager\GeneralString.cs
             var cdInfo = new System.IO.DirectoryInfo(Environment.CurrentDirectory);
-            var savePath = Path.Combine(cdInfo.Parent.Parent.Parent.Parent.FullName, "WMSAdmin.Language", "ResourceManager", $"{languageGroupCode}String.cs");
+            var savePath = Path.Combine(cdInfo!.Parent!.Parent!.Parent!.Parent!.FullName, "WMSAdmin.Language", "ResourceManager", $"{languageGroupCode}String.cs");
             File.WriteAllText(savePath, sb_cs.ToString());
         }
 
@@ -174,7 +174,7 @@ namespace WMSAdmin.Console
             var cdInfo = new System.IO.DirectoryInfo(Environment.CurrentDirectory);
             var savePath = Path.Combine(cdInfo.FullName, "WMSAdmin.Language.TSX", $"{languageGroupCode}String.tsx");
             var fileInfo = new FileInfo(savePath);
-            if (fileInfo.Directory.Exists == false) fileInfo.Directory.Create();
+            if (fileInfo!.Directory!.Exists == false) fileInfo.Directory.Create();
             fileInfo.Refresh();
             File.WriteAllText(savePath, sb_cs.ToString());
         }

@@ -37,12 +37,6 @@ INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Descr
 VALUES (GETDATE(), @AppConfigGroupId,  N'UI_LOCALE', N'sv-SE', N'The display and input locale of the application')
 END
 
-IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'CONFIG_TIMESTAMP')
-BEGIN
-INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
-VALUES (GETDATE(), @AppConfigGroupId,  N'CONFIG_TIMESTAMP', convert(varchar, GETDATE() ,121) , N'The date time in invariant format upto seconds if config timestamp is changed')
-END
-
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'APPCODE')
 BEGIN
 INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  

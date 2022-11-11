@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,36 +15,30 @@ namespace WMSAdmin.Language
 {
     public class LanguageResourceReader : IResourceReader
     {
-        private string? _className;
+       
         private string _cultureCode;
         private string _languageGroupCode;
         private Utility.Configuration _configuration;
-        private string ClassName
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_className) == false) return _className;
-                _className = this.GetType().FullName;
-                return _className!;
-            }
-        }
-
+        private readonly ILogger _logger;
+        private Utility.Cache _cacheUtility;
+        
         public LanguageResourceReader(Utility.Configuration configuration, CultureInfo culture, string languageGroupCode)
         {
             _cultureCode = culture.Name;
             _languageGroupCode = languageGroupCode;
             _configuration = configuration;
+            _logger = configuration.ServiceProvider.GetRequiredService<ILogger<LanguageResourceReader>>();
+            _cacheUtility = new Utility.Cache(configuration); 
         }
 
         public IDictionaryEnumerator GetEnumerator()
         {
-            var _memoryCache = _configuration.ServiceProvider.GetRequiredService<IMemoryCache>();
             var cultureCode = string.IsNullOrWhiteSpace(_cultureCode) ? _configuration.Setting.Application.Locale : _cultureCode;
-            var key = $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_{_languageGroupCode}_{cultureCode}_{_configuration.Setting.Application.AppCode}";
-            var isCached = _memoryCache.TryGetValue(key, out Hashtable cachedValue);
-            if (isCached) return cachedValue.GetEnumerator();
-            
-            
+            var key = $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_{_configuration.Setting.Application.AppCode}_{_languageGroupCode}_{cultureCode}";
+            var cachedValue = _cacheUtility.GetFromCache<Hashtable>(key, out bool isCached);
+
+            if (isCached && IsCacheChanged(key) == false) return cachedValue.GetEnumerator();
+
             var filter = new Entity.Filter.LanguageText
             {
                 LanguageGroup = new Entity.Filter.LanguageGroup
@@ -63,7 +58,6 @@ namespace WMSAdmin.Language
             var loginfo = new
             {
                 SesssionId = _configuration.Setting.Application.SessionId,
-                Class = ClassName,
                 Method = "GetEnumerator",
                 CultureCode = cultureCode,
                 LanguageGroupCode = _languageGroupCode,
@@ -81,7 +75,7 @@ namespace WMSAdmin.Language
                 {
                     if (cachedValue.ContainsKey(item.Code))
                     {
-                        _configuration.Logger.LogError("Duplicate Language Code Encountered", new { LogInfo = loginfo, LanguageTextCode = item.Code });
+                        _logger.LogError("Duplicate Language Code Encountered", new { LogInfo = loginfo, LanguageTextCode = item.Code });
                     }
                     else
                     {
@@ -93,7 +87,7 @@ namespace WMSAdmin.Language
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
 
-            _memoryCache.Set(key, cachedValue);
+            _cacheUtility.SaveToCache(key, cachedValue);
             return cachedValue.GetEnumerator();
         }
 
@@ -108,6 +102,30 @@ namespace WMSAdmin.Language
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+    
+        public DateTime GetTimeStamp(string code)
+        {
+            var repo = new Repository.AppConfig(_configuration);
+            var data = repo.Get(new Entity.Filter.AppConfig
+            {
+                Code = code,
+                AppConfigGroup = new Entity.Filter.AppConfigGroup
+                {
+                    Code = Entity.Constants.Config.GROUP_CONFIGTIMESTAMP
+                },
+            }).Data.FirstOrDefault();
+
+            if (data == null) return DateTime.MinValue;
+            return System.Text.Json.JsonSerializer.Deserialize<DateTime>(data.Value);
+        }
+
+        public bool IsCacheChanged(string cacheKey)
+        {
+            var lastCachedTime = _cacheUtility.GetCachedTime(cacheKey);
+            if (lastCachedTime == null) return true;
+            var lastChangedTime = GetTimeStamp(cacheKey);
+            return lastChangedTime > lastCachedTime;
         }
     }
 }

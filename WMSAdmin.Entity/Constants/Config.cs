@@ -19,7 +19,6 @@ namespace WMSAdmin.Entity.Constants
         public const string APPLICATION_PATH_TEMPLATEFILES = "PATH_TEMPLATEFILES";
         public const string APPLICATION_APP_APIKEY = "APP_APIKEY";
         public const string APPLICATION_LOCALFILES_BASEPATH = "LOCALFILES_BASEPATH";
-        public const string APPLICATION_CONFIG_TIMESTAMP = "CONFIG_TIMESTAMP";
         public const string APPLICATION_CONFIG_BASEURL = "BASEURL";
         public const string APPLICATION_BASEURL_INTERNAL = "BASEURL_INTERNAL";
         public const string APPLICATION_CACHEEXPIRY_INMINUTES = "CACHEEXPIRY_INMINUTES";
@@ -54,12 +53,6 @@ namespace WMSAdmin.Entity.Constants
         public const string DEBUGTEST_DEV_AUTO_LOGIN = "DEV_AUTO_LOGIN";
 
         public const string GROUP_CONFIGTIMESTAMP = "CONFIG_TIMESTAMP";
-        public const string CONFIGTIMESTAMP_CONFIGTIMESTAMP = "CONFIG_TIMESTAMP";
-        public const string CONFIGTIMESTAMP_APPLICATION = "APPLICATION";
-        public const string CONFIGTIMESTAMP_EMAIL = "EMAIL";
-        public const string CONFIGTIMESTAMP_PAGINATION = "PAGINATION";
-        public const string CONFIGTIMESTAMP_DEBUGTEST = "DEBUGTEST";
-
         public const string TRUE_VALUE = "1";
         public const string FALSE_VALUE = "0";
     }

@@ -10,25 +10,19 @@ namespace WMSAdmin.Console
         static void Main(string[] args)
         {
             var builder = Host.CreateDefaultBuilder(args);
-            
+
             builder.ConfigureServices((hostContext, services) =>
             {
                 services.AddMemoryCache();
                 services.AddHostedService<LanguageTextService>();
-                //services.AddLogging(opt=> { 
-                //    opt.AddConfiguration(hostContext.Configuration);
-                //});
+                services.AddHostedService<CacheTimestampService>();
             });
 
             var app = builder.Build();
-            
-            
-            IConfiguration config = app.Services.GetRequiredService<IConfiguration>();
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
-            var appUtility = new AppUtility(app.Services);
-            var cultures = appUtility.GetSupportedCultures();
+            logger.LogInformation("Starting App");
             app.Run();
-
+            logger.LogInformation("App is Running");
         }
     }
 }
