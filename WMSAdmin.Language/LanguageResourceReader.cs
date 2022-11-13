@@ -28,13 +28,13 @@ namespace WMSAdmin.Language
             _languageGroupCode = languageGroupCode;
             _configuration = configuration;
             _logger = configuration.ServiceProvider.GetRequiredService<ILogger<LanguageResourceReader>>();
-            _cacheUtility = new Utility.Cache(configuration); 
+            _cacheUtility = new Utility.Cache(configuration);
         }
 
         public IDictionaryEnumerator GetEnumerator()
         {
             var cultureCode = string.IsNullOrWhiteSpace(_cultureCode) ? _configuration.Setting.Application.Locale : _cultureCode;
-            var key = $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_{_configuration.Setting.Application.AppCode}_{_languageGroupCode}_{cultureCode}";
+            var key = $"{Entity.Constants.Cache.LANGUAGETEXT}_{_configuration.Setting.Application.AppCode}_{_languageGroupCode}_{cultureCode}";
             var cachedValue = _cacheUtility.GetFromCache<Hashtable>(key, out bool isCached);
 
             if (isCached && IsCacheChanged(key) == false) return cachedValue.GetEnumerator();
@@ -87,7 +87,7 @@ namespace WMSAdmin.Language
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
 
-            _cacheUtility.SaveToCache(key, cachedValue);
+            _cacheUtility.SaveToCache(key, cachedValue, true);
             return cachedValue.GetEnumerator();
         }
 
@@ -103,21 +103,58 @@ namespace WMSAdmin.Language
         {
             return this.GetEnumerator();
         }
-    
-        public DateTime GetTimeStamp(string code)
-        {
-            var repo = new Repository.AppConfig(_configuration);
-            var data = repo.Get(new Entity.Filter.AppConfig
-            {
-                Code = code,
-                AppConfigGroup = new Entity.Filter.AppConfigGroup
-                {
-                    Code = Entity.Constants.Config.GROUP_CONFIGTIMESTAMP
-                },
-            }).Data.FirstOrDefault();
 
-            if (data == null) return DateTime.MinValue;
-            return System.Text.Json.JsonSerializer.Deserialize<DateTime>(data.Value);
+        private List<Entity.Entities.ConfigTimeStamp> GetCacheTimestampList()
+        {
+            var key = Entity.Constants.Cache.CONFIGTIMESTAMPLIST;
+            var cachedValue = _cacheUtility.GetFromCache<List<Entity.Entities.ConfigTimeStamp>>(key, out bool isCached);
+            if (isCached) return cachedValue;
+
+            cachedValue = new List<Entity.Entities.ConfigTimeStamp>();
+            var filter = new Entity.Filter.ConfigTimeStamp { Pagination = Utility.AppHelper.GetDefaultPagination(_configuration.Setting, true), };
+            var repo = new Repository.ConfigTimeStamp(_configuration);
+
+            do
+            {
+                var data = repo.Get(filter).Data;
+                foreach (var item in data)
+                {
+                    cachedValue.Add(item);
+                }
+
+                filter.Pagination.CurrentPage++;
+            }
+            while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
+
+            _cacheUtility.SaveToCache(key, cachedValue, true);
+            return cachedValue;
+        }
+
+        private DateTime GetTimeStamp(string cacheKey)
+        {
+            var timestampList = GetCacheTimestampList();
+            var configTimeStamp = timestampList.FirstOrDefault(e => string.Compare(e.Code, cacheKey, true) == 0);
+
+            if (configTimeStamp != null) return configTimeStamp.TimeStamp!.Value;
+
+            var repo = new Repository.ConfigTimeStamp(_configuration);
+            configTimeStamp = repo.Get(new Entity.Filter.ConfigTimeStamp { Code = cacheKey, }).Data.FirstOrDefault();
+
+            if (configTimeStamp == null)
+            {
+                configTimeStamp = new Entity.Entities.ConfigTimeStamp
+                {
+                    Code = cacheKey,
+                    TimeStamp = DateTime.MinValue,
+                };
+
+                repo.Save(configTimeStamp);
+            }
+
+            timestampList = GetCacheTimestampList();
+            timestampList.Add(configTimeStamp);
+            _cacheUtility.SaveToCache(Entity.Constants.Cache.CONFIGTIMESTAMPLIST, timestampList);
+            return configTimeStamp.TimeStamp!.Value;
         }
 
         public bool IsCacheChanged(string cacheKey)

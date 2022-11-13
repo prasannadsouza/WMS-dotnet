@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace WMSAdmin.Entity.Filter
 {
-    public class LanguageCulture
+    public class ConfigTimeStamp
     {
         public long? Id { get; set; }
         public List<long> Ids { get; set; }
         public string Code { get; set; }
-        public string Name { get; set; }
         public DateTime? FromTimeStamp { get; set; }
         public DateTime? ToTimeStamp { get; set; }
         public Entities.Pagination Pagination { get; set; }

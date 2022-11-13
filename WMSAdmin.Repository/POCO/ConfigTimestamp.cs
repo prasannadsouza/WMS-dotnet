@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace WMSAdmin.Repository.POCO
 {
-    public class LanguageCulture
+    public class ConfigTimeStamp
     {
         public long? Id { get; set; }
         public string Code { get; set; }
-        public string Name { get; set; }
         public DateTime? TimeStamp { get; set; }
     }
 }

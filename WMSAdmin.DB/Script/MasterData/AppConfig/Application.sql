@@ -1,5 +1,12 @@
-﻿declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'APPLICATION')
-PRINT 'Creating data for AppConfig APPLICATION'
+﻿PRINT 'Creating data for AppConfig APPLICATION'
+
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfigGroup] WHERE [Code] = 'APPLICATION')
+BEGIN
+INSERT [dbo].[AppConfigGroup] ([Timestamp], [Code],[Name], [Description]) VALUES (GETDATE(), N'APPLICATION', N'Application', N'Group for Application')
+END
+
+declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'APPLICATION')
+
 
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'WEBFOLDER_DOWNLOADPATH')
 BEGIN

@@ -1,12 +1,8 @@
 ﻿use  [WMSAdmin]
-
-PRINT 'Executing AppConfigGroup'
-:r ../MasterData/AppConfigGroup.sql
 GO
+
 PRINT 'Executing AppConfig'
 :r ../MasterData/AppConfig/Application.sql
-GO
-:r ../MasterData/AppConfig/ConfigTimestamp.sql
 GO
 :r ../MasterData/AppConfig/DebugTest.sql
 GO

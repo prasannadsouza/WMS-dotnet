@@ -1,5 +1,10 @@
-﻿declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'DEBUGTEST')
-PRINT 'Creating data for AppConfig DEBUG_TEST'
+﻿PRINT 'Creating data for AppConfig DEBUG_TEST'
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfigGroup] WHERE [Code] = 'DEBUGTEST')
+BEGIN
+INSERT [dbo].[AppConfigGroup] ([Timestamp], [Code],[Name], [Description]) VALUES (GETDATE(), N'DEBUGTEST', N'DEBUGTEST', N'Group for Debugging in Test Mode')
+END
+
+declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'DEBUGTEST')
 
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'IS_TESTMODE')
 BEGIN

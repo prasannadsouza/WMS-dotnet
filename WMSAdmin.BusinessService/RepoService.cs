@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
+﻿
 namespace WMSAdmin.BusinessService
 {
     public class RepoService : BaseService
@@ -23,7 +22,11 @@ namespace WMSAdmin.BusinessService
         public Entity.Entities.Response<List<Entity.Entities.LanguageCulture>> Get(Entity.Filter.LanguageCulture filter)
             => GetRepository<Repository.LanguageCulture>().Get(filter);
 
+        public Entity.Entities.Response<List<Entity.Entities.ConfigTimeStamp>> Get(Entity.Filter.ConfigTimeStamp filter)
+            => GetRepository<Repository.ConfigTimeStamp>().Get(filter);
+
         public void Save(Entity.Entities.AppConfig item) => GetRepository<Repository.AppConfig>().Save(item);
         public void Save(Entity.Entities.AppConfigGroup item) => GetRepository<Repository.AppConfigGroup>().Save(item);
+        public void Save(Entity.Entities.ConfigTimeStamp item) => GetRepository<Repository.ConfigTimeStamp>().Save(item);
     }
 }

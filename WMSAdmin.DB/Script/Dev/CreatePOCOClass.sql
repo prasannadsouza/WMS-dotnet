@@ -1,5 +1,5 @@
 ﻿use WMSAdmin
-declare @tableName varchar(200) = 'LanguageText'
+declare @tableName varchar(200) = 'ConfigTimestamp'
 declare @columnName varchar(200)
 declare @nullable varchar(50)
 declare @datatype varchar(50)
@@ -53,6 +53,7 @@ print ''
 	when 'nvarchar' then 'string'
 	when 'uniqueidentifier' then 'Guid?'
 	when 'datetime' then 'DateTime?'
+	when 'datetime2' then 'DateTime?'
 	when 'bit' then 'bool?'
 	else 'string'
 	END

@@ -24,6 +24,7 @@ namespace WMSAdmin.Repository.Context
             modelBuilder.Entity<POCO.LanguageCulture>().ToTable("LanguageCulture");
             modelBuilder.Entity<POCO.LanguageText>().ToTable("LanguageText");
             modelBuilder.Entity<POCO.WMSApplication>().ToTable("WMSApplication");
+            modelBuilder.Entity<POCO.ConfigTimeStamp>().ToTable("ConfigTimeStamp");
             //modelBuilder.Entity<POCO.DBColumn>().ToView("INFORMATION_SCHEMA.COLUMNS");
         }
         public DbSet<POCO.AppConfig> AppConfig {get; set;}
@@ -32,6 +33,7 @@ namespace WMSAdmin.Repository.Context
         public DbSet<POCO.LanguageCulture> LanguageCulture { get; set; }
         public DbSet<POCO.LanguageText> LanguageText { get; set; }
         public DbSet<POCO.WMSApplication> WMSApplication { get; set; }
+        public DbSet<POCO.ConfigTimeStamp> ConfigTimeStamp { get; set; }
         //public DbSet<POCO.DBColumn> DBColumn { get; set; }
     }
 }

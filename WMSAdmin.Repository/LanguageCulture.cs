@@ -34,6 +34,10 @@ namespace WMSAdmin.Repository
                 if (filter.Name.Contains("%")) query = query.Where(p => EF.Functions.Like(p.Name, filter.Name));
                 else query = query.Where(e => e.Name == filter.Name);
             }
+
+            if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
+            if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.ToTimeStamp <= p.TimeStamp.Value);
+            
             return query;
         }
 
@@ -90,7 +94,7 @@ namespace WMSAdmin.Repository
                 Id = from.Id,
                 Code = from.Code,
                 Name = from.Name,
-                Timestamp = from.Timestamp,
+                TimeStamp = from.TimeStamp,
             };
 
             return to;
@@ -101,7 +105,7 @@ namespace WMSAdmin.Repository
             to.Id = from.Id;
             to.Code = from.Code;
             to.Name = from.Name;
-            to.Timestamp = from.Timestamp;
+            to.TimeStamp = from.TimeStamp;
             return to;
         }
     }

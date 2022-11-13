@@ -14,13 +14,12 @@ namespace WMSAdmin.Console
         private Utility.Configuration Configuration;
         private IServiceProvider _serviceProvider;
         private Dictionary<Type, BusinessService.BaseService> _businessServices;
-        private ILogger _logger;
+        public Utility.Cache Cache { get; private set; }
         internal AppUtility(IServiceProvider serviceProvider)
         {
             _businessServices = new Dictionary<Type, BusinessService.BaseService>();
             _serviceProvider = serviceProvider;
-            _logger = _serviceProvider.GetRequiredService<ILogger<AppUtility>>();
-
+            
             var setting = GetConfigSetting();
             Configuration = new Utility.Configuration
             {
@@ -28,6 +27,8 @@ namespace WMSAdmin.Console
                 ServiceProvider = serviceProvider,
                 Culture = new System.Globalization.CultureInfo(setting.Application.Locale),
             };
+
+           Cache = new Utility.Cache(Configuration);
         }
 
         public T GetBusinessService<T>() where T : BusinessService.BaseService

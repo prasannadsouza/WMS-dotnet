@@ -1,5 +1,11 @@
-﻿declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'PAGINATION')
-PRINT 'Creating data for AppConfig PAGINATION'
+﻿PRINT 'Creating data for AppConfig PAGINATION'
+
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfigGroup] WHERE [Code] = 'PAGINATION')
+BEGIN
+INSERT [dbo].[AppConfigGroup] ([Timestamp], [Code],[Name], [Description]) VALUES (GETDATE(), N'PAGINATION', N'PAGINATION', N'Group for Pagination')
+END
+
+declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'PAGINATION')
 
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'RECORDSPERPAGE')
 BEGIN

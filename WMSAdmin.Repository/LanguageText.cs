@@ -38,7 +38,7 @@ namespace WMSAdmin.Repository
             }
 
             if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
-            if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp <= p.TimeStamp.Value);
+            if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.ToTimeStamp <= p.TimeStamp.Value);
 
             if (filter.LanguageGroup?.Id != null) query = query.Where(p => filter.LanguageGroup.Id.Value == p.LanguageGroupId.Value);
             if (filter.LanguageGroup?.Ids?.Any() == true) query = query.Where(p => filter.LanguageGroup.Ids.Contains(p.LanguageGroupId.Value));
@@ -120,7 +120,8 @@ namespace WMSAdmin.Repository
                 Code = from.Code,
                 Value = from.Value,
                 Description = from.Description,
-            };
+                TimeStamp = from.TimeStamp,
+        };
 
             return to;
         }
@@ -132,6 +133,7 @@ namespace WMSAdmin.Repository
             to.Code = from.Code;
             to.Value = from.Value;
             to.Description = from.Description;
+            to.TimeStamp = from.TimeStamp;
             return to;
         }
     }

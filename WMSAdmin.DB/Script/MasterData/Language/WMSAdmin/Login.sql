@@ -2,7 +2,7 @@
 declare @LanguageCultureSwedish BIGINT = (select Id from [dbo].[LanguageCulture] where Code = 'sv-SE')
 declare @LanguageCultureEnglish BIGINT = (select Id from [dbo].[LanguageCulture] where Code = 'en-SE')
 declare @LangugaeGroupCode NVARCHAR(50) = N'LOGIN'
-declare @Timestamp DATETIME = GetDate()
+declare @Timestamp DATETIME2 = GetDate()
 IF Not EXISTS (SELECT * FROM [dbo].[LanguageGroup] WHERE WMSApplicationId = @WMSApplicationId and [Code] = @LangugaeGroupCode)
 INSERT [dbo].[LanguageGroup] ([Timestamp], [WMSApplicationId],[Code],[Name]) VALUES (@Timestamp,@WMSApplicationId, @LangugaeGroupCode, N'Group for Login text')
 

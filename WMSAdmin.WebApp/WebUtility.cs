@@ -48,5 +48,8 @@ namespace WMSAdmin.WebApp
             var setting = configService.GetConfigSetting();
             return setting;
         }
+
+        public const string APIRoute = "api/[controller]/[action]";
+
     }
 }

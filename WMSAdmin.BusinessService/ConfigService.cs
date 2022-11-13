@@ -12,10 +12,12 @@ namespace WMSAdmin.BusinessService
     {
         RepoService _repoService;
         private ILogger _logger;
+        private CacheService _cacheService;
         public ConfigService(Utility.Configuration configuration) : base(configuration)
         {
             _repoService = new RepoService(configuration);
             _logger = configuration.ServiceProvider.GetRequiredService<ILogger<BaseService>>();
+            _cacheService = new CacheService(configuration);
         }
 
         public Entity.Entities.Config.ConfigSetting GetConfigSetting()
@@ -36,27 +38,18 @@ namespace WMSAdmin.BusinessService
         private Entity.Entities.Config.DebugTest GetDebugTest()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_DEBUGTEST;
-            
+
             var to = CacheUtility.GetFromCache<Entity.Entities.Config.DebugTest>(key, out bool isCached);
-            if (isCached && IsCacheChanged(key) == false) return to;
-            
+            if (isCached && _cacheService.IsCacheChanged(key) == false) return to;
+
             to = new Entity.Entities.Config.DebugTest();
 
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_DEBUGTEST);
-
-            var filter = new Entity.Filter.AppConfig
-            {
-                AppConfigGroup = new Entity.Filter.AppConfigGroup
-                {
-                    Id = appConfigGroup.Id,
-                },
-            };
-
-            var repo = GetRepository<Repository.AppConfig>();
+            var filter = new Entity.Filter.AppConfig { AppConfigGroup = new Entity.Filter.AppConfigGroup { Id = appConfigGroup.Id, }, };
 
             do
             {
-                var items = repo.Get(filter).Data;
+                var items = _repoService.Get(filter).Data;
                 foreach (var from in items)
                 {
                     switch (from.Code)
@@ -108,12 +101,14 @@ namespace WMSAdmin.BusinessService
             CacheUtility.SaveToCache(key, to, true);
             return to;
         }
+        
+        
         private Entity.Entities.Config.Email GetEmail()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_EMAIL;
-            
+
             var to = CacheUtility.GetFromCache<Entity.Entities.Config.Email>(key, out bool isCached);
-            if (isCached && IsCacheChanged(key) == false) return to;
+            if (isCached && _cacheService.IsCacheChanged(key) == false) return to;
 
             to = new Entity.Entities.Config.Email();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_EMAIL);
@@ -126,11 +121,10 @@ namespace WMSAdmin.BusinessService
                 },
             };
 
-            var repo = GetRepository<Repository.AppConfig>();
 
             do
             {
-                var items = repo.Get(filter).Data;
+                var items = _repoService.Get(filter).Data;
                 foreach (var from in items)
                 {
                     switch (from.Code)
@@ -227,14 +221,15 @@ namespace WMSAdmin.BusinessService
             CacheUtility.SaveToCache(key, to, true);
             return to;
         }
+
         private Entity.Entities.Config.Application GetApplication()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_APPLICATION;
-           
+
             var to = CacheUtility.GetFromCache<Entity.Entities.Config.Application>(key, out bool isCached);
-            if (isCached && IsCacheChanged(key) == false) return to;
-            
-            to = new Entity.Entities.Config.Application(); 
+            if (isCached && _cacheService.IsCacheChanged(key) == false) return to;
+
+            to = new Entity.Entities.Config.Application();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_APPLICATION);
 
             var filter = new Entity.Filter.AppConfig
@@ -245,11 +240,10 @@ namespace WMSAdmin.BusinessService
                 },
             };
 
-            var repo = GetRepository<Repository.AppConfig>();
 
             do
             {
-                var items = repo.Get(filter).Data;
+                var items = _repoService.Get(filter).Data;
                 foreach (var from in items)
                 {
                     switch (from.Code)
@@ -341,13 +335,15 @@ namespace WMSAdmin.BusinessService
             CacheUtility.SaveToCache(key, to, true);
             return to;
         }
+
+
         private Entity.Entities.Config.Pagination GetPagination()
         {
             var key = Entity.Constants.Cache.CONFIGSETTING_PAGINATION;
-            
+
             var to = CacheUtility.GetFromCache<Entity.Entities.Config.Pagination>(key, out bool isCached);
-            if (isCached && IsCacheChanged(key) == false) return to;
-            
+            if (isCached && _cacheService.IsCacheChanged(key) == false) return to;
+
             to = new Entity.Entities.Config.Pagination();
             var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_PAGINATION);
 
@@ -359,11 +355,9 @@ namespace WMSAdmin.BusinessService
                 },
             };
 
-            var repo = GetRepository<Repository.AppConfig>();
-
             do
             {
-                var items = repo.Get(filter).Data;
+                var items = _repoService.Get(filter).Data;
                 foreach (var from in items)
                 {
                     switch (from.Code)

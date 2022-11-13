@@ -11,7 +11,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/[action]")]
+        [Route(WebUtility.APIRoute)]
         public JsonResult GetGeneralString([FromQuery] string cultureCode)
         {
             var generalResource = new Language.ResourceManager.GeneralString(AppUtility.Configuration, new System.Globalization.CultureInfo(cultureCode));
@@ -19,7 +19,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/[action]")]
+        [Route(WebUtility.APIRoute)]
         public JsonResult GetLoginString([FromQuery] string cultureCode)
         {
             var generalResource = new Language.ResourceManager.LoginString(AppUtility.Configuration, new System.Globalization.CultureInfo(cultureCode));
@@ -27,7 +27,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/[action]")]
+        [Route(WebUtility.APIRoute)]
         public JsonResult GetDefaultGeneralString()
         {
             var generalResource = new Language.ResourceManager.GeneralString(AppUtility.Configuration, System.Globalization.CultureInfo.CurrentCulture);
@@ -35,7 +35,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/[action]")]
+        [Route(WebUtility.APIRoute)]
         public JsonResult GetDefaultLoginString()
         {
             var generalResource = new Language.ResourceManager.LoginString(AppUtility.Configuration, System.Globalization.CultureInfo.CurrentCulture);

@@ -9,6 +9,7 @@ namespace WMSAdmin.WebApp.Controllers
     public class BaseController:Controller
     {
         private WebUtility? _appUtility;
+        
         public IServiceProvider ServiceProvider { get; private set; }
 
         public BaseController(IServiceProvider serviceProvider)

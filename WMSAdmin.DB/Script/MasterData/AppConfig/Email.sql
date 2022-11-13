@@ -1,5 +1,11 @@
-﻿declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'EMAIL')
-PRINT 'Creating data for AppConfig EMAIL'
+﻿PRINT 'Creating data for AppConfig EMAIL'
+
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfigGroup] WHERE [Code] = 'EMAIL')
+BEGIN
+INSERT [dbo].[AppConfigGroup] ([Timestamp], [Code],[Name], [Description]) VALUES (GETDATE(), N'EMAIL', N'EMAIL', N'Group for Email')
+END
+
+declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'EMAIL')
 
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'FROM_EMAIL_ADDRESS')
 BEGIN

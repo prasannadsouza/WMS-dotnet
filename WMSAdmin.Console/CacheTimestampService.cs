@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,45 +49,17 @@ namespace WMSAdmin.Console
                 Entity.Constants.Cache.CONFIGSETTING_DEBUGTEST,
                 Entity.Constants.Cache.CONFIGSETTING_EMAIL,
                 Entity.Constants.Cache.CONFIGSETTING_PAGINATION,
-                $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_GENERAL}_sv-SE",
-                $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_GENERAL}_en-SE",
-                $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_LOGIN}_sv-SE",
-                $"{Entity.Constants.Cache.CONFIGSETTING_LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_LOGIN}_en-SE",
+                $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_GENERAL}_sv-SE",
+                $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_GENERAL}_en-SE",
+                $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_LOGIN}_sv-SE",
+                $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_LOGIN}_en-SE",
             };
-
-            var repoService = AppUtility.GetBusinessService<BusinessService.RepoService>();
-            var appConfigGroup = repoService.Get(new Entity.Filter.AppConfigGroup { Code = Entity.Constants.Config.GROUP_CONFIGTIMESTAMP }).Data.FirstOrDefault();
-            if (appConfigGroup == null)
-            {
-                appConfigGroup = new Entity.Entities.AppConfigGroup
-                {
-                    Code = Entity.Constants.Config.GROUP_CONFIGTIMESTAMP,
-                    Name = "Config Timestamp",
-                    Description = "Group for Config Timestamp",
-                    TimeStamp = DateTime.Now,
-                };
-
-                repoService.Save(appConfigGroup);
-            }
+            
+            var cacheService = AppUtility.GetBusinessService<BusinessService.CacheService>();
 
             foreach (var key in keys)
             {
-                var appConfig = repoService.Get(new Entity.Filter.AppConfig
-                {
-                    Code = key,
-                    AppConfigGroup = new Entity.Filter.AppConfigGroup { Id = appConfigGroup.Id }
-                }).Data.FirstOrDefault();
-
-                if (appConfig == null) appConfig = new Entity.Entities.AppConfig
-                {
-                    Code = key,
-                    Description = $"Timestamp for Key {key}",
-                    AppConfigGroupId = appConfigGroup.Id,
-                };
-
-                appConfig.Value = System.Text.Json.JsonSerializer.Serialize(DateTime.Now);
-                appConfig.TimeStamp = DateTime.Now;
-                repoService.Save(appConfig);
+                cacheService.UpdateTimestamp(key);
             }
         }
     }

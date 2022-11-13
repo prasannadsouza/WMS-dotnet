@@ -11,7 +11,7 @@ namespace WMSAdmin.Entity.Entities
         public long? Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public DateTime? Timestamp { get; set; }
+        public DateTime? TimeStamp { get; set; }
     }
 
 }

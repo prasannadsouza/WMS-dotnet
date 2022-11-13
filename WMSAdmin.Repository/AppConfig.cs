@@ -38,7 +38,7 @@ namespace WMSAdmin.Repository
             }
 
             if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
-            if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp <= p.TimeStamp.Value);
+            if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.ToTimeStamp <= p.TimeStamp.Value);
 
             if (filter.AppConfigGroup?.Id.HasValue == true) query = query.Where(p => filter.AppConfigGroup.Id.Value == p.AppConfigGroupId.Value);
             if (filter.AppConfigGroup?.Ids?.Any() == true) query = query.Where(p => filter.AppConfigGroup.Ids.Contains(p.AppConfigGroupId.Value));

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace WMSAdmin.Utility
 {
@@ -49,19 +50,31 @@ namespace WMSAdmin.Utility
         private void SaveCacheKey(string cacheKey)
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var isCached = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
-            if (isCached == false) cacheValue = new Dictionary<string, DateTime>();
-            if (cacheValue.ContainsKey(cacheKey) == false) cacheValue.Add(cacheKey, DateTime.Now);
+            var isCached = MemoryCache.TryGetValue(key, out List<Entity.Entities.ConfigTimeStamp> cacheValue);
+            if (isCached == false) cacheValue = new List<Entity.Entities.ConfigTimeStamp>();
+
+            var configTimeStamp = cacheValue.FirstOrDefault(e => string.Compare(e.Code, cacheKey, true) == 0);
+
+            if (configTimeStamp == null)
+            {
+                configTimeStamp = new Entity.Entities.ConfigTimeStamp { Code = cacheKey };
+                cacheValue.Add(configTimeStamp);
+            }
+            
+            configTimeStamp.TimeStamp = DateTime.Now;
             MemoryCache.Set(key, cacheValue);
         }
 
         public void RemoveCacheKey(string cacheKey)
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var isCached = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
+            var isCached = MemoryCache.TryGetValue(key, out List<Entity.Entities.ConfigTimeStamp> cacheValue);
             if (isCached == false) return;
-            if (cacheValue.ContainsKey(cacheKey) == false) return;
-            cacheValue.Remove(cacheKey);
+
+            var configTimeStamp = cacheValue.FirstOrDefault(e => string.Compare(e.Code, cacheKey, true) == 0);
+            if (configTimeStamp == null) return;
+            
+            cacheValue.Remove(configTimeStamp);
             if (cacheValue.Any() == false)
             {
                 MemoryCache.Remove(key);
@@ -70,21 +83,25 @@ namespace WMSAdmin.Utility
             MemoryCache.Set(key, cacheValue);
         }
 
-        public Dictionary<string, DateTime> GetCacheKeys()
+        public List<Entity.Entities.ConfigTimeStamp> GetCacheKeys()
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var _ = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
+            var _ = MemoryCache.TryGetValue(key, out List<Entity.Entities.ConfigTimeStamp> cacheValue);
             return cacheValue;
         }
 
         public DateTime? GetCachedTime(string cacheKey)
         {
             var key = Entity.Constants.Cache.APPLICATION_CACHEKEYS;
-            var isCached = MemoryCache.TryGetValue(key, out Dictionary<string, DateTime> cacheValue);
-            
+            var isCached = MemoryCache.TryGetValue(key, out List<Entity.Entities.ConfigTimeStamp> cacheValue);
+
             if (isCached == false) return null;
-            if (cacheValue.ContainsKey(cacheKey) == false) return null;
-            return cacheValue[cacheKey];
+            return cacheValue.FirstOrDefault(e => string.Compare(e.Code, cacheKey, true) == 0)?.TimeStamp;
+        }
+
+        public void ClearConfigTimeStampCachedKeys()
+        {
+            RemoveCacheKey(Entity.Constants.Cache.APPLICATION_CACHEKEYS);
         }
     }
 }
