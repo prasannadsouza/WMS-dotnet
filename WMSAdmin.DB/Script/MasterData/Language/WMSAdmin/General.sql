@@ -56,5 +56,8 @@ select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'FetchData','Fetch Da
 select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'FetchData','Hämta data' union 
 
 select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'Language','Language' union
-select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'Language','Språk'
+select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'Language','Språk' union
+
+select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'Logout','Logout' union
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Logout','Logga ut'
 

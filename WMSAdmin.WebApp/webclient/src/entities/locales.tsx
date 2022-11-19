@@ -27,6 +27,7 @@ export type GeneralString = {
     settings: string;
     to: string;
     yes: string;
+    logout: string;
 }
 
 export type LoginLocaleString = {

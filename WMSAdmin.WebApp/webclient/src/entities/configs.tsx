@@ -1,7 +1,7 @@
 import { LocalizedStrings } from "react-localization";
 import { Customer, ErrorData, User } from "../entities/entities"
 import { ConfirmModel, LoginModel, MessageModel } from "../entities/models"
-import { LanguageCulture, GeneralString, LoginString, GeneralLocaleString, LoginLocaleString } from "./locales"
+import { LanguageCulture, GeneralString, GeneralLocaleString } from "./locales"
 
 
 export type ApplicationConfig = {
@@ -23,7 +23,6 @@ export type AppData = {
     applicationConfig?: ApplicationConfig;
     paginationConfig?: PaginationConfig;
     generalLocaleString?: GeneralLocaleString;
-    loginLocaleString?: LoginLocaleString;
     languageCultures?: LanguageCulture[];
     sessionData?: SessionData;
 }
@@ -31,8 +30,7 @@ export type AppData = {
 export type AppState = {
     confirmModel?: ConfirmModel;
     messageModel?: MessageModel;
-    GeneralString?: LocalizedStrings<GeneralString>;
-    LoginString?: LocalizedStrings<LoginString>;
+    generalString?: LocalizedStrings<GeneralString>;
     currentTitle?: string;
     showLoader?: boolean;
     language?: LanguageCulture;

@@ -11,16 +11,5 @@ export class UIHelper {
         return " modal-show ";
     }
 
-    static getInitialLoginModel = (): LoginModel =>  {
-        return {
-            showPassword: false,
-            showForgotPassword: false,
-            email: "",
-            emailFeedback: "",
-            password: "",
-            passwordFeedback: "",
-            username: "",
-            usernameFeedBack: "",
-        };
-    }
+    
 }

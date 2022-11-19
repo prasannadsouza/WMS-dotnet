@@ -1,16 +1,20 @@
 import { AppData, AppState, SessionData, ApplicationConfig, PaginationConfig, ConfigTimeStamp } from "../entities/configs"
-import { ConfirmModel, MessageModel } from "../entities/models"
+import { ConfirmModel, LoginModel, MessageModel } from "../entities/models"
 import { Locale } from "./locale"
 import LocalizedStrings from "react-localization";
-import { ErrorConstants, LinkConstants,CacheConstants } from "../entities/constants";
+import { ErrorConstants, LinkConstants,CacheConstants, APIParts } from "../entities/constants";
 import { ResponseData } from "../entities/entities";
-import { URL } from "url";
 
 export class Utility {
 
-    static async GetData<T>(url: URL, defaultData: ResponseData<T>): Promise<ResponseData<T>> {
-        
-        return await fetch(url).then(response => {
+       static async GetData<T>(urlPart: string, searchParams:URLSearchParams,  defaultData: ResponseData<T>): Promise<ResponseData<T>> {
+           const url: URL = new URL(window.origin + "/" + urlPart);
+
+           const search = searchParams?.toString(); 
+           if ((search?.length > 0) == true) url.search = search;
+                      
+           console.log(url.toString());
+           return await fetch(url).then(response => {
             if (!response.ok) {
                 defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
                 return defaultData;
@@ -28,13 +32,11 @@ export class Utility {
                 data: data,
                 errors: []
             }
-            return Promise.resolve(response);
+            return await Promise.resolve(response);
         };
-
-        return await this.GetData<ApplicationConfig>(new URL("api/Config/GetApplicationConfig"), { data: null }).then(response => {
-            if (response.errors?.length > 0 == true) return response;
-
-            
+        
+        return await Utility.GetData<ApplicationConfig>(APIParts.CONFIG + "GetApplicationConfig", undefined, { data: null }).then(response => {
+            if ((response.errors?.length > 0) === true) return response;
             Utility.saveToLocalStorage(CacheConstants.APPLICATIONCONFIG, response.data);
             return response;
         });
@@ -47,32 +49,30 @@ export class Utility {
                 data: data,
                 errors: []
             }
-            return Promise.resolve(response);
+            return await Promise.resolve(response);
         };
 
-        return await this.GetData<PaginationConfig>(new URL("api/Config/GetPaginationConfig"), { data: null }).then(response => {
-            if (response.errors?.length > 0 == true) return response;
+        return await Utility.GetData<PaginationConfig>(APIParts.CONFIG +  "GetPaginationConfig", undefined, { data: null }).then(response => {
+            if ((response.errors?.length > 0) === true) return response;
             Utility.saveToLocalStorage(CacheConstants.PAGINATIONCONFIG, response.data);
             return response;
         });
     }
 
-
-
     static async getAppData(): Promise<AppData> {
 
         let responseData: AppData = { appInitErrrors: [] }; 
 
-        Utility.GetApplicationConfig().then(x => {
-            if (x.errors?.length > 0 == true) {
+        await Utility.GetApplicationConfig().then(x => {
+            if ((x.errors?.length > 0) === true) {
                 responseData.appInitErrrors.push(...x.errors);
                 return;
             }
             responseData.applicationConfig = x.data;
         });
 
-        Utility.GetPaginationConfig().then(x => {
-            if (x.errors?.length > 0 == true) {
+        await Utility.GetPaginationConfig().then(x => {
+            if ((x.errors?.length > 0) === true) {
                 responseData.appInitErrrors.push(...x.errors);
                 return;
             }
@@ -81,46 +81,43 @@ export class Utility {
 
         const locale = new Locale();
 
-        locale.getGeneralString().then(x => {
-            if (x.errors?.length > 0 == true) {
+        await locale.getGeneralString().then(x => {
+            if ((x.errors?.length > 0) === true) {
                 responseData.appInitErrrors.push(...x.errors);
                 return;
             }
             responseData.generalLocaleString = x.data;
         });
 
-        return Promise.resolve(responseData);
+        await locale.getLanguages().then(x => {
+            if ((x.errors?.length > 0) === true) {
+                responseData.appInitErrrors.push(...x.errors);
+                return;
+            }
+            responseData.languageCultures = x.data;
+        });
+
+        return await Promise.resolve(responseData);
     };
 
-    static getNewAppData(appData: AppData,) {
-        const newAppData: AppData = {
-            applicationConfig: appData.applicationConfig,
-        };
-        return newAppData;
-    };
-
-
-
-    static getAppState(appConfig: AppData, appState: AppState): AppState {
-
+    static getAppState(appData: AppData, appState: AppState): AppState {
+        let localizedGeneralString = new LocalizedStrings(appData.generalLocaleString);
         let newAppState: AppState = {
-            GeneralString: new LocalizedStrings(appConfig.generalLocaleString),
-            LoginString: new LocalizedStrings(appConfig.loginLocaleString),
-            language: appConfig.languageCultures[0],
+            generalString: localizedGeneralString,
+            language: appData.languageCultures[0],
         };
 
         let localeCode = appState?.language?.code;
 
-        if ((localeCode?.length > 0) === false) localeCode = appConfig.sessionData?.user?.localeCode;
-        if ((localeCode?.length > 0) === false) localeCode = appConfig.sessionData?.customer?.localeCode
-        if ((localeCode?.length > 0) === false) localeCode = appConfig.applicationConfig.localeCode;
+        if ((localeCode?.length > 0) === false) localeCode = appData.sessionData?.user?.localeCode;
+        if ((localeCode?.length > 0) === false) localeCode = appData.sessionData?.customer?.localeCode
+        if ((localeCode?.length > 0) === false) localeCode = appData.applicationConfig.localeCode;
 
-        newAppState.language = appConfig.languageCultures.filter(
+        newAppState.language = appData.languageCultures.filter(
             (languageCulture) => languageCulture.code === localeCode
         )[0];
 
-        newAppState.GeneralString.setLanguage(newAppState.language.code);
-        newAppState.LoginString.setLanguage(newAppState.language.code);
+        newAppState.generalString.setLanguage(newAppState.language.code);
         return newAppState;
     };
 
@@ -147,10 +144,10 @@ export class Utility {
 
     static getConfirmModel = (appState: AppState): ConfirmModel => {
         return {
-            title: appState.GeneralString?.confirmTitle,
-            cancelTitle: appState.GeneralString?.no,
-            message: appState.GeneralString?.confirmMessage,
-            confirmTitle: appState.GeneralString?.yes,
+            title: appState.generalString?.confirmTitle,
+            cancelTitle: appState.generalString?.no,
+            message: appState.generalString?.confirmMessage,
+            confirmTitle: appState.generalString?.yes,
             onClose: undefined,
             show: false,
         };
@@ -158,8 +155,8 @@ export class Utility {
 
     static getMessageModel = (appState: AppState): MessageModel => {
         return {
-            title: appState.GeneralString?.message,
-            okTitle: appState.GeneralString?.ok,
+            title: appState.generalString?.message,
+            okTitle: appState.generalString?.ok,
             onClose: undefined,
             show: false,
             isError: false,
@@ -188,61 +185,7 @@ export class Utility {
         return true;
     }
 
-    static performUserLogin = (appState: AppState, username: string, password: string): ResponseData<boolean> => {
-
-        let response: ResponseData<boolean> = {
-            errors: []
-        }
-
-        if ((username?.trim()?.length > 0) !== true) {
-            response.errors?.push({
-                errorCode: ErrorConstants.USERNAME_CANNOTBE_BLANK,
-                message: appState.LoginString?.usernameCannotBeBlank,
-            });
-        }
-
-        if ((password?.trim()?.length > 0) !== true) {
-            response.errors?.push({
-                errorCode: ErrorConstants.PASSWORD_CANNOTBE_BLANK,
-                message: appState.LoginString?.passwordCannotBeBlank,
-            });
-        }
-
-        if (username === "prasanna") {
-            response.errors?.push({
-                errorCode: ErrorConstants.USERNAME_OR_PASSWORD_ISINVALID,
-                message: appState.LoginString?.usernameOrPasswordIsInvalid,
-            });
-        }
-
-        if ((response.errors!.length > 0) === true) return response;
-        response.data = true;
-        return response;
-    }
-
-    static getUserLoginAppConfig = (appState: AppState, appConfig: AppData, username: string, password: string): AppData => {
-        var newAppData = Utility.getNewAppData(appConfig);
-        newAppData.sessionData = Utility.getSessionConfig(username, password);
-        return newAppData;
-    };
-
-    static validateResetPassword = (appState: AppState, email: string): ResponseData<boolean> => {
-        let response: ResponseData<boolean> = {
-            data: false,
-            errors: []
-        }
-
-        if ((email?.trim()?.length > 0) !== true) {
-            response.errors?.push({
-                errorCode: ErrorConstants.EMAIL_CANNOTBE_BLANK,
-                message: appState.LoginString?.emailCannotBeBlank,
-            });
-        }
-
-        response.data = true;
-        return response;
-
-    }
+    
 
     static getOtherMenuTitle = (appData: AppData, appState: AppState) => {
 
@@ -289,13 +232,13 @@ export class Utility {
         let serializedState = localStorage.getItem(CacheConstants.CONFIGTIMESTAMPS);
         if (!serializedState) return;
         let data = JSON.parse(serializedState) as ConfigTimeStamp[];
-        if (data?.length > 0 !== true) return;
+        if ((data?.length > 0) !== true) return;
 
         data = data.filter(function (item) {
             return item.Code !== key
         });
 
-        if (data.length > 0 !== true) {
+        if ((data.length > 0) !== true) {
             localStorage.removeItem(CacheConstants.CONFIGTIMESTAMPS);
             return;
         }
@@ -309,13 +252,13 @@ export class Utility {
         let serializedState = localStorage.getItem(CacheConstants.CONFIGTIMESTAMPS);
         if (!serializedState) return undefined;
         let data = JSON.parse(serializedState) as ConfigTimeStamp[];
-        if (data?.length > 0 !== true) return undefined;
+        if ((data?.length > 0) !== true) return undefined;
 
         const items = data?.filter(function (item) {
-            return item.Code == key
+            return item.Code === key
         });
 
-        if (items?.length > 0 !== true) return undefined;
+        if ((items?.length > 0) !== true) return undefined;
         return items[0];
     }
 
@@ -328,7 +271,7 @@ export class Utility {
         if (!data) data = [];
         
         const items = data?.filter(function (item) {
-            return item.Code == cacheKey
+            return item.Code === cacheKey
         });
 
         let item: ConfigTimeStamp | undefined = undefined;

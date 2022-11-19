@@ -22,6 +22,8 @@ namespace WMSAdmin.Language.ResourceManager
         public string To => GetResourceString(nameof(To));
         public string Yes => GetResourceString(nameof(Yes));
 
+        public string Logout => GetResourceString(nameof(Logout));
+
         public Entity.Entities.LanguageStrings.GeneralString GetString()
         {
             return new Entity.Entities.LanguageStrings.GeneralString
@@ -42,6 +44,7 @@ namespace WMSAdmin.Language.ResourceManager
                 Settings = Settings,
                 To = To,
                 Yes = Yes,
+                Logout = Logout,
             };
         }
     }

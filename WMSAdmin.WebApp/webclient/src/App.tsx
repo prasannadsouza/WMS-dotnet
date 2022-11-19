@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import { GlobalStateProvider, appStore, appPersistor } from './utilities/store';
+import { GlobalStateProvider, appStore, appPersistor, useUpdateGlobalState, AppSlice } from './utilities/store';
 import './App.css';
 import { NavBar } from './components/shared/navbar'
 import { Home } from "./components/home";
@@ -9,22 +9,26 @@ import { Utility } from './utilities/utility';
 import { LinkConstants } from './entities/constants';
 import { Confirm } from './components/shared/confirm';
 import { Message } from './components/shared/message';
-import { Loader } from './components/shared/loader';
+import { Loader, LoaderStart } from './components/shared/loader';
 import { Provider } from 'react-redux';
 import { Login } from './components/login';
 import { PersistGate } from 'redux-persist/integration/react'
 import { FetchData } from './components/FetchData';
 
+const OnBeforeLift = async () => {
+    console.log("onBeforeLift");
+        
+    const { setAppModel } = AppSlice.actions;
+    await Utility.getAppData().then(appData => {
+        appStore.dispatch(setAppModel(appData));
+    });
+}
+
 const App = () => {
-
-    const onBeforeLift = () => {
-        {/*onBeforeLift={onBeforeLift}*/ } 
-    }
-
     return (
         <Provider store={appStore}>
-            <PersistGate loading={<Loader />} persistor={appPersistor}>
-                <GlobalStateProvider>
+            <PersistGate loading={<LoaderStart />} persistor={appPersistor} onBeforeLift={ async () => await OnBeforeLift()}>
+                <GlobalStateProvider  >
                     <div className="App">
                         <NavBar />
                         <Routes>

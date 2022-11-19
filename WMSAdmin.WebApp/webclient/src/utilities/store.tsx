@@ -1,12 +1,12 @@
 //Reference: https://blog.logrocket.com/persist-state-redux-persist-redux-toolkit-react/
 // npm debounce (for delaying repeated actions)
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { createContainer, createTrackedSelector } from 'react-tracked';
 import { Utility } from './utility';
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from 'react-redux';
-import { AppData, SessionData, ApplicationConfig, PaginationConfig } from '../entities/configs';
+import { AppData, SessionData, ApplicationConfig, PaginationConfig, AppState } from '../entities/configs';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LoginModel } from '../entities/models';
 import { AppConstants, AppReducerConstants } from '../entities/constants';
@@ -15,20 +15,10 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 import thunk from 'redux-thunk';
 import { GeneralLocaleString, LanguageCulture, LoginLocaleString } from '../entities/locales';
 import { ErrorData } from '../entities/entities';
+import { log } from 'console';
 
-
-const getAppData = () => {
-    const [AppData, setAppData] = useState<AppData>(null);
-
-    useEffect(() => {
-    Utility.getAppData().then(x => {
-        setAppData(x);
-    });
-    }, []);
-    return AppData;
-};
-
-const initialAppData = getAppData();
+ 
+const initialAppData: AppData = {};
 
 export const AppSlice = createSlice({
     name: AppReducerConstants.APP,
@@ -78,5 +68,10 @@ export const appPersistor = persistStore(appStore);
 export const useAppDispatch = () => useDispatch<typeof appStore.dispatch>();
 export const useAppTrackedSelector = createTrackedSelector<AppData>(useSelector);
 
-const useInitialState = () => useState(Utility.getAppState(initialAppData,null));
+const GetInitialState = () => {
+    console.log("get initial state");
+    const appData = useAppTrackedSelector();
+    return Utility.getAppState(appData, null);
+}
+const useInitialState = () => useState(GetInitialState());
 export const { Provider: GlobalStateProvider, useTrackedState: useTrackedGlobalState, useUpdate: useUpdateGlobalState, } = createContainer(useInitialState,);

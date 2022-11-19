@@ -8,7 +8,7 @@ export const Confirm = () => {
     const updateAppConfig = useUpdateGlobalState();
     const appConfig = useTrackedGlobalState();
     const model = appConfig.confirmModel;
-    const generalString = appConfig.GeneralString;
+    const generalString = appConfig.generalString;
     let okButton = useRef<HTMLButtonElement>(null);
     let showModal = model?.show === true;
 

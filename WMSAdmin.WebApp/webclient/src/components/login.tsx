@@ -1,11 +1,14 @@
 import { useAppTrackedSelector, useAppDispatch, useTrackedGlobalState, AppSlice, useUpdateGlobalState } from '../utilities/store';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
 import { ErrorConstants, LinkConstants } from '../entities/constants';
 import { useNavigate, Navigate } from "react-router-dom";
 import { ErrorData,ResponseData } from '../entities/entities';
 import { LoginModel } from "../entities/models";
+import LocalizedStrings from 'react-localization';
+import { GeneralString, LoginString } from '../entities/locales';
+import { Locale } from '../utilities/locale';
 
 
 export const Login = () => {
@@ -13,21 +16,35 @@ export const Login = () => {
     const navigate = useNavigate();
     
     const dispatch = useAppDispatch();
-    const { setAppModel, setLoginModel } = AppSlice.actions;
+    const { setSessionData, setLoginModel } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
-    const model: LoginModel = appData.loginModel;
+    let model: LoginModel = appData.loginModel;
 
     const appState = useTrackedGlobalState();
-    const generalString = appState.GeneralString;
-    const loginString = appState.LoginString;
+    const generalString = appState.generalString;
+    let loginString = model?.loginString;
+   
 
     let passwordInput = useRef<HTMLInputElement>(null);
     let usernameInput = useRef<HTMLInputElement>(null);
     let emailInput = useRef<HTMLInputElement>(null);
 
-    let title = loginString!.login;
-    if (model?.showForgotPassword === true) title = loginString!.forgotPassword
+    let getInitialLoginModel = (): LoginModel => {
+        return {
+            showPassword: false,
+            showForgotPassword: false,
+            email: "",
+            emailFeedback: "",
+            password: "",
+            passwordFeedback: "",
+            username: "",
+            usernameFeedBack: "",
+        };
+    }
+
+    let title = loginString?.loginTitle;
+    if (model?.showForgotPassword === true) title = loginString?.forgotPassword
 
     const getCurrentModel = (): LoginModel => {
         return {
@@ -39,8 +56,24 @@ export const Login = () => {
             showPassword: model?.showPassword,
             username: model?.username,
             usernameFeedBack: model?.usernameFeedBack,
+            loginString: model?.loginString,
         }
     }
+
+    
+
+    const loginLoadHasErrors = <T,>(response: ResponseData<T>): boolean => {
+        if ((response?.errors?.length! > 0) === false) return false;
+        let unhandledErrors: ErrorData[] = response.errors;
+
+        let messageModel = Utility.getMessageModel(appState);
+        messageModel.message = unhandledErrors[0].message;
+        messageModel.show = true;
+        messageModel.isError = true;
+        messageModel.title = generalString?.error;
+        updateAppConfig((prev) => ({ ...prev, messageModel: messageModel }));
+        return true;
+    };
 
     const resetPasswordHasErrors = <T,>(response: ResponseData<T>): boolean => {
         if ((response?.errors?.length! > 0) === false) return false;
@@ -76,7 +109,7 @@ export const Login = () => {
         return true;
     };
 
-    let loginHasErrors = <T,>(response: ResponseData<T>): boolean => {
+    const loginHasErrors = <T,>(response: ResponseData<T>): boolean => {
         if ((response?.errors?.length! > 0) === false) return false;
         let unhandledErrors: ErrorData[] = [];
 
@@ -145,7 +178,7 @@ export const Login = () => {
         currentModel.emailFeedback = "";
         dispatch(setLoginModel(currentModel));
 
-        const response = Utility.validateResetPassword(appState, model.email!);
+        const response = validateResetPassword();
         if (resetPasswordHasErrors(response)) return;
 
         let confirmModel = Utility.getConfirmModel(appState);
@@ -167,20 +200,72 @@ export const Login = () => {
         performUserLogin();
     }
 
+    const validateUserLogin = (): ResponseData<boolean> => {
+
+    let response: ResponseData<boolean> = {
+        errors: []
+    }
+
+    if ((model.username?.trim()?.length > 0) !== true) {
+        response.errors?.push({
+            errorCode: ErrorConstants.USERNAME_CANNOTBE_BLANK,
+            message: model.loginString?.usernameCannotBeBlank,
+        });
+    }
+
+        if ((model.password?.trim()?.length > 0) !== true) {
+        response.errors?.push({
+            errorCode: ErrorConstants.PASSWORD_CANNOTBE_BLANK,
+            message: model.loginString?.passwordCannotBeBlank,
+        });
+    }
+
+        if (model.username === "prasanna") {
+        response.errors?.push({
+            errorCode: ErrorConstants.USERNAME_OR_PASSWORD_ISINVALID,
+            message: model.loginString?.usernameOrPasswordIsInvalid,
+        });
+    }
+
+    if ((response.errors!.length > 0) === true) return response;
+    response.data = true;
+    return response;
+}
+   
+
+    const validateResetPassword = (): ResponseData<boolean> => {
+    let response: ResponseData<boolean> = {
+        data: false,
+        errors: []
+    }
+
+    if ((model.email?.trim()?.length > 0) !== true) {
+        response.errors?.push({
+            errorCode: ErrorConstants.EMAIL_CANNOTBE_BLANK,
+            message: model.loginString?.emailCannotBeBlank,
+        });
+    }
+
+    response.data = true;
+    return response;
+
+}
+
     const performUserLogin = () => {
         let currentModel = getCurrentModel();
         currentModel.passwordFeedback = "";
         currentModel.usernameFeedBack = "";
         dispatch(setLoginModel(currentModel));
 
-        const response = Utility.performUserLogin(appState, model.username!, model.password!);
+        const response = validateUserLogin();
         if (loginHasErrors(response)) return;
-        var newAppConfig = Utility.getNewAppData(appData);
-        newAppConfig.sessionData = Utility.getSessionConfig(model.username!, model.password!);
-        dispatch(setAppModel(newAppConfig));
-        dispatch(setLoginModel(UIHelper.getInitialLoginModel()));
 
-        var newAppState = Utility.getAppState(newAppConfig,appState);
+        
+        let sessionData = Utility.getSessionConfig(model.username!, model.password!);
+        dispatch(setSessionData(sessionData));
+        dispatch(setLoginModel(getInitialLoginModel()));
+
+        var newAppState = Utility.getAppState(appData,appState);
         updateAppConfig(() => (newAppState));
         navigate(Utility.getLink(LinkConstants.HOME));
     }
@@ -241,11 +326,36 @@ export const Login = () => {
         
     };
 
+    const setModel = async () => {
+        model = getInitialLoginModel();
+        const locale = new Locale();
+        locale.getLoginString().then(response => {
+            if (response?.errors) {
+                loginLoadHasErrors(response);
+                return;
+            }
+
+            model.loginString = new LocalizedStrings(response.data);
+            model.loginString.setLanguage(appState.language.code)
+            title = model.loginString.loginTitle;
+            dispatch(setLoginModel(model))
+            updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
+        }); 
+    };
+
+
     useEffect(() => {
+
+        if (model === undefined) {
+            setModel();
+        }
+
         if (Utility.isUserLoggedIn(appData)) {
             navigate(Utility.getLink(LinkConstants.HOME), { replace: true });
             return;
         }
+
+
         updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
     }, []);
 
@@ -383,7 +493,7 @@ export const Login = () => {
             <div className='container' >
                 <div className='row mt-5'>
                     <section className="col-12 col-md-3 col-lg-4"></section>
-                    {model?.showForgotPassword === true ? renderForgotPassword() : renderLogin()}
+                    {model === undefined ? <p><em>Loading...</em></p> : model?.showForgotPassword === true ? renderForgotPassword() : renderLogin()}
                     <section className="col-12 col-md-3 col-lg-4"></section>
                 </div>
             </div>

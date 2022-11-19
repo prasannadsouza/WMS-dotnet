@@ -1,8 +1,8 @@
 import { LanguageCulture, GeneralString, GeneralLocaleString, LoginString, LoginLocaleString } from "../entities/locales"
 import { ResponseData } from "../entities/entities";
-import { CacheConstants, CultureCodeConstants } from "../entities/constants";
+import { APIParts, CacheConstants, CultureCodeConstants } from "../entities/constants";
 import { Utility } from "./utility";
-import { URL } from "url";
+
 export class Locale {
 
     getLanguages = async () => {
@@ -15,10 +15,10 @@ export class Locale {
             return Promise.resolve(response);
         };
 
-        return await Utility.GetData<LanguageCulture[]>(new URL("api/Language/GetUICulture"), { data: null }).then(response => {
-            if (response.errors?.length > 0 == true) return response;
+        return await Utility.GetData<LanguageCulture[]>(APIParts.LANGUAGE + "GetUICulture", undefined, { data: null }).then(response => {
+            if ((response.errors?.length > 0) === true) return response;
 
-            let languageCodes: string[];
+            let languageCodes: string[] = [];
             languageCodes.push(CultureCodeConstants.en_SE);
             languageCodes.push(CultureCodeConstants.sv_SE);
 
@@ -30,66 +30,72 @@ export class Locale {
     };
 
     getGeneralString = async () => {
-        let response: ResponseData<GeneralLocaleString> = {};
+        let responseData: ResponseData<GeneralLocaleString> = {};
         const languagesResponse = await this.getLanguages();
 
-        if (languagesResponse.errors?.length > 0 == true) {
-            response.errors = languagesResponse.errors;
-            return response;
+        if ((languagesResponse.errors?.length > 0) === true) {
+            responseData.errors = languagesResponse.errors;
+            return responseData;
         }
         
         for (var i = 0; i < languagesResponse.data.length; i++) {
             const item = languagesResponse.data[i];
-            let url = new URL("api/Language/GetGeneralString");
-            url.search = new URLSearchParams({ cultureCode: item.code }).toString();
-            await Utility.GetData<GeneralString>(url, { data: null }).then(x => {
-                if (x.errors?.length > 0 == true) {
-                    response.errors.push(...x.errors);
-                    return x;
+
+            var key = CacheConstants.LANGUAGESTRINGGENERAL + "_" + item.code;
+            const data: GeneralString = Utility.getFromLocalStorage(key);
+
+            if (data !== undefined) continue;
+            await Utility.GetData<GeneralString>(APIParts.LANGUAGE + "GetGeneralString", new URLSearchParams({ cultureCode: item.code }), { data: null }).then(response => {
+                if ((response.errors?.length > 0) === true) {
+                    responseData.errors.push(...response.errors);
+                    return responseData;
                 }
-                
-                Utility.saveToLocalStorage(CacheConstants.LANGUAGECULTURELIST + "_" + item.code, response.data);
-                return response;
-            });     
+
+                Utility.saveToLocalStorage(key, response.data);
+
+            });
         }
         
-        response.data = {
-            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGECULTURELIST + "_" + CultureCodeConstants.en_SE),
-            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGECULTURELIST + "_" + CultureCodeConstants.sv_SE),
+        responseData.data = {
+            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGGENERAL + "_" + CultureCodeConstants.en_SE),
+            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGGENERAL + "_" + CultureCodeConstants.sv_SE),
         };
 
-        return Promise.resolve(response);;
+        return await Promise.resolve(responseData);;
     };
 
     getLoginString = async () => {
-        let response: ResponseData<LoginLocaleString> = {};
+        let responseData: ResponseData<LoginLocaleString> = {};
         const languagesResponse = await this.getLanguages();
 
-        if (languagesResponse.errors?.length > 0 == true) {
-            response.errors = languagesResponse.errors;
-            return response;
+        if ((languagesResponse.errors?.length > 0) === true) {
+            responseData.errors = languagesResponse.errors;
+            return responseData;
         }
 
         for (var i = 0; i < languagesResponse.data.length; i++) {
             const item = languagesResponse.data[i];
-            let url = new URL("api/Language/GetLoginString");
-            url.search = new URLSearchParams({ cultureCode: item.code }).toString();
-            await Utility.GetData<LoginString>(url, { data: null }).then(x => {
-                if (x.errors?.length > 0 == true) {
-                    response.errors = x.errors;
-                    return x;
+
+            var key = CacheConstants.LANGUAGESTRINGLOGIN + "_" + item.code;
+            const data: GeneralString = Utility.getFromLocalStorage(key);
+
+            if (data !== undefined) continue;
+
+            await Utility.GetData<GeneralString>(APIParts.LANGUAGE + "GetLoginString", new URLSearchParams({ cultureCode: item.code }), { data: null }).then(response => {
+                if ((response.errors?.length > 0) === true) {
+                    responseData.errors = response.errors;
+                    return responseData;
                 }
 
-                Utility.saveToLocalStorage(CacheConstants.LANGUAGECULTURELIST + "_" + item.code, response.data);
-                return response;
+                Utility.saveToLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + item.code, response.data);
             });
         }
 
-        response.data = {
-            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGECULTURELIST + "_" + CultureCodeConstants.en_SE),
-            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGECULTURELIST + "_" + CultureCodeConstants.sv_SE),
+        responseData.data = {
+            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + CultureCodeConstants.en_SE),
+            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + CultureCodeConstants.sv_SE),
         };
 
-        return Promise.resolve(response);;
+        return await Promise.resolve(responseData);;
     };
 }

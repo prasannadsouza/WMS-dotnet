@@ -49,16 +49,12 @@ export const NavBar = () => {
 
         var generalString = new LocalizedStrings(appData.generalLocaleString);
         generalString.setLanguage(code);
-        var loginString = new LocalizedStrings(appData.loginLocaleString);
-        loginString.setLanguage(code);
-
         updateAppConfig((prev) => (
             {
                 ...prev,
                 language: userLanguage,
                 currentTitle: "",
-                GeneralString: generalString,
-                LoginString: loginString,
+                generalString: generalString,
             }));
     };
 
@@ -84,7 +80,7 @@ export const NavBar = () => {
                         className="btn bg-secondary text-white"
                         onClick={performUserLogout.bind(this)}
                     >
-                        {appState.LoginString?.logout}
+                        {appState.generalString?.logout}
                     </button>
                 </li>
             );
@@ -144,9 +140,9 @@ export const NavBar = () => {
                 <ul
                     className="dropdown-menu nav-item  p-0 border-0"
                     aria-labelledby="navbarDropdown">
-                    {getNavLink(appState.GeneralString!.home, LinkConstants.HOME)}
-                    {getNavLink(appState.GeneralString!.settings, LinkConstants.SETTINGS)}
-                    {getNavLink(appState.GeneralString!.fetchData, LinkConstants.FETCHDATA)}
+                    {getNavLink(appState.generalString!.home, LinkConstants.HOME)}
+                    {getNavLink(appState.generalString!.settings, LinkConstants.SETTINGS)}
+                    {getNavLink(appState.generalString!.fetchData, LinkConstants.FETCHDATA)}
                 </ul>
             </div>);
     };

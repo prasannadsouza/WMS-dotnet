@@ -40,3 +40,8 @@ export const CultureCodeConstants = {
     en_SE: "en-SE",
     sv_SE: "sv-SE",
 }
+
+export const APIParts = {
+    CONFIG: "api/Config/",
+    LANGUAGE: "api/Language/",
+}

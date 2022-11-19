@@ -1,3 +1,6 @@
+import { LocalizedStrings } from "react-localization";
+import { LoginString } from "./locales";
+
 export type ConfirmModel = {
     title?: string;
     message?: string;
@@ -25,5 +28,6 @@ export type LoginModel = {
     showForgotPassword?: boolean,
     email?: string,
     emailFeedback?: string,
+    loginString?: LocalizedStrings<LoginString>;
 };
 

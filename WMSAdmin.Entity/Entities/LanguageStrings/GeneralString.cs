@@ -18,5 +18,6 @@ namespace WMSAdmin.Entity.Entities.LanguageStrings
         public string Settings { get; set; }
         public string To { get; set; }
         public string Yes { get; set; }
+        public string Logout { get; set; }
     }
 }
