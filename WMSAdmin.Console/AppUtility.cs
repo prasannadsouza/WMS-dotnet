@@ -25,7 +25,7 @@ namespace WMSAdmin.Console
             {
                 Setting = setting,
                 ServiceProvider = serviceProvider,
-                Culture = new System.Globalization.CultureInfo(setting.Application.Locale),
+                Culture = new System.Globalization.CultureInfo(setting.Application.LocaleCode),
             };
 
            Cache = new Utility.Cache(Configuration);

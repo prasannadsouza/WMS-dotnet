@@ -1,5 +1,5 @@
 
-export type Language = {
+export type LanguageCulture = {
     id?: number;
     code: string
     name: string;

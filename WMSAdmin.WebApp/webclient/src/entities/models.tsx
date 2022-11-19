@@ -1,5 +1,3 @@
-import { ErrorData, Pagination } from "../entities/entities"
-
 export type ConfirmModel = {
     title?: string;
     message?: string;
@@ -16,13 +14,6 @@ export type MessageModel = {
     okTitle?: string;
     onClose?: () => void;
     show?: boolean;
-}
-
-export type ResponseModel<T> = {
-    data?: T;
-    message?: string;
-    pagination?: Pagination;
-    errors?: ErrorData[];
 }
 
 export type LoginModel = {

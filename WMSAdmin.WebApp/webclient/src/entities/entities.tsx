@@ -30,3 +30,16 @@ export type Pagination = {
     sortFields?: Sort[];
 }
 
+export type ResponseData<T> = {
+    data?: T;
+    message?: string;
+    pagination?: Pagination;
+    errors?: Error[];
+}
+
+export type Error = {
+    errorCode?: number;
+    message?: string;
+}
+
+

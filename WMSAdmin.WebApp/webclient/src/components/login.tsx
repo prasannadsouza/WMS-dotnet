@@ -2,10 +2,9 @@ import { useAppTrackedSelector, useAppDispatch, useTrackedGlobalState, AppSlice,
 import React, { useEffect, useRef } from 'react';
 import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
-import { ResponseModel } from '../entities/models';
 import { ErrorConstants, LinkConstants } from '../entities/constants';
 import { useNavigate, Navigate } from "react-router-dom";
-import { ErrorData } from '../entities/entities';
+import { ErrorData,ResponseData } from '../entities/entities';
 import { LoginModel } from "../entities/models";
 
 
@@ -17,7 +16,6 @@ export const Login = () => {
     const { setAppModel, setLoginModel } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
-    const appConfig = appData.appConfig;
     const model: LoginModel = appData.loginModel;
 
     const appState = useTrackedGlobalState();
@@ -44,7 +42,7 @@ export const Login = () => {
         }
     }
 
-    const resetPasswordHasErrors = <T,>(response: ResponseModel<T>): boolean => {
+    const resetPasswordHasErrors = <T,>(response: ResponseData<T>): boolean => {
         if ((response?.errors?.length! > 0) === false) return false;
         let unhandledErrors: ErrorData[] = [];
 
@@ -78,7 +76,7 @@ export const Login = () => {
         return true;
     };
 
-    let loginHasErrors = <T,>(response: ResponseModel<T>): boolean => {
+    let loginHasErrors = <T,>(response: ResponseData<T>): boolean => {
         if ((response?.errors?.length! > 0) === false) return false;
         let unhandledErrors: ErrorData[] = [];
 
@@ -177,8 +175,8 @@ export const Login = () => {
 
         const response = Utility.performUserLogin(appState, model.username!, model.password!);
         if (loginHasErrors(response)) return;
-        var newAppConfig = Utility.getAppConfig();
-        newAppConfig.session = Utility.getSessionConfig(model.username!, model.password!);
+        var newAppConfig = Utility.getNewAppData(appData);
+        newAppConfig.sessionData = Utility.getSessionConfig(model.username!, model.password!);
         dispatch(setAppModel(newAppConfig));
         dispatch(setLoginModel(UIHelper.getInitialLoginModel()));
 
@@ -244,7 +242,7 @@ export const Login = () => {
     };
 
     useEffect(() => {
-        if (Utility.isUserLoggedIn(appConfig)) {
+        if (Utility.isUserLoggedIn(appData)) {
             navigate(Utility.getLink(LinkConstants.HOME), { replace: true });
             return;
         }
@@ -377,7 +375,7 @@ export const Login = () => {
 
     const renderForm = () => {
 
-        if (Utility.isUserLoggedIn(appConfig)) {
+        if (Utility.isUserLoggedIn(appData)) {
             return (<Navigate to={Utility.getLink(LinkConstants.HOME)} />);
         }
 

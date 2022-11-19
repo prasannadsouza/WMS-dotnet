@@ -92,7 +92,7 @@ namespace WMSAdmin.Console
             }
             while (languageTextFilter.Pagination.CurrentPage <= languageTextFilter.Pagination.TotalPages);
 
-            var defaultLanguageTexts = languageTexts.Where(e => e.LanguageCultureId == languageCultures.First(f => f.Code == AppUtility.ConfigSetting.Application.UILocale).Id).ToList();
+            var defaultLanguageTexts = languageTexts.Where(e => e.LanguageCultureId == languageCultures.First(f => f.Code == AppUtility.ConfigSetting.Application.UILocaleCode).Id).ToList();
             GenerateCSEntity(languageGroupCode, defaultLanguageTexts);
             GenerateCSResource(languageGroupCode, defaultLanguageTexts);
             GenerateCSTSX(languageGroupCode, defaultLanguageTexts, languageCultures);

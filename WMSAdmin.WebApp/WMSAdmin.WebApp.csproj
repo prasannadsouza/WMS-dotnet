@@ -56,7 +56,6 @@
     <None Include="webclient\src\entities\entities.tsx" />
     <None Include="webclient\src\entities\locales.tsx" />
     <None Include="webclient\src\entities\models.tsx" />
-    <None Include="webclient\src\entities\response.tsx" />
     <None Include="webclient\src\index.tsx" />
     <None Include="webclient\src\react-app-env.d.ts" />
     <None Include="webclient\src\reportWebVitals.ts" />

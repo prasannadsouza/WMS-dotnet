@@ -48,7 +48,7 @@ namespace WMSAdmin.BusinessService
             return lastChangedTime > lastCachedTime;
         }
 
-        private List<Entity.Entities.ConfigTimeStamp> GetCacheTimestampList()
+        public List<Entity.Entities.ConfigTimeStamp> GetCacheTimestampList()
         {
             var key = Entity.Constants.Cache.CONFIGTIMESTAMPLIST;
             var cachedValue = CacheUtility.GetFromCache<List<Entity.Entities.ConfigTimeStamp>>(key, out bool isCached);

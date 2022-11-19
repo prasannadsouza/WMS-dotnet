@@ -5,8 +5,6 @@ import { useAppTrackedSelector } from './store';
 
 export const PrivateRoute = () => {
     const appData = useAppTrackedSelector();
-    const appConfig = appData.appConfig;
-
-    let isUserLoggedIn = Utility.isUserLoggedIn(appConfig);
+    let isUserLoggedIn = Utility.isUserLoggedIn(appData);
     return isUserLoggedIn === true ? <Outlet /> : <Navigate to={Utility.getLink(LinkConstants.LOGIN)} />;
 }

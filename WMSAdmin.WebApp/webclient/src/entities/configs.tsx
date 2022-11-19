@@ -1,28 +1,31 @@
 import { LocalizedStrings } from "react-localization";
-import { Customer, User } from "../entities/entities"
+import { Customer, ErrorData, User } from "../entities/entities"
 import { ConfirmModel, LoginModel, MessageModel } from "../entities/models"
-import { Language, GeneralString, LoginString, GeneralLocaleString, LoginLocaleString } from "./locales"
+import { LanguageCulture, GeneralString, LoginString, GeneralLocaleString, LoginLocaleString } from "./locales"
 
-export type AppConfig = {
-    system?: SystemConfig;
-    session?: SessionConfig;
-}
-export type SystemConfig = {
-    appTitle?: string;
-    defaultLocaleCode?: string;
-    languages?: Language[];
-    GeneralLocaleString?: GeneralLocaleString;
-    LoginLocaleString?: LoginLocaleString;
+
+export type ApplicationConfig = {
+    applicationTitle?: string;
+    baseUrl?: string;
+    currentVersion?: string;
+    localeCode?: string;
+    uiLocaleCode?:string
 }
 
-export type SessionConfig = {
+export type SessionData = {
     user?: User
     customer?: Customer;
-}
+} 
 
 export type AppData = {
-    appConfig?: AppConfig;
     loginModel?: LoginModel;
+    appInitErrrors?: ErrorData[];
+    applicationConfig?: ApplicationConfig;
+    paginationConfig?: PaginationConfig;
+    generalLocaleString?: GeneralLocaleString;
+    loginLocaleString?: LoginLocaleString;
+    languageCultures?: LanguageCulture[];
+    sessionData?: SessionData;
 }
 
 export type AppState = {
@@ -32,7 +35,18 @@ export type AppState = {
     LoginString?: LocalizedStrings<LoginString>;
     currentTitle?: string;
     showLoader?: boolean;
-    language?: Language;
+    language?: LanguageCulture;
+}
+
+export type PaginationConfig = {
+    recordsPerPage?: number;
+    maxRecordsPerPage?: number;
+    totalPagesToJump?: number;
+}
+
+export type ConfigTimeStamp = {
+    timeStamp?: Date,
+    Code?: string
 }
 
 

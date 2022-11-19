@@ -250,12 +250,12 @@ namespace WMSAdmin.BusinessService
                     {
                         case Entity.Constants.Config.APPLICATION_LOCALE:
                             {
-                                to.Locale = from.Value;
+                                to.LocaleCode = from.Value;
                                 break;
                             }
                         case Entity.Constants.Config.APPLICATION_UI_LOCALE:
                             {
-                                to.UILocale = from.Value;
+                                to.UILocaleCode = from.Value;
                                 break;
                             }
                         case Entity.Constants.Config.APPLICATION_TITLE:

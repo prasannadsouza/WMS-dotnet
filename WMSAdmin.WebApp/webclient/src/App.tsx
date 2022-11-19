@@ -16,9 +16,14 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { FetchData } from './components/FetchData';
 
 const App = () => {
+
+    const onBeforeLift = () => {
+        {/*onBeforeLift={onBeforeLift}*/ } 
+    }
+
     return (
         <Provider store={appStore}>
-            <PersistGate loading={null} persistor={appPersistor}>
+            <PersistGate loading={<Loader />} persistor={appPersistor}>
                 <GlobalStateProvider>
                     <div className="App">
                         <NavBar />

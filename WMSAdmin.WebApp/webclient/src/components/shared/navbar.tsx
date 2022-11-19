@@ -5,18 +5,18 @@ import logo from '../../logo.svg';
 import { Utility } from '../../utilities/utility';
 import LocalizedStrings from 'react-localization';
 import { Locale } from '../../utilities/locale';
+import App from '../../App';
 
 export const NavBar = () => {
     const updateAppConfig = useUpdateGlobalState();
     const appState = useTrackedGlobalState();
 
     const dispatch = useAppDispatch();
-    const { setSession } = AppSlice.actions;
+    const { setSessionData } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
-    const appConfig = appData.appConfig;
 
-    const isUserLoggedIn = Utility.isUserLoggedIn(appConfig);
+    const isUserLoggedIn = Utility.isUserLoggedIn(appData);
 
     const getNavBrand = () => {
         let appLink = LinkConstants.LOGIN;
@@ -26,7 +26,7 @@ export const NavBar = () => {
         }
         return (<Link className="btn navbar-brand m-0 p-0" to={Utility.getLink(appLink)}>
             <img src={logo} className="App-logo" style={{ height: '45px' }} alt="logo" />
-            <strong className='pt-1'>{appConfig.system?.appTitle}</strong>
+            <strong className='pt-1'>{appData.applicationConfig.applicationTitle}</strong>
         </Link>);
     }
 
@@ -43,14 +43,13 @@ export const NavBar = () => {
     }
 
     const changeLanguage = (code: string, e: any) => {
-        let userLanguage = appConfig.system?.languages?.filter(
+        let userLanguage = appData.languageCultures.filter(
             (language) => language.code === code
         )[0];
 
-        const locale = new Locale();
-        var generalString = new LocalizedStrings(locale.getGeneralString());
+        var generalString = new LocalizedStrings(appData.generalLocaleString);
         generalString.setLanguage(code);
-        var loginString = new LocalizedStrings(locale.getLoginString());
+        var loginString = new LocalizedStrings(appData.loginLocaleString);
         loginString.setLanguage(code);
 
         updateAppConfig((prev) => (
@@ -64,15 +63,14 @@ export const NavBar = () => {
     };
 
     const performUserLogout = () => {
-        let localeCode = appConfig.session.user?.localeCode!;
-        let systemConfig = Utility.getSystemConfig();
-        if (localeCode?.length > 0) systemConfig.defaultLocaleCode = localeCode;
+        let localeCode = appData.sessionData.user?.localeCode!;
+        if (localeCode?.length > 0) appData.applicationConfig.localeCode = localeCode;
 
-        let language = systemConfig!.languages!.filter(
-            (language) => language.code === systemConfig.defaultLocaleCode
+        let language = appData!.languageCultures!.filter(
+            (language) => language.code === appData.applicationConfig.localeCode,
         )[0];
 
-        dispatch(setSession(null));
+        dispatch(setSessionData(null));
         updateAppConfig((prev) => ({ ...prev, language: language }));
     }
 
@@ -100,23 +98,23 @@ export const NavBar = () => {
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                 >
-                    {Utility.getOtherMenuTitle(appConfig, appState)}
+                    {Utility.getOtherMenuTitle(appData, appState)}
                 </button>
                 <ul
                     className="dropdown-menu dropdown-menu-end p-0"
                     aria-labelledby="navbarLanguageDropdown">
-                    {appConfig.system?.languages?.map((language) => {
+                    {appData.languageCultures?.map((languageCulture) => {
                         return (
                             <li
                                 className="bg-secondary dropdown-item"
-                                key={language.code.toString()}
+                                key={languageCulture.code.toString()}
                             >
                                 <button
-                                    key={language.code}
+                                    key={languageCulture.code}
                                     className="btn bg-secondary text-white"
-                                    onClick={changeLanguage.bind(this, language.code)}
+                                    onClick={changeLanguage.bind(this, languageCulture.code)}
                                 >
-                                    {language.name}
+                                    {languageCulture.name}
                                 </button>
                             </li>
                         );

@@ -34,7 +34,7 @@ namespace WMSAdmin.Language
         public IDictionaryEnumerator GetEnumerator()
         {
             
-            var cultureCode = string.IsNullOrWhiteSpace(_cultureCode) ? _configuration.Setting.Application.Locale : _cultureCode;
+            var cultureCode = string.IsNullOrWhiteSpace(_cultureCode) ? _configuration.Setting.Application.LocaleCode : _cultureCode;
             var key = $"{Entity.Constants.Cache.LANGUAGETEXT}_{_configuration.Setting.Application.AppCode}_{_languageGroupCode}_{cultureCode}";
             var cachedValue = _cacheUtility.GetFromCache<Hashtable>(key, out bool isCached);
 

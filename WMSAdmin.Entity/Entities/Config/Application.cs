@@ -8,8 +8,8 @@ namespace WMSAdmin.Entity.Entities.Config
 {
     public class Application
     {
-        public string Locale { get; set; }
-        public string UILocale { get; set; }
+        public string LocaleCode { get; set; }
+        public string UILocaleCode { get; set; }
         public string ApplicationTitle { get; set; }
         public string SessionId { get; set; }
         public string CurrentVersion { get; set; }

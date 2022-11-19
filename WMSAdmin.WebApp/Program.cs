@@ -74,7 +74,7 @@ namespace WMSAdmin.WebApp
             {
                 Setting = setting,
                 ServiceProvider = serviceProvider,
-                Culture = new System.Globalization.CultureInfo(setting.Application.Locale),
+                Culture = new System.Globalization.CultureInfo(setting.Application.LocaleCode),
             };
         }
         private static List<System.Globalization.CultureInfo> GetSupportedCultures(Utility.Configuration configuration)
