@@ -14,7 +14,7 @@ export const Message = () => {
 
     const handleClose = () => {
         if (model?.onClose !== undefined && model?.onClose !== null) model.onClose();
-        updateAppConfig((prev) => ({ ...prev, messageModel: Utility.getMessageModel(appConfig) }));
+        updateAppConfig((prev) => ({ ...prev, messageModel: Utility.getMessageModel(appConfig,false,"",undefined,false)}));
     }
 
     const getClassName = () => {
@@ -22,10 +22,7 @@ export const Message = () => {
     }
 
     useEffect(() => {
-        if (showModal === true) {
-            okButton.current?.focus();
-        }
-
+        if (showModal === true) okButton.current?.focus();
     }, [model?.show]);
 
     return (

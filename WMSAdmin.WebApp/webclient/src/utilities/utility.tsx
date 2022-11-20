@@ -1,20 +1,20 @@
 import { AppData, AppState, SessionData, ApplicationConfig, PaginationConfig, ConfigTimeStamp } from "../entities/configs"
-import { ConfirmModel, LoginModel, MessageModel } from "../entities/models"
+import { ConfirmModel, MessageModel } from "../entities/models"
 import { Locale } from "./locale"
 import LocalizedStrings from "react-localization";
 import { ErrorConstants, LinkConstants,CacheConstants, APIParts } from "../entities/constants";
-import { ResponseData } from "../entities/entities";
+import { ErrorData, ResponseData } from "../entities/entities";
 
 export class Utility {
 
-       static async GetData<T>(urlPart: string, searchParams:URLSearchParams,  defaultData: ResponseData<T>): Promise<ResponseData<T>> {
-           const url: URL = new URL(window.origin + "/" + urlPart);
+    static async GetData<T>(urlPart: string, searchParams: URLSearchParams, defaultData: ResponseData<T>): Promise<ResponseData<T>> {
+        const url: URL = new URL(window.origin + "/" + urlPart);
 
-           const search = searchParams?.toString(); 
-           if ((search?.length > 0) == true) url.search = search;
-                      
-           console.log(url.toString());
-           return await fetch(url).then(response => {
+        const search = searchParams?.toString();
+        if ((search?.length > 0) === true) url.search = search;
+
+        console.log(url.toString());
+        return await fetch(url).then(response => {
             if (!response.ok) {
                 defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
                 return defaultData;
@@ -121,6 +121,11 @@ export class Utility {
         return newAppState;
     };
 
+    static handleErrors = (appState: AppState, errors: ErrorData[], updateAppConfig: (value: React.SetStateAction<AppState>) => void, onClose: () => void = undefined): boolean => {
+        if ((errors?.length > 0) === false) return false;
+        updateAppConfig((prev) => ({ ...prev, messageModel: Utility.getMessageModel(appState, true, errors[0].message, onClose) }));
+        return true;
+    };
     
 
     static getSessionConfig(username: string, password: string): SessionData {
@@ -153,14 +158,22 @@ export class Utility {
         };
     };
 
-    static getMessageModel = (appState: AppState): MessageModel => {
+    static getMessageModel = (appState: AppState, isError: boolean, message: string, onClose: () => void = undefined, show: boolean = true, title: string = undefined, okTitle: string = undefined): MessageModel => {
+
+        if ((okTitle?.length > 0) === false) okTitle = appState.generalString?.ok;
+
+        if ((title?.length > 0) === false) {
+            title = isError ? appState.generalString?.error : appState.generalString?.message
+        }
+
         return {
-            title: appState.generalString?.message,
-            okTitle: appState.generalString?.ok,
-            onClose: undefined,
-            show: false,
-            isError: false,
-            message: undefined,
+            title: title,
+            okTitle: okTitle,
+            onClose: onClose,
+            show: show,
+            isError: isError,
+            message: message,
+
         };
     };
 
@@ -286,5 +299,18 @@ export class Utility {
 
         serializedState = JSON.stringify(data);
         localStorage.setItem(CacheConstants.CONFIGTIMESTAMPS, serializedState);
+    }
+
+    static clearConfigCache = () => {
+        let serializedState = localStorage.getItem(CacheConstants.CONFIGTIMESTAMPS);
+        if (!serializedState) return;
+        let data = JSON.parse(serializedState) as ConfigTimeStamp[];
+        if ((data?.length > 0) !== true) return;
+
+        data.map((configTimeStamp) => {
+            this.removeFromLocalStorage(configTimeStamp.Code);
+        });
+
+        this.removeFromLocalStorage(CacheConstants.CONFIGTIMESTAMPS);
     }
 }

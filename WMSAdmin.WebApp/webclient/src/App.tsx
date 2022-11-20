@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import { GlobalStateProvider, appStore, appPersistor, useUpdateGlobalState, AppSlice } from './utilities/store';
+import { GlobalStateProvider, appStore, appPersistor, AppSlice } from './utilities/store';
 import './App.css';
 import { NavBar } from './components/shared/navbar'
 import { Home } from "./components/home";

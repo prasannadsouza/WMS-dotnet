@@ -1,5 +1,3 @@
-import { LoginModel } from "../entities/models";
-
 export class UIHelper {
     static getclassIsInvalid = (message: string): string => {
         if ((message?.length > 0) === true) return " is-invalid "

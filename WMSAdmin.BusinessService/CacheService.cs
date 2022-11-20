@@ -95,5 +95,17 @@ namespace WMSAdmin.BusinessService
 
             CacheUtility.SaveToCache(Entity.Constants.Cache.CONFIGTIMESTAMPLIST, timestampList);
         }
+
+        public void ClearCache(string cacheKey)
+        {
+            CacheUtility.RemoveFromCache(cacheKey);
+            CacheUtility.RemoveCacheKey(cacheKey);
+        }
+
+        public void ClearCache()
+        {
+            CacheUtility.ClearCache();
+            CacheUtility.RemoveFromCache(Entity.Constants.Cache.CONFIGTIMESTAMPLIST);
+        }
     }
 }

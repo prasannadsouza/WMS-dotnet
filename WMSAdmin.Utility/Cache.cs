@@ -103,5 +103,16 @@ namespace WMSAdmin.Utility
         {
             RemoveCacheKey(Entity.Constants.Cache.APPLICATION_CACHEKEYS);
         }
+
+        public void ClearCache()
+        {
+            var cacheKeys = GetCacheKeys().Select(e=> e.Code).ToList();
+            if (cacheKeys == null) return;
+            foreach (var cacheKey in cacheKeys)
+            {
+                RemoveCacheKey(cacheKey);
+            }
+            ClearConfigTimeStampCachedKeys();
+        }
     }
 }

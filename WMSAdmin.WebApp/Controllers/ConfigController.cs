@@ -1,26 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WMSAdmin.BusinessService;
 
 namespace WMSAdmin.WebApp.Controllers
 {
     public class ConfigController : BaseController
     {
+        BusinessService.CacheService _cacheService;
         public ConfigController(IServiceProvider serviceProvider) :
           base(serviceProvider)
         {
-
+            _cacheService = AppUtility.GetBusinessService<BusinessService.CacheService>();
         }
 
         [HttpGet]
         [Route(WebUtility.APIRoute)]
         public void UpdateTimeStamp([FromQuery] string cacheKey)
         {
-            var cacheService = AppUtility.GetBusinessService<BusinessService.CacheService>();
-            cacheService.UpdateTimestamp(cacheKey);
+            _cacheService.UpdateTimestamp(cacheKey);
         }
 
         [HttpGet]
         [Route(WebUtility.APIRoute)]
-        public void UpdateAllTimeStamp()
+        public OkObjectResult UpdateAllTimeStamp()
         {
             //var keys = new List<string>
             //{
@@ -34,14 +35,23 @@ namespace WMSAdmin.WebApp.Controllers
             //    $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_LOGIN}_en-SE",
             //};
 
-            var cacheService = AppUtility.GetBusinessService<BusinessService.CacheService>();
-            var timeStampList = cacheService.GetCacheTimestampList();
+            var timeStampList = _cacheService.GetCacheTimestampList();
             foreach (var timeStamp in timeStampList)
             {
-                cacheService.UpdateTimestamp(timeStamp.Code);
+                _cacheService.UpdateTimestamp(timeStamp.Code);
             }
+
+            return Ok(new Entity.Entities.Response<bool> { Data = true });
         }
 
+
+        [HttpGet]
+        [Route(WebUtility.APIRoute)]
+        public OkObjectResult ClearCache()
+        {
+            _cacheService.ClearCache();
+            return Ok(new Entity.Entities.Response<bool> { Data = true });
+        }
 
         [HttpGet]
         [Route(WebUtility.APIRoute)]
@@ -50,13 +60,14 @@ namespace WMSAdmin.WebApp.Controllers
             var setting = AppUtility.ConfigSetting.Application;
             return Ok(new Entity.Entities.Response<Entity.Entities.Config.Client.Application>
             {
-                Data = new Entity.Entities.Config.Client.Application {
+                Data = new Entity.Entities.Config.Client.Application
+                {
                     ApplicationTitle = setting.ApplicationTitle,
                     BaseUrl = setting.BaseUrl,
                     CurrentVersion = setting.CurrentVersion,
                     LocaleCode = setting.LocaleCode,
                     UILocaleCode = setting.UILocaleCode,
-                } 
+                }
             });
         }
 
@@ -67,7 +78,8 @@ namespace WMSAdmin.WebApp.Controllers
             var setting = AppUtility.ConfigSetting.Pagination;
             return Ok(new Entity.Entities.Response<Entity.Entities.Config.Client.Pagination>
             {
-                Data = new Entity.Entities.Config.Client.Pagination {
+                Data = new Entity.Entities.Config.Client.Pagination
+                {
                     MaxRecordsPerPage = setting.MaxRecordsPerPage,
                     RecordsPerPage = setting.RecordsPerPage,
                     TotalPagesToJump = setting.TotalPagesToJump,

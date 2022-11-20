@@ -28,6 +28,10 @@ export type GeneralString = {
     to: string;
     yes: string;
     logout: string;
+    loadingMessage: string;
+    reloadApp: string;
+    clearServerCache: string;
+    updateServerData: string
 }
 
 export type LoginLocaleString = {

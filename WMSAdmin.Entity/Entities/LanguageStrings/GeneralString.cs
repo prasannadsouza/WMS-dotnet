@@ -19,5 +19,9 @@ namespace WMSAdmin.Entity.Entities.LanguageStrings
         public string To { get; set; }
         public string Yes { get; set; }
         public string Logout { get; set; }
+        public string LoadingMessage { get; set; }
+        public string ReloadApp { get; set; }
+        public string ClearServerCache { get; set; }
+        public string UpdateServerData { get; set; }
     }
 }

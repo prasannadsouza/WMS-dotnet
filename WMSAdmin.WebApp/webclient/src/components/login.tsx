@@ -1,5 +1,5 @@
 import { useAppTrackedSelector, useAppDispatch, useTrackedGlobalState, AppSlice, useUpdateGlobalState } from '../utilities/store';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
 import { ErrorConstants, LinkConstants } from '../entities/constants';
@@ -7,9 +7,8 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { ErrorData,ResponseData } from '../entities/entities';
 import { LoginModel } from "../entities/models";
 import LocalizedStrings from 'react-localization';
-import { GeneralString, LoginString } from '../entities/locales';
 import { Locale } from '../utilities/locale';
-
+import { LoadingScreen } from './shared/loadingScreen';
 
 export const Login = () => {
     const updateAppConfig = useUpdateGlobalState();
@@ -22,7 +21,6 @@ export const Login = () => {
     let model: LoginModel = appData.loginModel;
 
     const appState = useTrackedGlobalState();
-    const generalString = appState.generalString;
     let loginString = model?.loginString;
    
 
@@ -60,26 +58,17 @@ export const Login = () => {
         }
     }
 
+  
     
+    //const handleOtherErrors = (errors: ErrorData[], onClose: () => void = undefined): boolean => {
+    //    return Utility.handleErrors(appState, errors, updateAppConfig, onClose);
+    //};
 
-    const loginLoadHasErrors = <T,>(response: ResponseData<T>): boolean => {
-        if ((response?.errors?.length! > 0) === false) return false;
-        let unhandledErrors: ErrorData[] = response.errors;
-
-        let messageModel = Utility.getMessageModel(appState);
-        messageModel.message = unhandledErrors[0].message;
-        messageModel.show = true;
-        messageModel.isError = true;
-        messageModel.title = generalString?.error;
-        updateAppConfig((prev) => ({ ...prev, messageModel: messageModel }));
-        return true;
-    };
-
-    const resetPasswordHasErrors = <T,>(response: ResponseData<T>): boolean => {
-        if ((response?.errors?.length! > 0) === false) return false;
+    const resetPasswordHasErrors = (errors: ErrorData[]): boolean => {
+        if ((errors?.length! > 0) === false) return false;
         let unhandledErrors: ErrorData[] = [];
 
-        for (var error of response.errors!) {
+        for (var error of errors!) {
 
             switch (error.errorCode) {
                 case ErrorConstants.EMAIL_CANNOTBE_BLANK:
@@ -87,7 +76,6 @@ export const Login = () => {
                         let currentModel = getCurrentModel();
                         currentModel.emailFeedback = error.message;
                         dispatch(setLoginModel(currentModel));
-                        //setModelData({ ...model, emailFeedback: error.message ?? "" })
                         break;
                     }
                 default:
@@ -97,29 +85,21 @@ export const Login = () => {
             }
         }
 
-        if ((response.errors?.length! - unhandledErrors.length > 0)) return true;
-        if ((unhandledErrors.length > 0) === false) return true;
-        let messageModel = Utility.getMessageModel(appState);
-        messageModel.message = unhandledErrors[0].message;
-        messageModel.show = true;
-        messageModel.isError = true;
-        messageModel.title = generalString?.error;
-        messageModel!.onClose = () => emailInput.current?.focus();
-        updateAppConfig((prev) => ({ ...prev, messageModel: messageModel }));
-        return true;
+        if ((errors?.length! - unhandledErrors.length > 0)) return true;
+        return Utility.handleErrors(appState, unhandledErrors, updateAppConfig, () => emailInput.current?.focus());
+
     };
 
-    const loginHasErrors = <T,>(response: ResponseData<T>): boolean => {
-        if ((response?.errors?.length! > 0) === false) return false;
+    const loginHasErrors = (errors: ErrorData[]): boolean => {
+        if ((errors?.length! > 0) === false) return false;
         let unhandledErrors: ErrorData[] = [];
 
-        for (var error of response.errors!) {
+        for (var error of errors!) {
 
             switch (error.errorCode) {
                 case ErrorConstants.USERNAME_CANNOTBE_BLANK:
                     {
                         usernameInput.current?.focus();
-                        //setModelData({ ...model, usernameFeedBack: error.message ?? "" })
                         let currentModel = getCurrentModel();
                         currentModel.usernameFeedBack = error.message;
                         dispatch(setLoginModel(currentModel));
@@ -128,7 +108,6 @@ export const Login = () => {
                 case ErrorConstants.PASSWORD_CANNOTBE_BLANK:
                     {
                         passwordInput.current?.focus();
-                        //setModelData({ ...model, passwordFeedback: error.message ?? "" })
                         let currentModel = getCurrentModel();
                         currentModel.passwordFeedback = error.message;
                         dispatch(setLoginModel(currentModel));
@@ -140,20 +119,8 @@ export const Login = () => {
                     }
             }
         }
-
-
-        if ((response.errors?.length! - unhandledErrors.length > 0)) return true;
-        if ((unhandledErrors.length > 0) === false) return true;
-        let messageModel = Utility.getMessageModel(appState);
-        messageModel.message = unhandledErrors[0].message;
-        messageModel.show = true;
-        messageModel.isError = true;
-        messageModel.title = generalString?.error;
-        messageModel!.onClose = () => {
-            usernameInput.current?.focus();
-        };
-        updateAppConfig((prev) => ({ ...prev, messageModel: messageModel }));
-        return true;
+        if ((errors?.length! - unhandledErrors.length > 0)) return true;
+        return Utility.handleErrors(appState, unhandledErrors, updateAppConfig, () => usernameInput.current?.focus());
     };
 
     const handleForgotPasswordClick = (event: React.MouseEvent) => {
@@ -179,7 +146,7 @@ export const Login = () => {
         dispatch(setLoginModel(currentModel));
 
         const response = validateResetPassword();
-        if (resetPasswordHasErrors(response)) return;
+        if (resetPasswordHasErrors(response?.errors)) return;
 
         let confirmModel = Utility.getConfirmModel(appState);
         confirmModel.show = true;
@@ -258,8 +225,7 @@ export const Login = () => {
         dispatch(setLoginModel(currentModel));
 
         const response = validateUserLogin();
-        if (loginHasErrors(response)) return;
-
+        if (loginHasErrors(response?.errors)) return;
         
         let sessionData = Utility.getSessionConfig(model.username!, model.password!);
         dispatch(setSessionData(sessionData));
@@ -293,16 +259,14 @@ export const Login = () => {
         currentModel.showForgotPassword = true;
 
         if (resetFields) {
-            //setModelData({ ...model, showForgotPassword: true, email: "", emailFeedback: "" });
             currentModel.emailFeedback = "";
             dispatch(setLoginModel(currentModel));
         }
         else {
-            //setModelData({ ...model, showForgotPassword: true });
             dispatch(setLoginModel(currentModel));
         }
 
-        updateAppConfig((prev) => ({ ...prev, currentTitle: loginString!.forgotPassword }));
+        updateAppConfig((prev) => ({ ...prev, currentTitle: loginString.forgotPassword }));
 
     };
 
@@ -322,24 +286,23 @@ export const Login = () => {
 
         }
         dispatch(setLoginModel(currentModel));
-        updateAppConfig((prev) => ({ ...prev, currentTitle: loginString!.login }));
+        updateAppConfig((prev) => ({ ...prev, currentTitle: loginString.login }));
         
     };
 
     const setModel = async () => {
+        updateAppConfig((prev) => ({ ...prev, showLoader: true }));
         model = getInitialLoginModel();
         const locale = new Locale();
-        locale.getLoginString().then(response => {
-            if (response?.errors) {
-                loginLoadHasErrors(response);
-                return;
-            }
+        await locale.getLoginString().then(response => {
+            if (Utility.handleErrors(appState, response?.errors, updateAppConfig)) return;
 
             model.loginString = new LocalizedStrings(response.data);
             model.loginString.setLanguage(appState.language.code)
             title = model.loginString.loginTitle;
             dispatch(setLoginModel(model))
             updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
+            updateAppConfig((prev) => ({ ...prev, showLoader: false }));
         }); 
     };
 
@@ -355,7 +318,6 @@ export const Login = () => {
             return;
         }
 
-
         updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
     }, []);
 
@@ -368,7 +330,7 @@ export const Login = () => {
         return (
             <section className='col-12 col-md-5 col-lg-4 bg-white  border border-warning rounded-3 p-2'>
                 <fieldset className='col-12 fieldsetLabel'>
-                    <label>{loginString!.username}<span className='text-danger'> *</span></label>
+                    <label>{loginString.username}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.usernameFeedBack!)}>
                         <input name="username" ref={usernameInput} type="text" className={"form-control border-0 me-1 rounded" + UIHelper.getclassIsInvalid(model?.usernameFeedBack!)}
                             onChange={(e) => {
@@ -396,7 +358,7 @@ export const Login = () => {
                     <div className="invalid-feedback">{model?.usernameFeedBack}</div>
                 </fieldset>
                 <fieldset className='col-12 fieldsetLabel'>
-                    <label>{loginString!.password}<span className='text-danger'> *</span></label>
+                    <label>{loginString.password}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.passwordFeedback!)}>
                         <input name="password" ref={passwordInput} type={model?.showPassword ? "text" : "password"}
                             className={"form-control border-0 rounded" + UIHelper.getclassIsInvalid(model?.passwordFeedback!)}
@@ -447,7 +409,7 @@ export const Login = () => {
         return (
             <section className='col-12 col-md-6 col-lg-4 bg-white  border border-warning rounded-3 p-2'>
                 <fieldset className='col-12 fieldsetLabel'>
-                    <label>{generalString!.email}<span className='text-danger'> *</span></label>
+                    <label>{appState.generalString.email}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.emailFeedback!)}>
                         <input name="email" ref={emailInput} type="text" className={'form-control border-0 me-1 rounded' + UIHelper.getclassIsInvalid(model?.emailFeedback!)}
                             onChange={(e) => {
@@ -476,8 +438,8 @@ export const Login = () => {
                     <div className="invalid-feedback">{model?.emailFeedback}</div>
                 </fieldset>
                 <div className="mt-3 d-flex justify-content-around">
-                    <button className='btn btn-secondary' onClick={(e) => showLogin(false)}>{generalString?.cancel}</button>
-                    <button className='btn btn-primary' onClick={(e) => handleForgotPasswordClick(e)} >{loginString?.sendPasswordResetLink}</button>
+                    <button className='btn btn-secondary' onClick={(e) => showLogin(false)}>{appState.generalString.cancel}</button>
+                    <button className='btn btn-primary' onClick={(e) => handleForgotPasswordClick(e)} >{loginString.sendPasswordResetLink}</button>
                 </div>
             </section>
         );
@@ -489,11 +451,17 @@ export const Login = () => {
             return (<Navigate to={Utility.getLink(LinkConstants.HOME)} />);
         }
 
+        const renderContent = () => {
+            if (model === undefined) return (<LoadingScreen/>)
+            if (model?.showForgotPassword === true) return renderForgotPassword();
+            return renderLogin();
+        }
+
         return (
             <div className='container' >
                 <div className='row mt-5'>
                     <section className="col-12 col-md-3 col-lg-4"></section>
-                    {model === undefined ? <p><em>Loading...</em></p> : model?.showForgotPassword === true ? renderForgotPassword() : renderLogin()}
+                    {renderContent()}
                     <section className="col-12 col-md-3 col-lg-4"></section>
                 </div>
             </div>

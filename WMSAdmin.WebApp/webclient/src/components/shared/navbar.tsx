@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom'
 import { AppSlice, useAppDispatch, useAppTrackedSelector, useTrackedGlobalState, useUpdateGlobalState } from '../../utilities/store';
-import { LinkConstants } from '../../entities/constants'
+import { APIParts, LinkConstants } from '../../entities/constants'
 import logo from '../../logo.svg';
 import { Utility } from '../../utilities/utility';
 import LocalizedStrings from 'react-localization';
-import { Locale } from '../../utilities/locale';
-import App from '../../App';
+import { ResponseData } from '../../entities/entities';
+import { useNavigate } from "react-router-dom";
 
 export const NavBar = () => {
     const updateAppConfig = useUpdateGlobalState();
     const appState = useTrackedGlobalState();
+    const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    const { setSessionData } = AppSlice.actions;
+    const { setAppModel, setSessionData } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
 
@@ -70,16 +71,46 @@ export const NavBar = () => {
         updateAppConfig((prev) => ({ ...prev, language: language }));
     }
 
+    const performReloadApp = async () => {
+        Utility.clearConfigCache();
+        await Utility.getAppData().then(newAppData => {
+
+            if (Utility.handleErrors(appState, newAppData.appInitErrrors, updateAppConfig)) return;
+
+            newAppData.sessionData = appData.sessionData;
+            dispatch(setAppModel(newAppData));
+
+            const newAppState = Utility.getAppState(newAppData, appState);
+            updateAppConfig(() => (newAppState));
+            navigate(Utility.getLink(LinkConstants.HOME));
+        });
+    }
+
+    const clearServerCache = async () => {
+        await Utility.GetData<ResponseData<boolean>>(APIParts.CONFIG + "ClearCache", undefined, { data: null }).then(response => {
+            return Utility.handleErrors(appState, response.errors, updateAppConfig);
+        }).then((response) => {
+            if (!response) return;
+            performReloadApp();
+        });
+    }
+
+    const updateServerData = async () => {
+        await Utility.GetData<ResponseData<boolean>>(APIParts.CONFIG + "UpdateAllTimeStamp", undefined, { data: null }).then(response => {
+            return Utility.handleErrors(appState, response.errors, updateAppConfig);
+        }).then((response) => {
+            if (!response) return;
+            performReloadApp();
+        });
+    }
+
     const OtherMenu = () => {
 
         const getRemainingMenu = () => {
             if (isUserLoggedIn !== true) return null;
             return (
                 <li className="bg-secondary dropdown-item">
-                    <button
-                        className="btn bg-secondary text-white"
-                        onClick={performUserLogout.bind(this)}
-                    >
+                    <button className="btn bg-secondary text-white" onClick={performUserLogout.bind(this)}>
                         {appState.generalString?.logout}
                     </button>
                 </li>
@@ -88,12 +119,7 @@ export const NavBar = () => {
 
         return (
             <div className='d-flex justify-content-end'>
-                <button
-                    className="dropdown-toggle bg-secondary border-0 text-white"
-                    id="navbarLanguageDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
+                <button className="dropdown-toggle bg-secondary border-0 text-white" id="navbarLanguageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     {Utility.getOtherMenuTitle(appData, appState)}
                 </button>
                 <ul
@@ -101,20 +127,18 @@ export const NavBar = () => {
                     aria-labelledby="navbarLanguageDropdown">
                     {appData.languageCultures?.map((languageCulture) => {
                         return (
-                            <li
-                                className="bg-secondary dropdown-item"
-                                key={languageCulture.code.toString()}
-                            >
-                                <button
-                                    key={languageCulture.code}
-                                    className="btn bg-secondary text-white"
-                                    onClick={changeLanguage.bind(this, languageCulture.code)}
-                                >
+                            <li className="bg-secondary dropdown-item" key={languageCulture.code.toString()}>
+                                <button key={languageCulture.code} className="btn bg-secondary text-white" onClick={changeLanguage.bind(this, languageCulture.code)}>
                                     {languageCulture.name}
                                 </button>
                             </li>
                         );
                     })}
+                    <li className="bg-secondary dropdown-item">
+                        <button className="btn bg-secondary text-white" onClick={performReloadApp.bind(this)}>
+                            {appState.generalString?.reloadApp}
+                        </button>
+                    </li>
                     {getRemainingMenu()}
                 </ul>
             </div>
@@ -143,6 +167,16 @@ export const NavBar = () => {
                     {getNavLink(appState.generalString!.home, LinkConstants.HOME)}
                     {getNavLink(appState.generalString!.settings, LinkConstants.SETTINGS)}
                     {getNavLink(appState.generalString!.fetchData, LinkConstants.FETCHDATA)}
+                    <li className="bg-secondary dropdown-item">
+                        <button className="btn bg-secondary text-white" onClick={clearServerCache.bind(this)}>
+                            {appState.generalString?.clearServerCache}
+                        </button>
+                    </li>
+                    <li className="bg-secondary dropdown-item">
+                        <button className="btn bg-secondary text-white" onClick={updateServerData.bind(this)}>
+                            {appState.generalString?.updateServerData}
+                        </button>
+                    </li>
                 </ul>
             </div>);
     };

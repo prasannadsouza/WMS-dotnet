@@ -1,4 +1,4 @@
-import { LanguageCulture, GeneralString, GeneralLocaleString, LoginString, LoginLocaleString } from "../entities/locales"
+import { LanguageCulture, GeneralString, GeneralLocaleString, LoginLocaleString } from "../entities/locales"
 import { ResponseData } from "../entities/entities";
 import { APIParts, CacheConstants, CultureCodeConstants } from "../entities/constants";
 import { Utility } from "./utility";
@@ -41,7 +41,7 @@ export class Locale {
         for (var i = 0; i < languagesResponse.data.length; i++) {
             const item = languagesResponse.data[i];
 
-            var key = CacheConstants.LANGUAGESTRINGGENERAL + "_" + item.code;
+            const key = CacheConstants.LANGUAGESTRINGGENERAL + "_" + item.code;
             const data: GeneralString = Utility.getFromLocalStorage(key);
 
             if (data !== undefined) continue;

@@ -59,5 +59,18 @@ select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'Language','Language'
 select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'Language','Språk' union
 
 select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'Logout','Logout' union
-select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Logout','Logga ut'
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Logout','Logga ut' union 
+
+select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'LoadingMessage','Please wait, while screen is loading' union
+select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'LoadingMessage','Vänta medan skärmen laddas' union 
+
+select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'ReloadApp','Reload App' union
+select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'ReloadApp','Ladda om appen' union 
+
+select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'ClearServerCache','Refresh Server Data' union
+select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'ClearServerCache','Ladda om serverdata' union 
+
+select @TimeStamp,@LanguageCultureEnglish,@LanguageGroupId,'UpdateServerData','Update Server Data' union
+select @TimeStamp,@LanguageCultureSwedish,@LanguageGroupId,'UpdateServerData','Uppdatera serverdata' 
+
 

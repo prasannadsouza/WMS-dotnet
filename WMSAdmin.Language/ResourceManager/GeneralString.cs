@@ -21,6 +21,13 @@ namespace WMSAdmin.Language.ResourceManager
         public string Settings => GetResourceString(nameof(Settings));
         public string To => GetResourceString(nameof(To));
         public string Yes => GetResourceString(nameof(Yes));
+        public string ReloadApp => GetResourceString(nameof(ReloadApp));
+
+        public string ClearServerCache => GetResourceString(nameof(ClearServerCache));
+        public string UpdateServerData => GetResourceString(nameof(UpdateServerData));
+
+
+        public string LoadingMessage => GetResourceString(nameof(LoadingMessage));
 
         public string Logout => GetResourceString(nameof(Logout));
 
@@ -45,6 +52,10 @@ namespace WMSAdmin.Language.ResourceManager
                 To = To,
                 Yes = Yes,
                 Logout = Logout,
+                LoadingMessage = LoadingMessage,
+                ReloadApp = ReloadApp,
+                ClearServerCache = ClearServerCache,
+                UpdateServerData = UpdateServerData
             };
         }
     }
