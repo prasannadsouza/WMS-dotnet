@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTrackedGlobalState, useUpdateGlobalState } from '../../utilities/store';
 import { UIHelper } from '../../utilities/uihelper';
-import { Utility } from '../../utilities/utility';
-
 
 export const Message = () => {
     const updateAppConfig = useUpdateGlobalState();
@@ -14,7 +12,20 @@ export const Message = () => {
 
     const handleClose = () => {
         if (model?.onClose !== undefined && model?.onClose !== null) model.onClose();
-        updateAppConfig((prev) => ({ ...prev, messageModel: Utility.getMessageModel(appConfig,false,"",undefined,false)}));
+        updateAppConfig((prev) => (
+            {
+                ...prev,
+                messageModel:
+                {
+                    ...prev.messageModel,
+                    show: false,
+                    onClose: null,
+                    isError: false,
+                    message: undefined,
+                    title: appConfig.generalString.ok,
+                    okTitle: appConfig.generalString.ok
+                }
+            }));
     }
 
     const getClassName = () => {

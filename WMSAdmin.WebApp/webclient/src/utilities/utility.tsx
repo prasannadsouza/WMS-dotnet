@@ -1,9 +1,11 @@
-import { AppData, AppState, SessionData, ApplicationConfig, PaginationConfig, ConfigTimeStamp } from "../entities/configs"
-import { ConfirmModel, MessageModel } from "../entities/models"
-import { Locale } from "./locale"
 import LocalizedStrings from "react-localization";
-import { ErrorConstants, LinkConstants,CacheConstants, APIParts } from "../entities/constants";
+import App from "../App";
+import { AppData, ApplicationConfig, AppState, ConfigTimeStamp, PaginationConfig, SessionData } from "../entities/configs";
+import { APIParts, CacheConstants, ErrorConstants, LinkConstants } from "../entities/constants";
 import { ErrorData, ResponseData } from "../entities/entities";
+import { ConfirmModel, MessageModel } from "../entities/models";
+import { Locale } from "./locale";
+import { UIHelper } from "./uihelper";
 
 export class Utility {
 
@@ -12,14 +14,11 @@ export class Utility {
 
         const search = searchParams?.toString();
         if ((search?.length > 0) === true) url.search = search;
-
-        console.log(url.toString());
         return await fetch(url).then(response => {
             if (!response.ok) {
                 defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
                 return defaultData;
             }
-
             defaultData = response.json() as ResponseData<T>;
             return defaultData;
         });
@@ -61,14 +60,27 @@ export class Utility {
 
     static async getAppData(): Promise<AppData> {
 
-        let responseData: AppData = { appInitErrrors: [] }; 
+        let responseData: AppData = {
+            appInitErrrors: [], sessionData: {} }; 
 
         await Utility.GetApplicationConfig().then(x => {
             if ((x.errors?.length > 0) === true) {
                 responseData.appInitErrrors.push(...x.errors);
-                return;
+                return responseData;
             }
             responseData.applicationConfig = x.data;
+            return responseData;
+        }).then(async (response) => {
+            if ((response.appInitErrrors?.length > 0) === true) return;
+
+            await Locale.getLanguages().then(x => {
+                if ((x.errors?.length > 0) === true) {
+                    responseData.appInitErrrors.push(...x.errors);
+                    return;
+                }
+                responseData.languageCultures = x.data;
+                responseData.sessionData.language = x.data.filter((item) => { return item.code == responseData.applicationConfig.localeCode })[0];
+            });
         });
 
         await Utility.GetPaginationConfig().then(x => {
@@ -79,9 +91,7 @@ export class Utility {
             responseData.paginationConfig = x.data;
         });
 
-        const locale = new Locale();
-
-        await locale.getGeneralString().then(x => {
+        await Locale.getGeneralString().then(x => {
             if ((x.errors?.length > 0) === true) {
                 responseData.appInitErrrors.push(...x.errors);
                 return;
@@ -89,93 +99,55 @@ export class Utility {
             responseData.generalLocaleString = x.data;
         });
 
-        await locale.getLanguages().then(x => {
-            if ((x.errors?.length > 0) === true) {
-                responseData.appInitErrrors.push(...x.errors);
-                return;
-            }
-            responseData.languageCultures = x.data;
-        });
-
         return await Promise.resolve(responseData);
     };
 
-    static getAppState(appData: AppData, appState: AppState): AppState {
+    static getAppState(appData: AppData): AppState {
         let localizedGeneralString = new LocalizedStrings(appData.generalLocaleString);
         let newAppState: AppState = {
             generalString: localizedGeneralString,
-            language: appData.languageCultures[0],
         };
 
-        let localeCode = appState?.language?.code;
-
-        if ((localeCode?.length > 0) === false) localeCode = appData.sessionData?.user?.localeCode;
-        if ((localeCode?.length > 0) === false) localeCode = appData.sessionData?.customer?.localeCode
-        if ((localeCode?.length > 0) === false) localeCode = appData.applicationConfig.localeCode;
-
-        newAppState.language = appData.languageCultures.filter(
-            (languageCulture) => languageCulture.code === localeCode
-        )[0];
-
-        newAppState.generalString.setLanguage(newAppState.language.code);
+        newAppState.generalString.setLanguage(Locale.getLocalizedLocaleCode(appData.sessionData.language.code));
         return newAppState;
     };
 
     static handleErrors = (appState: AppState, errors: ErrorData[], updateAppConfig: (value: React.SetStateAction<AppState>) => void, onClose: () => void = undefined): boolean => {
         if ((errors?.length > 0) === false) return false;
-        updateAppConfig((prev) => ({ ...prev, messageModel: Utility.getMessageModel(appState, true, errors[0].message, onClose) }));
+        UIHelper.showMessageModal(updateAppConfig,appState, true, errors[0].message, onClose);
         return true;
     };
-    
 
-    static getSessionConfig(username: string, password: string): SessionData {
-        const sessionConfig: SessionData = {
+    static showLoader = (updateAppConfig: (value: React.SetStateAction<AppState>) => void, show: boolean) => {
+        updateAppConfig((prev) => ({ ...prev, showLoader: show, }));
+    }
+
+    
+    static getSessionConfig(appData:AppData, username: string, password: string): SessionData {
+        const sessionData: SessionData = {
             customer: {
                 name: "C-" + username,
                 number: "123456",
                 organizationNumber: "555555-55555",
                 id: 1,
-                localeCode: "se"
+                localeCode: "sv-SE"
             },
             user: {
                 firstName: username,
                 lastName: password,
-                localeCode: "en",
+                localeCode: "en-SE",
             },
+            language: appData.sessionData.language, 
         };
 
-        return sessionConfig;
+        return sessionData;
     };
 
-    static getConfirmModel = (appState: AppState): ConfirmModel => {
-        return {
-            title: appState.generalString?.confirmTitle,
-            cancelTitle: appState.generalString?.no,
-            message: appState.generalString?.confirmMessage,
-            confirmTitle: appState.generalString?.yes,
-            onClose: undefined,
-            show: false,
-        };
-    };
+    
 
-    static getMessageModel = (appState: AppState, isError: boolean, message: string, onClose: () => void = undefined, show: boolean = true, title: string = undefined, okTitle: string = undefined): MessageModel => {
 
-        if ((okTitle?.length > 0) === false) okTitle = appState.generalString?.ok;
 
-        if ((title?.length > 0) === false) {
-            title = isError ? appState.generalString?.error : appState.generalString?.message
-        }
-
-        return {
-            title: title,
-            okTitle: okTitle,
-            onClose: onClose,
-            show: show,
-            isError: isError,
-            message: message,
-
-        };
-    };
+    
 
     static getLink(key: string) {
         switch (key) {
@@ -200,9 +172,9 @@ export class Utility {
 
     
 
-    static getOtherMenuTitle = (appData: AppData, appState: AppState) => {
+    static getOtherMenuTitle = (appData: AppData) => {
 
-        if (Utility.isUserLoggedIn(appData) !== true) return appState?.language?.name;
+        if (Utility.isUserLoggedIn(appData) !== true) return appData.sessionData.language.name;
 
         let title = appData.sessionData!.user!.firstName!;
 
@@ -307,10 +279,14 @@ export class Utility {
         let data = JSON.parse(serializedState) as ConfigTimeStamp[];
         if ((data?.length > 0) !== true) return;
 
-        data.map((configTimeStamp) => {
+        data.forEach((configTimeStamp) => {
             this.removeFromLocalStorage(configTimeStamp.Code);
         });
 
         this.removeFromLocalStorage(CacheConstants.CONFIGTIMESTAMPS);
+    }
+
+    static copyObjectData = <T,>(theObject: T) => {
+        return JSON.parse(JSON.stringify(theObject)) as T;
     }
 }

@@ -1,20 +1,18 @@
 import { useTrackedGlobalState, useUpdateGlobalState } from '../../utilities/store';
 import { UIHelper } from '../../utilities/uihelper';
-import { Utility } from '../../utilities/utility';
 import { useEffect, useRef } from 'react';
-
 
 export const Confirm = () => {
     const updateAppConfig = useUpdateGlobalState();
-    const appConfig = useTrackedGlobalState();
-    const model = appConfig.confirmModel;
-    const generalString = appConfig.generalString;
+    const appState = useTrackedGlobalState();
+    const model = appState.confirmModel;
+    const generalString = appState.generalString;
     let okButton = useRef<HTMLButtonElement>(null);
     let showModal = model?.show === true;
 
     const handleClose = (confirmed: boolean) => {
         if (model?.onClose !== undefined && model?.onClose !== null) model.onClose(confirmed);
-        updateAppConfig((prev) => ({ ...prev, confirmModel: Utility.getConfirmModel(appConfig) }));
+        updateAppConfig((prev) => ({ ...prev, confirmModel: { ...prev.confirmModel, show: false } }));
     }
 
     useEffect(() => {

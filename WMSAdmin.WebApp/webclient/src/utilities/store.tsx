@@ -6,7 +6,7 @@ import { createContainer, createTrackedSelector } from 'react-tracked';
 import { Utility } from './utility';
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from 'react-redux';
-import { AppData, SessionData, ApplicationConfig, PaginationConfig, AppState } from '../entities/configs';
+import { AppData, SessionData, ApplicationConfig, PaginationConfig } from '../entities/configs';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LoginModel } from '../entities/models';
 import { AppConstants, AppReducerConstants } from '../entities/constants';
@@ -15,7 +15,6 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 import thunk from 'redux-thunk';
 import { GeneralLocaleString, LanguageCulture, LoginLocaleString } from '../entities/locales';
 import { ErrorData } from '../entities/entities';
-import { log } from 'console';
 
  
 const initialAppData: AppData = {};
@@ -49,7 +48,10 @@ export const AppSlice = createSlice({
             return { ...state, languageCultures: action.payload };
         },
         setSessionData: (state, action: PayloadAction<SessionData>) => {
-            return { ...state, session: action.payload };
+            return { ...state, sessionData: action.payload };
+        },
+        setSessionLocale: (state, action: PayloadAction<LanguageCulture>) => {
+            return { ...state, appConfig: { ...state.sessionData, language: action.payload } };
         },
     },
 });
@@ -69,9 +71,8 @@ export const useAppDispatch = () => useDispatch<typeof appStore.dispatch>();
 export const useAppTrackedSelector = createTrackedSelector<AppData>(useSelector);
 
 const GetInitialState = () => {
-    console.log("get initial state");
     const appData = useAppTrackedSelector();
-    return Utility.getAppState(appData, null);
+    return Utility.getAppState(appData);
 }
 const useInitialState = () => useState(GetInitialState());
 export const { Provider: GlobalStateProvider, useTrackedState: useTrackedGlobalState, useUpdate: useUpdateGlobalState, } = createContainer(useInitialState,);

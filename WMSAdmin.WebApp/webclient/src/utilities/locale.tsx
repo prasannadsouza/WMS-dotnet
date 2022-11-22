@@ -1,11 +1,11 @@
 import { LanguageCulture, GeneralString, GeneralLocaleString, LoginLocaleString } from "../entities/locales"
 import { ResponseData } from "../entities/entities";
-import { APIParts, CacheConstants, CultureCodeConstants } from "../entities/constants";
+import { APIParts, CacheConstants, LocaleCodeConstants } from "../entities/constants";
 import { Utility } from "./utility";
 
 export class Locale {
 
-    getLanguages = async () => {
+    static getLanguages = async () => {
         const data: LanguageCulture[] = Utility.getFromLocalStorage(CacheConstants.LANGUAGECULTURELIST);
         if (data !== undefined && data !== null) {
             let response: ResponseData<LanguageCulture[]> = {
@@ -19,8 +19,8 @@ export class Locale {
             if ((response.errors?.length > 0) === true) return response;
 
             let languageCodes: string[] = [];
-            languageCodes.push(CultureCodeConstants.en_SE);
-            languageCodes.push(CultureCodeConstants.sv_SE);
+            languageCodes.push(LocaleCodeConstants.en_SE);
+            languageCodes.push(LocaleCodeConstants.sv_SE);
 
             const data = response.data.filter(x => languageCodes.includes(x.code));
             
@@ -29,7 +29,7 @@ export class Locale {
         });
     };
 
-    getGeneralString = async () => {
+    static getGeneralString = async () => {
         let responseData: ResponseData<GeneralLocaleString> = {};
         const languagesResponse = await this.getLanguages();
 
@@ -57,14 +57,14 @@ export class Locale {
         }
         
         responseData.data = {
-            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGGENERAL + "_" + CultureCodeConstants.en_SE),
-            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGGENERAL + "_" + CultureCodeConstants.sv_SE),
+            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGGENERAL + "_" + LocaleCodeConstants.en_SE),
+            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGGENERAL + "_" + LocaleCodeConstants.sv_SE),
         };
 
         return await Promise.resolve(responseData);;
     };
 
-    getLoginString = async () => {
+    static getLoginString = async () => {
         let responseData: ResponseData<LoginLocaleString> = {};
         const languagesResponse = await this.getLanguages();
 
@@ -92,10 +92,15 @@ export class Locale {
         }
 
         responseData.data = {
-            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + CultureCodeConstants.en_SE),
-            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + CultureCodeConstants.sv_SE),
+            en_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + LocaleCodeConstants.en_SE),
+            sv_SE: Utility.getFromLocalStorage(CacheConstants.LANGUAGESTRINGLOGIN + "_" + LocaleCodeConstants.sv_SE),
         };
 
         return await Promise.resolve(responseData);;
     };
+
+    static getLocalizedLocaleCode = (localeCode: string) => {
+        if (localeCode === LocaleCodeConstants.en_SE) return "en_SE";
+        if (localeCode === LocaleCodeConstants.sv_SE) return "sv_SE";
+    }
 }

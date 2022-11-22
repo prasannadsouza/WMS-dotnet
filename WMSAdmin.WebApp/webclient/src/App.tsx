@@ -16,8 +16,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { FetchData } from './components/FetchData';
 
 const OnBeforeLift = async () => {
-    console.log("onBeforeLift");
-        
     const { setAppModel } = AppSlice.actions;
     await Utility.getAppData().then(appData => {
         appStore.dispatch(setAppModel(appData));

@@ -36,7 +36,7 @@ export const AppReducerConstants = {
     SET_MODEL: "SET_MODEL"
 }
 
-export const CultureCodeConstants = {
+export const LocaleCodeConstants = {
     en_SE: "en-SE",
     sv_SE: "sv-SE",
 }

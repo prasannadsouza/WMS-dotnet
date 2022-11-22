@@ -4,7 +4,7 @@ import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
 import { ErrorConstants, LinkConstants } from '../entities/constants';
 import { useNavigate, Navigate } from "react-router-dom";
-import { ErrorData,ResponseData } from '../entities/entities';
+import { ErrorData, ResponseData } from '../entities/entities';
 import { LoginModel } from "../entities/models";
 import LocalizedStrings from 'react-localization';
 import { Locale } from '../utilities/locale';
@@ -13,22 +13,22 @@ import { LoadingScreen } from './shared/loadingScreen';
 export const Login = () => {
     const updateAppConfig = useUpdateGlobalState();
     const navigate = useNavigate();
-    
+
     const dispatch = useAppDispatch();
     const { setSessionData, setLoginModel } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
-    let model: LoginModel = appData.loginModel;
+    const model: LoginModel = appData.loginModel;
 
     const appState = useTrackedGlobalState();
     let loginString = model?.loginString;
-   
+
 
     let passwordInput = useRef<HTMLInputElement>(null);
     let usernameInput = useRef<HTMLInputElement>(null);
     let emailInput = useRef<HTMLInputElement>(null);
 
-    let getInitialLoginModel = (): LoginModel => {
+    const getInitialLoginModel = (): LoginModel => {
         return {
             showPassword: false,
             showForgotPassword: false,
@@ -58,12 +58,6 @@ export const Login = () => {
         }
     }
 
-  
-    
-    //const handleOtherErrors = (errors: ErrorData[], onClose: () => void = undefined): boolean => {
-    //    return Utility.handleErrors(appState, errors, updateAppConfig, onClose);
-    //};
-
     const resetPasswordHasErrors = (errors: ErrorData[]): boolean => {
         if ((errors?.length! > 0) === false) return false;
         let unhandledErrors: ErrorData[] = [];
@@ -73,7 +67,7 @@ export const Login = () => {
             switch (error.errorCode) {
                 case ErrorConstants.EMAIL_CANNOTBE_BLANK:
                     {
-                        let currentModel = getCurrentModel();
+                        const currentModel = getCurrentModel();
                         currentModel.emailFeedback = error.message;
                         dispatch(setLoginModel(currentModel));
                         break;
@@ -140,7 +134,6 @@ export const Login = () => {
     }
 
     const performResetPassword = () => {
-        //setModelData({ ...model, emailFeedback: "" })
         let currentModel = getCurrentModel();
         currentModel.emailFeedback = "";
         dispatch(setLoginModel(currentModel));
@@ -148,18 +141,17 @@ export const Login = () => {
         const response = validateResetPassword();
         if (resetPasswordHasErrors(response?.errors)) return;
 
-        let confirmModel = Utility.getConfirmModel(appState);
-        confirmModel.show = true;
-        confirmModel!.onClose = (confirmed: boolean) => {
+        const onClose = (confirmed: boolean) => {
             if (confirmed) {
                 showLogin(true);
-                updateAppConfig((prev) => ({ ...prev, confirmModel: Utility.getConfirmModel(appState) }));
+                UIHelper.showMessageModal(updateAppConfig,appState, false, "Reset Email Sent",);
+                return;
             }
             else {
                 emailInput.current?.focus();
             }
         };
-        updateAppConfig((prev) => ({ ...prev, confirmModel: confirmModel }));
+        UIHelper.showConfirmationModal(updateAppConfig, appState, onClose);
     };
 
     const handleLoginClick = (event: React.MouseEvent) => {
@@ -169,70 +161,72 @@ export const Login = () => {
 
     const validateUserLogin = (): ResponseData<boolean> => {
 
-    let response: ResponseData<boolean> = {
-        errors: []
-    }
+        let response: ResponseData<boolean> = {
+            errors: []
+        }
 
-    if ((model.username?.trim()?.length > 0) !== true) {
-        response.errors?.push({
-            errorCode: ErrorConstants.USERNAME_CANNOTBE_BLANK,
-            message: model.loginString?.usernameCannotBeBlank,
-        });
-    }
+        if ((model.username?.trim()?.length > 0) !== true) {
+            response.errors?.push({
+                errorCode: ErrorConstants.USERNAME_CANNOTBE_BLANK,
+                message: model.loginString?.usernameCannotBeBlank,
+            });
+        }
 
         if ((model.password?.trim()?.length > 0) !== true) {
-        response.errors?.push({
-            errorCode: ErrorConstants.PASSWORD_CANNOTBE_BLANK,
-            message: model.loginString?.passwordCannotBeBlank,
-        });
-    }
+            response.errors?.push({
+                errorCode: ErrorConstants.PASSWORD_CANNOTBE_BLANK,
+                message: model.loginString?.passwordCannotBeBlank,
+            });
+        }
 
         if (model.username === "prasanna") {
-        response.errors?.push({
-            errorCode: ErrorConstants.USERNAME_OR_PASSWORD_ISINVALID,
-            message: model.loginString?.usernameOrPasswordIsInvalid,
-        });
+            response.errors?.push({
+                errorCode: ErrorConstants.USERNAME_OR_PASSWORD_ISINVALID,
+                message: model.loginString?.usernameOrPasswordIsInvalid,
+            });
+        }
+
+        if ((response.errors!.length > 0) === true) return response;
+        response.data = true;
+        return response;
     }
 
-    if ((response.errors!.length > 0) === true) return response;
-    response.data = true;
-    return response;
-}
-   
 
     const validateResetPassword = (): ResponseData<boolean> => {
-    let response: ResponseData<boolean> = {
-        data: false,
-        errors: []
+        let response: ResponseData<boolean> = {
+            data: false,
+            errors: []
+        }
+
+        if ((model.email?.trim()?.length > 0) !== true) {
+            response.errors?.push({
+                errorCode: ErrorConstants.EMAIL_CANNOTBE_BLANK,
+                message: model.loginString?.emailCannotBeBlank,
+            });
+        }
+
+        response.data = true;
+        return response;
+
     }
-
-    if ((model.email?.trim()?.length > 0) !== true) {
-        response.errors?.push({
-            errorCode: ErrorConstants.EMAIL_CANNOTBE_BLANK,
-            message: model.loginString?.emailCannotBeBlank,
-        });
-    }
-
-    response.data = true;
-    return response;
-
-}
 
     const performUserLogin = () => {
-        let currentModel = getCurrentModel();
-        currentModel.passwordFeedback = "";
-        currentModel.usernameFeedBack = "";
-        dispatch(setLoginModel(currentModel));
+
+        let newModel = getCurrentModel();
+        newModel.passwordFeedback = "";
+        newModel.usernameFeedBack = "";
+        dispatch(setLoginModel(newModel));
 
         const response = validateUserLogin();
         if (loginHasErrors(response?.errors)) return;
-        
-        let sessionData = Utility.getSessionConfig(model.username!, model.password!);
-        dispatch(setSessionData(sessionData));
-        dispatch(setLoginModel(getInitialLoginModel()));
 
-        var newAppState = Utility.getAppState(appData,appState);
-        updateAppConfig(() => (newAppState));
+        let sessionData = Utility.getSessionConfig(appData, model.username!, model.password!);
+        dispatch(setSessionData(sessionData));
+        newModel = getInitialLoginModel();
+        newModel.loginString = model.loginString;
+        dispatch(setLoginModel(newModel));
+
+        updateAppConfig(() => (Utility.getAppState(appData)));
         navigate(Utility.getLink(LinkConstants.HOME));
     }
 
@@ -260,12 +254,8 @@ export const Login = () => {
 
         if (resetFields) {
             currentModel.emailFeedback = "";
-            dispatch(setLoginModel(currentModel));
         }
-        else {
-            dispatch(setLoginModel(currentModel));
-        }
-
+        dispatch(setLoginModel(currentModel));
         updateAppConfig((prev) => ({ ...prev, currentTitle: loginString.forgotPassword }));
 
     };
@@ -275,41 +265,36 @@ export const Login = () => {
         let currentModel = getCurrentModel();
         currentModel.showForgotPassword = false;
         if (resetFields) {
-            //setModelData({ ...model, showForgotPassword: false, username: "", password: "", emailFeedback: "", passwordFeedback: "" });
             currentModel.username = "";
             currentModel.password = "";
             currentModel.emailFeedback = "";
             currentModel.passwordFeedback = "";
-        }
-        else {
-            //setModelData({ ...model, showForgotPassword: false });
-
+            currentModel.email = "";
         }
         dispatch(setLoginModel(currentModel));
         updateAppConfig((prev) => ({ ...prev, currentTitle: loginString.login }));
-        
+
     };
 
-    const setModel = async () => {
-        updateAppConfig((prev) => ({ ...prev, showLoader: true }));
-        model = getInitialLoginModel();
-        const locale = new Locale();
-        await locale.getLoginString().then(response => {
+    const setLanguage = async (newModel: LoginModel) => {
+        await Locale.getLoginString().then(response => {
             if (Utility.handleErrors(appState, response?.errors, updateAppConfig)) return;
 
-            model.loginString = new LocalizedStrings(response.data);
-            model.loginString.setLanguage(appState.language.code)
-            title = model.loginString.loginTitle;
-            dispatch(setLoginModel(model))
-            updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
-            updateAppConfig((prev) => ({ ...prev, showLoader: false }));
-        }); 
-    };
+            newModel.loginString = new LocalizedStrings(response.data);
+            newModel.loginString.setLanguage(Locale.getLocalizedLocaleCode(appData.sessionData.language.code))
+            dispatch(setLoginModel(newModel))
+            updateAppConfig((prev) => ({ ...prev, currentTitle: newModel.loginString.loginTitle, showLoader: false }));
+        });
+    }
 
+    const setModel = async () => {
+        await setLanguage(getInitialLoginModel());
+    };
 
     useEffect(() => {
 
         if (model === undefined) {
+            updateAppConfig((prev) => ({ ...prev, showLoader: true }));
             setModel();
         }
 
@@ -322,13 +307,18 @@ export const Login = () => {
     }, []);
 
     useEffect(() => {
+
+        if (model !== undefined) {
+            setLanguage(getCurrentModel());
+        }
+
         updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
-    }, [appState.currentTitle]);
+    }, [appData.sessionData.language]);
 
 
     const renderLogin = () => {
         return (
-            <section className='col-12 col-md-5 col-lg-4 bg-white  border border-warning rounded-3 p-2'>
+            <section className='col-12 col-md-8 col-lg-6 bg-white  border border-warning rounded-3 p-2'>
                 <fieldset className='col-12 fieldsetLabel'>
                     <label>{loginString.username}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.usernameFeedBack!)}>
@@ -407,7 +397,7 @@ export const Login = () => {
 
     const renderForgotPassword = () => {
         return (
-            <section className='col-12 col-md-6 col-lg-4 bg-white  border border-warning rounded-3 p-2'>
+            <section className='col-12 col-md-8 col-lg-6 bg-white  border border-warning rounded-3 p-2'>
                 <fieldset className='col-12 fieldsetLabel'>
                     <label>{appState.generalString.email}<span className='text-danger'> *</span></label>
                     <div className={"input-group border rounded" + UIHelper.getclassIsInvalid(model?.emailFeedback!)}>
@@ -452,7 +442,7 @@ export const Login = () => {
         }
 
         const renderContent = () => {
-            if (model === undefined) return (<LoadingScreen/>)
+            if (model === undefined) return (<LoadingScreen />)
             if (model?.showForgotPassword === true) return renderForgotPassword();
             return renderLogin();
         }
@@ -460,9 +450,9 @@ export const Login = () => {
         return (
             <div className='container' >
                 <div className='row mt-5'>
-                    <section className="col-12 col-md-3 col-lg-4"></section>
+                    <section className="col-12 col-md-2 col-lg-3"></section>
                     {renderContent()}
-                    <section className="col-12 col-md-3 col-lg-4"></section>
+                    <section className="col-12 col-md-2 col-lg-3"></section>
                 </div>
             </div>
         );

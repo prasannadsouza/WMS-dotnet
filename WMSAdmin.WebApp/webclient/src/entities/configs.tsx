@@ -15,6 +15,7 @@ export type ApplicationConfig = {
 export type SessionData = {
     user?: User
     customer?: Customer;
+    language?: LanguageCulture;
 } 
 
 export type AppData = {
@@ -33,7 +34,6 @@ export type AppState = {
     generalString?: LocalizedStrings<GeneralString>;
     currentTitle?: string;
     showLoader?: boolean;
-    language?: LanguageCulture;
 }
 
 export type PaginationConfig = {

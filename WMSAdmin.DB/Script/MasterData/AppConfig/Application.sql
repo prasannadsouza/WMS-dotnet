@@ -7,6 +7,17 @@ END
 
 declare @AppConfigGroupId BIGINT = (select Id from [dbo].[AppConfigGroup] where Code = 'APPLICATION')
 
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'TITLE')
+BEGIN
+INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
+VALUES (GETDATE(), @AppConfigGroupId,  N'TITLE', N'WMS Admin', N'Title of the application')
+END
+
+IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'CURRENT_VERSION')
+BEGIN
+INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
+VALUES (GETDATE(), @AppConfigGroupId,  N'CURRENT_VERSION', N'0.1', N'Title of the application')
+END
 
 IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'WEBFOLDER_DOWNLOADPATH')
 BEGIN
