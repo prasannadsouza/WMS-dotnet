@@ -15,9 +15,9 @@ namespace WMSAdmin.BusinessService
         private CacheService _cacheService;
         public ConfigService(Utility.Configuration configuration) : base(configuration)
         {
-            _repoService = new RepoService(configuration);
             _logger = configuration.ServiceProvider.GetRequiredService<ILogger<BaseService>>();
-            _cacheService = new CacheService(configuration);
+            _repoService = GetBusinessService<RepoService>();
+            _cacheService = GetBusinessService<CacheService>();
         }
 
         public Entity.Entities.Config.ConfigSetting GetConfigSetting()

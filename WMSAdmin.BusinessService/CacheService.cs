@@ -11,7 +11,7 @@ namespace WMSAdmin.BusinessService
         private RepoService _reposervice;
         public CacheService(Utility.Configuration configuration) : base(configuration)
         {
-            _reposervice = new RepoService(configuration);
+            _reposervice = GetBusinessService<RepoService>();
         }
 
         private DateTime GetTimeStamp(string cacheKey)

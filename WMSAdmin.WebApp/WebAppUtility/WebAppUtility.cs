@@ -2,14 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace WMSAdmin.WebApp
+namespace WMSAdmin.WebApp.WebAppUtility
 {
-    public class WebUtility
+    public class WebAppUtility
     {
         private HttpContext _httpContext;
         public Utility.Configuration Configuration { get; private set; }
         private Dictionary<Type, BusinessService.BaseService> _businessServices;
-        public WebUtility(HttpContext httpContext, IServiceProvider serviceProvider)
+        public WebAppUtility(HttpContext httpContext, IServiceProvider serviceProvider)
         {
             _httpContext = httpContext;
             _businessServices = new Dictionary<Type, BusinessService.BaseService>();

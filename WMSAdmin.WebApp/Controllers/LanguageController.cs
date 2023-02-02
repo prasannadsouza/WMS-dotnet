@@ -12,7 +12,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetGeneralString([FromQuery] string cultureCode)
         {
             var resource = new Language.ResourceManager.GeneralString(AppUtility.Configuration, new System.Globalization.CultureInfo(cultureCode));
@@ -20,7 +20,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetLoginString([FromQuery] string cultureCode)
         {
             var resource = new Language.ResourceManager.LoginString(AppUtility.Configuration, new System.Globalization.CultureInfo(cultureCode));
@@ -28,7 +28,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetDefaultGeneralString()
         {
             var resource = new Language.ResourceManager.GeneralString(AppUtility.Configuration, System.Globalization.CultureInfo.CurrentCulture);
@@ -36,7 +36,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetDefaultLoginString()
         {
             var resource = new Language.ResourceManager.LoginString(AppUtility.Configuration, System.Globalization.CultureInfo.CurrentCulture);
@@ -44,7 +44,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetUICulture()
         {
             var languageCultureFilter = new Entity.Filter.LanguageCulture

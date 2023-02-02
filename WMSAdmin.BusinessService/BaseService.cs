@@ -10,6 +10,7 @@ namespace WMSAdmin.BusinessService
         protected Utility.Configuration Configuration { get; private set; }
 
         private Dictionary<System.Type, Repository.BaseRepository> _repositories;
+        private Dictionary<System.Type, BaseService> _businessServices;
 
 
         protected Utility.Cache CacheUtility { get; private set; }
@@ -20,6 +21,7 @@ namespace WMSAdmin.BusinessService
 
             CacheUtility = new Utility.Cache(configuration);
             _repositories = new Dictionary<Type, Repository.BaseRepository>();
+            _businessServices = new Dictionary<Type, BaseService>();
         }
 
         protected T GetRepository<T>() where T : Repository.BaseRepository
@@ -33,6 +35,15 @@ namespace WMSAdmin.BusinessService
             return (T)repository;
         }
 
-      
+        protected T GetBusinessService<T>() where T : BaseService
+        {
+            var type = typeof(T);
+            _businessServices.TryGetValue(type, out var businessService);
+            if (businessService != null) return (T)businessService;
+
+            businessService = Activator.CreateInstance(typeof(T), Configuration) as T;
+            _businessServices.Add(type, businessService);
+            return (T)businessService;
+        }
     }
 }

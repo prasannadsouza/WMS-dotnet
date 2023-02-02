@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WMSAdmin.BusinessService;
 
 namespace WMSAdmin.WebApp.Controllers
 {
@@ -13,14 +12,14 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public void UpdateTimeStamp([FromQuery] string cacheKey)
         {
             _cacheService.UpdateTimestamp(cacheKey);
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult UpdateAllTimeStamp()
         {
             //var keys = new List<string>
@@ -46,7 +45,7 @@ namespace WMSAdmin.WebApp.Controllers
 
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult ClearCache()
         {
             _cacheService.ClearCache();
@@ -54,7 +53,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetApplicationConfig()
         {
             var setting = AppUtility.ConfigSetting.Application;
@@ -72,7 +71,7 @@ namespace WMSAdmin.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route(WebUtility.APIRoute)]
+        [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetPaginationConfig()
         {
             var setting = AppUtility.ConfigSetting.Pagination;
