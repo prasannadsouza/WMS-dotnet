@@ -5,8 +5,7 @@ namespace WMSAdmin.WebApp.Controllers
     public class ConfigController : BaseController
     {
         BusinessService.CacheService _cacheService;
-        public ConfigController(IServiceProvider serviceProvider) :
-          base(serviceProvider)
+        public ConfigController(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _cacheService = AppUtility.GetBusinessService<BusinessService.CacheService>();
         }

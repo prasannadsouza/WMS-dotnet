@@ -22,14 +22,11 @@ namespace WMSAdmin.Language.ResourceManager
         public string To => GetResourceString(nameof(To));
         public string Yes => GetResourceString(nameof(Yes));
         public string ReloadApp => GetResourceString(nameof(ReloadApp));
-
         public string ClearServerCache => GetResourceString(nameof(ClearServerCache));
         public string UpdateServerData => GetResourceString(nameof(UpdateServerData));
-
-
         public string LoadingMessage => GetResourceString(nameof(LoadingMessage));
-
         public string Logout => GetResourceString(nameof(Logout));
+        public string Unauthorized => GetResourceString(nameof(Unauthorized));
 
         public Entity.Entities.LanguageStrings.GeneralString GetString()
         {
@@ -55,7 +52,8 @@ namespace WMSAdmin.Language.ResourceManager
                 LoadingMessage = LoadingMessage,
                 ReloadApp = ReloadApp,
                 ClearServerCache = ClearServerCache,
-                UpdateServerData = UpdateServerData
+                UpdateServerData = UpdateServerData,
+                Unauthorized = Unauthorized,
             };
         }
     }

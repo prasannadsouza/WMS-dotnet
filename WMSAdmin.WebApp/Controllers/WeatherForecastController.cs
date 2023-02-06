@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using WMSAdmin.Entity.Entities;
+using WMSAdmin.WebApp.WebAppUtility;
 
 namespace WMSAdmin.WebApp.Controllers
 {
+    [JwtAuthorizeAttribute]
     [ApiController]
     public class WeatherForecastController : BaseController
     {

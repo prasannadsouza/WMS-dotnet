@@ -32,6 +32,8 @@ namespace WMSAdmin.WebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseMiddleware<WebAppUtility.JwtMiddleware>();
             app.MapControllers();
             app.UseSession();
 

@@ -15,7 +15,7 @@ namespace WMSAdmin.BusinessService
         private CacheService _cacheService;
         public ConfigService(Utility.Configuration configuration) : base(configuration)
         {
-            _logger = configuration.ServiceProvider.GetRequiredService<ILogger<BaseService>>();
+            _logger = configuration.ServiceProvider.GetRequiredService<ILogger<ConfigService>>();
             _repoService = GetBusinessService<RepoService>();
             _cacheService = GetBusinessService<CacheService>();
         }
@@ -387,7 +387,7 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Method = "GetPaginationConfig",
+                                    Method = nameof(GetPagination),
                                     AppConfigGroup = appConfigGroup.Code,
                                     AppConfig = from.Code,
                                 };
