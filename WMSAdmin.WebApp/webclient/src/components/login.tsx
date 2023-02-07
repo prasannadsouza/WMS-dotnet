@@ -2,9 +2,9 @@ import { useAppTrackedSelector, useAppDispatch, useTrackedGlobalState, AppSlice,
 import React, { useEffect, useRef } from 'react';
 import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
-import { ErrorConstants, LinkConstants } from '../entities/constants';
+import { APIParts, ErrorConstants, LinkConstants } from '../entities/constants';
 import { useNavigate, Navigate } from "react-router-dom";
-import { ErrorData, ResponseData } from '../entities/entities';
+import { ErrorData, ResponseData, UserAuthenticateResponse } from '../entities/entities';
 import { LoginModel } from "../entities/models";
 import LocalizedStrings from 'react-localization';
 import { Locale } from '../utilities/locale';
@@ -144,7 +144,7 @@ export const Login = () => {
         const onClose = (confirmed: boolean) => {
             if (confirmed) {
                 showLogin(true);
-                UIHelper.showMessageModal(updateAppConfig,appState, false, "Reset Email Sent",);
+                UIHelper.showMessageModal(updateAppConfig, appState, false, "Reset Email Sent",);
                 return;
             }
             else {
@@ -159,9 +159,9 @@ export const Login = () => {
         performUserLogin();
     }
 
-    const validateUserLogin = (): ResponseData<boolean> => {
+    const validateUserLogin = async (): Promise<ResponseData<UserAuthenticateResponse>> => {
 
-        let response: ResponseData<boolean> = {
+        let response: ResponseData<UserAuthenticateResponse> = {
             errors: []
         }
 
@@ -179,16 +179,12 @@ export const Login = () => {
             });
         }
 
-        if (model.username === "prasanna") {
-            response.errors?.push({
-                errorCode: ErrorConstants.USERNAME_OR_PASSWORD_ISINVALID,
-                message: model.loginString?.usernameOrPasswordIsInvalid,
-            });
-        }
-
         if ((response.errors!.length > 0) === true) return response;
-        response.data = true;
-        return response;
+
+        const loginResponse = await Utility.PostData<UserAuthenticateResponse>(APIParts.APP + "Login", undefined
+            , { UserName: model.username, Password: model.password }, { data: null });
+
+        return loginResponse;
     }
 
 
@@ -210,17 +206,17 @@ export const Login = () => {
 
     }
 
-    const performUserLogin = () => {
+    const performUserLogin = async () => {
 
         let newModel = getCurrentModel();
         newModel.passwordFeedback = "";
         newModel.usernameFeedBack = "";
         dispatch(setLoginModel(newModel));
 
-        const response = validateUserLogin();
+        const response = await validateUserLogin();
         if (loginHasErrors(response?.errors)) return;
 
-        let sessionData = Utility.getSessionConfig(appData, model.username!, model.password!);
+        let sessionData = Utility.getSessionConfig(appData, response.data);
         dispatch(setSessionData(sessionData));
         newModel = getInitialLoginModel();
         newModel.loginString = model.loginString;

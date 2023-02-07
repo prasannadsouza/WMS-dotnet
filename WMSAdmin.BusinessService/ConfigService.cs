@@ -84,9 +84,8 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Method = "SetDebugTestConfig",
-                                    AppConfigGroup = appConfigGroup.Code,
-                                    AppConfig = from.Code,
+                                    Method = nameof(GetDebugTest),
+                                    AppConfigId= from.Id,
                                 };
 
                                 _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
@@ -204,9 +203,8 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Method = "SetEmailConfig",
-                                    AppConfigGroup = appConfigGroup.Code,
-                                    AppConfig = from.Code,
+                                    Method = nameof(GetEmail),
+                                    AppConfigId = from.Id,
                                 };
 
                                 _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
@@ -308,9 +306,19 @@ namespace WMSAdmin.BusinessService
                                 to.BaseUrl = from.Value;
                                 break;
                             }
-                        case Entity.Constants.Config.APPLICATION_CACHEEXPIRY_INMINUTES:
+                        case Entity.Constants.Config.APPLICATION_SYSTEMUSER_CODE:
                             {
-                                to.CacheExpiryInMinutes = int.Parse(from.Value);
+                                to.SystemUserCode = from.Value;
+                                break;
+                            }
+                        case Entity.Constants.Config.APPLICATION_JWTKEY:
+                            {
+                                to.JWTKey = from.Value;
+                                break;
+                            }
+                        case Entity.Constants.Config.APPLICATION_JWTVALIDITYINMINUTES:
+                            {
+                                to.JWTValiditiyInMinutes = int.Parse(from.Value);
                                 break;
                             }
                         default:
@@ -318,9 +326,8 @@ namespace WMSAdmin.BusinessService
                                 var loginfo = new
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
-                                    Method = "SetSystemConfig",
-                                    AppConfigGroup = appConfigGroup.Code,
-                                    AppConfig = from.Code,
+                                    Method = nameof(GetApplication),
+                                    AppConfigId = from.Id,
                                 };
 
                                 _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
@@ -388,8 +395,7 @@ namespace WMSAdmin.BusinessService
                                 {
                                     SesssionId = Configuration.Setting.Application.SessionId,
                                     Method = nameof(GetPagination),
-                                    AppConfigGroup = appConfigGroup.Code,
-                                    AppConfig = from.Code,
+                                    AppConfigId = from.Id,
                                 };
 
                                 _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });

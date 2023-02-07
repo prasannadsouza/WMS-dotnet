@@ -64,5 +64,11 @@ namespace WMSAdmin.WebApp.WebAppUtility
             _resourceManagers.Add(type, resourceManager);
             return (T)resourceManager;
         }
+
+        public Entity.Entities.Pagination GetDefaultPagination(bool forMaxRecordsPerPage = false)
+        {
+            return GetBusinessService<BusinessService.RepoService>().GetDefaultPagination(forMaxRecordsPerPage);
+        }
+
     }
 }

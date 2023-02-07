@@ -30,4 +30,3 @@ export type LoginModel = {
     emailFeedback?: string,
     loginString?: LocalizedStrings<LoginString>;
 };
-

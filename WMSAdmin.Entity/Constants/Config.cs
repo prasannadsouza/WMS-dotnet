@@ -22,6 +22,10 @@ namespace WMSAdmin.Entity.Constants
         public const string APPLICATION_CONFIG_BASEURL = "BASEURL";
         public const string APPLICATION_BASEURL_INTERNAL = "BASEURL_INTERNAL";
         public const string APPLICATION_CACHEEXPIRY_INMINUTES = "CACHEEXPIRY_INMINUTES";
+        public const string APPLICATION_SYSTEMUSER_CODE = "SYSTEMUSER_CODE";
+        public const string APPLICATION_JWTKEY = "JWTKEY";
+        public const string APPLICATION_JWTISSUER = "JWTISSUER";
+        public const string APPLICATION_JWTVALIDITYINMINUTES = "JWTVALIDITYINMINUTES";
 
         public const string GROUP_PAGINATION = "PAGINATION";
         public const string PAGINATION_RECORDSPERPAGE = "RECORDSPERPAGE";

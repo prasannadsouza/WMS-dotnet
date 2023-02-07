@@ -31,7 +31,7 @@ namespace WMSAdmin.WebApp.Controllers
         [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetDefaultGeneralString()
         {
-            var resource = new Language.ResourceManager.GeneralString(AppUtility.Configuration, System.Globalization.CultureInfo.CurrentCulture);
+            var resource = AppUtility.GetResourceManager<Language.ResourceManager.GeneralString>();
             return Ok(new Entity.Entities.Response<Entity.Entities.LanguageStrings.GeneralString> { Data = resource.GetString() });
         }
 
@@ -39,7 +39,7 @@ namespace WMSAdmin.WebApp.Controllers
         [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetDefaultLoginString()
         {
-            var resource = new Language.ResourceManager.LoginString(AppUtility.Configuration, System.Globalization.CultureInfo.CurrentCulture);
+            var resource = AppUtility.GetResourceManager<Language.ResourceManager.LoginString>();
             return Ok(new Entity.Entities.Response<Entity.Entities.LanguageStrings.LoginString> { Data = resource.GetString() });
         }
 
@@ -47,14 +47,7 @@ namespace WMSAdmin.WebApp.Controllers
         [Route(WebAppUtility.WebAppUtility.APIRoute)]
         public OkObjectResult GetUICulture()
         {
-            var languageCultureFilter = new Entity.Filter.LanguageCulture
-            {
-                Pagination = new Entity.Entities.Pagination
-                {
-                    CurrentPage = 1,
-                    RecordsPerPage = AppUtility.ConfigSetting.Pagination.MaxRecordsAllowedPerPage,
-                }
-            };
+            var languageCultureFilter = new Entity.Filter.LanguageCulture { Pagination = AppUtility.GetDefaultPagination(true) };
 
             var languageCultures = new List<Entity.Entities.LanguageCulture>();
             var repoService = AppUtility.GetBusinessService<BusinessService.RepoService>();

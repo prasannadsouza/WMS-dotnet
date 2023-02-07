@@ -11,6 +11,7 @@ export type User = {
     firstName?: string;
     lastName?: string;
     localeCode?: string;
+    token?: string;
 }
 
 export type ErrorData = {
@@ -42,4 +43,13 @@ export type Error = {
     message?: string;
 }
 
+export type UserAuthenticateResponse = {
+    firstName?: string,
+    lastName?: string,
+    userName?: string,
+    locale?: string,
+    customerName?: string,
+    customerLocale?: string,
+    token?: string,
+}
 

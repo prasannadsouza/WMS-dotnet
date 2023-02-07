@@ -14,19 +14,35 @@ namespace WMSAdmin.BusinessService
     public class AuthenticationService : BaseService
     {
         RepoService _repoService;
-        LanguageService _languageService;
         private ILogger _logger;
         public AuthenticationService(Utility.Configuration configuration) : base(configuration)
         {
             _logger = configuration.ServiceProvider.GetRequiredService<ILogger<AuthenticationService>>();
             _repoService = GetBusinessService<RepoService>();
-            _languageService = GetBusinessService<LanguageService>();
         }
 
         public Entity.Entities.Response<Entity.Entities.UserAuthenticateResponse> AuthenticateAppUser(Entity.Entities.UserAuthenticateRequest model)
         {
-            var response = new Entity.Entities.Response<Entity.Entities.UserAuthenticateResponse> { Data = new Entity.Entities.UserAuthenticateResponse() };
-            response.Data.Token = generateJwtToken(new Entity.Entities.AppUser());
+            var response = new Entity.Entities.Response<Entity.Entities.UserAuthenticateResponse> { Errors = new List<Entity.Entities.Error>() };
+            var appLogin = _repoService.Get(new Entity.Filter.AppLogin { LoginId = model.UserName}).Data.FirstOrDefault();
+            var loginStrings = GetResourceManager<Language.ResourceManager.LoginString>();
+            var authError = new Entity.Entities.Error {
+                ErrorCode = Entity.Constants.ErrorCode.InvalidUserNameOrPassword,
+                Message = loginStrings.UsernameOrPasswordIsInvalid
+            };
+
+            if (appLogin == null || 
+                appLogin.LoginId == Configuration.Setting.Application.SystemUserCode 
+                || appLogin.LoginSecret != model.Password) {
+                response.Errors.Add(authError);
+                return response;
+            }
+            
+            response.Data = new Entity.Entities.UserAuthenticateResponse
+            {
+                Token = generateJwtToken(new Entity.Entities.AppLogin()),
+            };
+
             return response;
         }
 
@@ -54,7 +70,7 @@ namespace WMSAdmin.BusinessService
             
         }
 
-        private string generateJwtToken(Entity.Entities.AppUser user)
+        private string generateJwtToken(Entity.Entities.AppLogin appLogin)
         {
             var appSetting = Configuration.Setting.Application;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSetting.JWTKey));
@@ -62,7 +78,7 @@ namespace WMSAdmin.BusinessService
             // Here you  can fill claim information from database for the users as well
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, "atul"),
-                new Claim("Id", $"{user.Id}"),
+                new Claim("Id", $"{appLogin.Id}"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
             var token = new JwtSecurityToken(appSetting.JWTIssuer, appSetting.JWTIssuer, claims, expires: DateTime.Now.AddMinutes(appSetting.JWTValiditiyInMinutes), signingCredentials: credentials);

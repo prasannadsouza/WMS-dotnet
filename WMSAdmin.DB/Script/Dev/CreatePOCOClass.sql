@@ -1,5 +1,5 @@
 ﻿use WMSAdmin
-declare @tableName varchar(200) = 'ConfigTimestamp'
+declare @tableName varchar(200) = 'AppLogin'
 declare @columnName varchar(200)
 declare @nullable varchar(50)
 declare @datatype varchar(50)

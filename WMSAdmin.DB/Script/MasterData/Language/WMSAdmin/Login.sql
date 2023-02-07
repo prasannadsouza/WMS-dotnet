@@ -44,4 +44,7 @@ select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'ResetEmailLinkSent',
 select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'ResetEmailLinkSent','Återställ e-postlänk skickad' union
 
 select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'LoginTitle','Login' union
-select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'LoginTitle','Logga in' 
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'LoginTitle','Logga in' union 
+
+select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'Unauthorized','Unauthorized' union
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Unauthorized','Inte behörig' 

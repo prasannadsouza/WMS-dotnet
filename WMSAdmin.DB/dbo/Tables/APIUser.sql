@@ -1,0 +1,4 @@
+﻿CREATE TABLE [dbo].[APIUser]
+(
+	[Id] INT NOT NULL PRIMARY KEY
+)

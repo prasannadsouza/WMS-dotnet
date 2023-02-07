@@ -2,7 +2,7 @@ import LocalizedStrings from "react-localization";
 import App from "../App";
 import { AppData, ApplicationConfig, AppState, ConfigTimeStamp, PaginationConfig, SessionData } from "../entities/configs";
 import { APIParts, CacheConstants, ErrorConstants, LinkConstants } from "../entities/constants";
-import { ErrorData, ResponseData } from "../entities/entities";
+import { ErrorData, ResponseData, UserAuthenticateResponse } from "../entities/entities";
 import { ConfirmModel, MessageModel } from "../entities/models";
 import { Locale } from "./locale";
 import { UIHelper } from "./uihelper";
@@ -15,6 +15,28 @@ export class Utility {
         const search = searchParams?.toString();
         if ((search?.length > 0) === true) url.search = search;
         return await fetch(url).then(response => {
+            if (!response.ok) {
+                defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
+                return defaultData;
+            }
+            defaultData = response.json() as ResponseData<T>;
+            return defaultData;
+        });
+    }
+
+    static async PostData<T>(urlPart: string, searchParams: URLSearchParams, data:object, defaultData: ResponseData<T>): Promise<ResponseData<T>> {
+        const url: URL = new URL(window.origin + "/" + urlPart);
+
+        const search = searchParams?.toString();
+        if ((search?.length > 0) === true) url.search = search;
+        return await fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
             if (!response.ok) {
                 defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
                 return defaultData;
@@ -123,19 +145,17 @@ export class Utility {
     }
 
     
-    static getSessionConfig(appData:AppData, username: string, password: string): SessionData {
+    static getSessionConfig(appData:AppData, data: UserAuthenticateResponse): SessionData {
         const sessionData: SessionData = {
             customer: {
-                name: "C-" + username,
-                number: "123456",
-                organizationNumber: "555555-55555",
-                id: 1,
-                localeCode: "sv-SE"
+                name: data.customerName,
+                localeCode: data.customerLocale,
             },
             user: {
-                firstName: username,
-                lastName: password,
-                localeCode: "en-SE",
+                firstName: data.firstName,
+                lastName: data.lastName,
+                localeCode: data.locale,
+                token: data.token,
             },
             language: appData.sessionData.language, 
         };

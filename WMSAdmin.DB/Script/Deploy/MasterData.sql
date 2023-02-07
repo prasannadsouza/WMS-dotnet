@@ -13,6 +13,9 @@ GO
 PRINT 'Executing Role'
 :r ../MasterData/Role.sql
 GO
+PRINT 'AppLogin'
+:r ../MasterData/AppLogin.sql
+GO
 PRINT 'WMS Application'
 :r ../MasterData/WMSApplication.sql
 GO

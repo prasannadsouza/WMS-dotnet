@@ -75,6 +75,9 @@
     <Build Include="dbo\Tables\LanguageGroup.sql" />
     <Build Include="dbo\Tables\LanguageText.sql" />
     <Build Include="dbo\Tables\ConfigTimestamp.sql" />
+    <Build Include="dbo\Tables\AppLogin.sql" />
+    <Build Include="dbo\Tables\APIUser.sql" />
+    <None Include="Script\MasterData\AppLogin.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\Deploy\MasterData.sql" />

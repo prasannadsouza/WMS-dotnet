@@ -44,4 +44,5 @@ export const LocaleCodeConstants = {
 export const APIParts = {
     CONFIG: "api/Config/",
     LANGUAGE: "api/Language/",
+    APP: "api/App"
 }
