@@ -13,8 +13,11 @@ GO
 PRINT 'Executing Role'
 :r ../MasterData/Role.sql
 GO
-PRINT 'AppLogin'
-:r ../MasterData/AppLogin.sql
+PRINT 'AppUserType'
+:r ../MasterData/AppUserType.sql
+GO
+PRINT 'AppUser'
+:r ../MasterData/AppUser.sql
 GO
 PRINT 'WMS Application'
 :r ../MasterData/WMSApplication.sql

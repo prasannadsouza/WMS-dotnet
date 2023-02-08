@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace WMSAdmin.Entity.Filter
 {
-    public class AppUser
+    public class AppCustomerUser
     {
         public long? Id { get; set; }
         public List<long> Ids { get; set; }
-        public string AuthId { get; set; }
         public Entities.Pagination Pagination { get; set; }
     }
 }

@@ -21,26 +21,26 @@ namespace WMSAdmin.BusinessService
             _repoService = GetBusinessService<RepoService>();
         }
 
-        public Entity.Entities.Response<Entity.Entities.UserAuthenticateResponse> AuthenticateAppUser(Entity.Entities.UserAuthenticateRequest model)
+        public Entity.Entities.Response<Entity.Entities.UserAuthenticateResponse> AuthenticateAppCustomerUser(Entity.Entities.UserAuthenticateRequest model)
         {
             var response = new Entity.Entities.Response<Entity.Entities.UserAuthenticateResponse> { Errors = new List<Entity.Entities.Error>() };
-            var appLogin = _repoService.Get(new Entity.Filter.AppLogin { LoginId = model.UserName}).Data.FirstOrDefault();
+            var appUser = _repoService.Get(new Entity.Filter.AppUser { AuthId = model.UserName}).Data.FirstOrDefault();
             var loginStrings = GetResourceManager<Language.ResourceManager.LoginString>();
             var authError = new Entity.Entities.Error {
                 ErrorCode = Entity.Constants.ErrorCode.InvalidUserNameOrPassword,
                 Message = loginStrings.UsernameOrPasswordIsInvalid
             };
 
-            if (appLogin == null || 
-                appLogin.LoginId == Configuration.Setting.Application.SystemUserCode 
-                || appLogin.LoginSecret != model.Password) {
+            if (appUser == null || 
+                appUser.AuthId == Configuration.Setting.Application.SystemUserCode 
+                || appUser.AuthSecret != model.Password) {
                 response.Errors.Add(authError);
                 return response;
             }
             
             response.Data = new Entity.Entities.UserAuthenticateResponse
             {
-                Token = generateJwtToken(new Entity.Entities.AppLogin()),
+                Token = generateJwtToken(new Entity.Entities.AppUser()),
             };
 
             return response;
@@ -70,7 +70,7 @@ namespace WMSAdmin.BusinessService
             
         }
 
-        private string generateJwtToken(Entity.Entities.AppLogin appLogin)
+        private string generateJwtToken(Entity.Entities.AppUser appLogin)
         {
             var appSetting = Configuration.Setting.Application;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSetting.JWTKey));

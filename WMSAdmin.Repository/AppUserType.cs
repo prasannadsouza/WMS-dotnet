@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace WMSAdmin.Repository
 {
-    public class AppConfigGroup: BaseRepository
+    public class AppUserType : BaseRepository
     {
-        public AppConfigGroup(Utility.Configuration configuration) : base(configuration)
+        public AppUserType(Utility.Configuration configuration) : base(configuration)
         {
         }
 
-        internal IQueryable<POCO.AppConfigGroup> GetQuery(Context.RepoContext db, Entity.Filter.AppConfigGroup filter)
+        internal IQueryable<POCO.AppUserType> GetQuery(Context.RepoContext db, Entity.Filter.AppUserType filter)
         {
-            var query = db.AppConfigGroup.AsNoTracking();
+            var query = db.AppUserType.AsNoTracking();
             if (filter == null) return query;
 
             if (filter.Id != null) query = query.Where(p => filter.Id.Value == p.Id.Value);
@@ -28,22 +28,12 @@ namespace WMSAdmin.Repository
                 if (filter.Code.Contains("%")) query = query.Where(p => EF.Functions.Like(p.Code, filter.Code));
                 else query = query.Where(e => e.Code == filter.Code);
             }
-
-            if (string.IsNullOrEmpty(filter?.Name) == false)
-            {
-                if (filter.Name.Contains("%")) query = query.Where(p => EF.Functions.Like(p.Name, filter.Name));
-                else query = query.Where(e => e.Name == filter.Name);
-            }
-
-            if (filter.FromTimeStamp.HasValue) query = query.Where(p => filter.FromTimeStamp >= p.TimeStamp.Value);
-            if (filter.ToTimeStamp.HasValue) query = query.Where(p => filter.ToTimeStamp <= p.TimeStamp.Value);
-
             return query;
         }
 
-        public Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>> Get(Entity.Filter.AppConfigGroup filter)
+        public Entity.Entities.Response<List<Entity.Entities.AppUserType>> Get(Entity.Filter.AppUserType filter)
         {
-            var responseData = new Entity.Entities.Response<List<Entity.Entities.AppConfigGroup>>()
+            var responseData = new Entity.Entities.Response<List<Entity.Entities.AppUserType>>()
             {
                 Errors = new List<Entity.Entities.Error>(),
             };
@@ -57,55 +47,56 @@ namespace WMSAdmin.Repository
             }
         }
 
-        public void Save(Entity.Entities.AppConfigGroup item)
+        public void Save(Entity.Entities.AppUserType item)
         {
             using (var dbContext = GetDbContext())
             {
-                POCO.AppConfigGroup dbItem = null;
+                POCO.AppUserType dbItem = null;
 
                 if (item.Id.HasValue)
                 {
-                    dbItem = dbContext.AppConfigGroup.First(e => e.Id == item.Id.Value);
+                    dbItem = dbContext.AppUserType.First(e => e.Id == item.Id.Value);
                     ConvertTo(item, dbItem);
                     dbContext.SaveChanges();
                     return;
                 }
 
                 dbItem = ConvertTo(item, dbItem);
-                dbContext.AppConfigGroup.Add(dbItem);
+                dbContext.AppUserType.Add(dbItem);
                 dbContext.SaveChanges();
                 item.Id = dbItem.Id;
                 return;
             }
         }
 
-        internal static List<Entity.Entities.AppConfigGroup> ConvertTo(IEnumerable<POCO.AppConfigGroup> fromList)
+        internal static List<Entity.Entities.AppUserType> ConvertTo(IEnumerable<POCO.AppUserType> fromList)
         {
-            var toList = new List<Entity.Entities.AppConfigGroup>();
+            var toList = new List<Entity.Entities.AppUserType>();
             foreach (var from in fromList)
             {
                 toList.Add(ConvertTo(from));
             }
             return toList;
         }
-        internal static Entity.Entities.AppConfigGroup ConvertTo(POCO.AppConfigGroup from)
+        internal static Entity.Entities.AppUserType ConvertTo(POCO.AppUserType from)
         {
-            var to = new Entity.Entities.AppConfigGroup
+            var to = new Entity.Entities.AppUserType
             {
                 Id = from.Id,
                 Code = from.Code,
-                Name = from.Name,
+                AppUserTypeName = from.AppUserTypeName,
                 Description = from.Description,
                 TimeStamp = from.TimeStamp,
-                
+
+
             };
             return to;
         }
-        internal static POCO.AppConfigGroup ConvertTo(Entity.Entities.AppConfigGroup from, POCO.AppConfigGroup to)
+        internal static POCO.AppUserType ConvertTo(Entity.Entities.AppUserType from, POCO.AppUserType to)
         {
-            if (to == null) to = new POCO.AppConfigGroup();
+            if (to == null) to = new POCO.AppUserType();
             to.Code = from.Code;
-            to.Name = from.Name;
+            to.AppUserTypeName = from.AppUserTypeName;
             to.Description = from.Description;
             to.TimeStamp = from.TimeStamp;
             return to;

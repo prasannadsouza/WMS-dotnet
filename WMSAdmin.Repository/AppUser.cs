@@ -15,34 +15,26 @@ namespace WMSAdmin.Repository
         {
         }
 
-        internal IQueryable<POCO.AppLogin> GetQuery(Context.RepoContext db, Entity.Filter.AppLogin filter)
+        internal IQueryable<POCO.AppUser> GetQuery(Context.RepoContext db, Entity.Filter.AppUser filter)
         {
-            var query = db.AppLogin.AsNoTracking();
+            var query = db.AppUser.AsNoTracking();
             if (filter == null) return query;
 
             if (filter.Id != null) query = query.Where(p => filter.Id.Value == p.Id.Value);
             if (filter.Ids?.Any() == true) query = query.Where(p => filter.Ids.Contains(p.Id.Value));
 
-            filter.LoginId = filter?.LoginId?.Trim();
-            if (string.IsNullOrEmpty(filter?.LoginId) == false)
+            filter.AuthId = filter?.AuthId?.Trim();
+            if (string.IsNullOrEmpty(filter?.AuthId) == false)
             {
-                if (filter.LoginId.Contains("%")) query = query.Where(p => EF.Functions.Like(p.LoginId, filter.LoginId));
-                else query = query.Where(e => e.LoginId == filter.LoginId);
+                if (filter.AuthId.Contains("%")) query = query.Where(p => EF.Functions.Like(p.AuthId, filter.AuthId));
+                else query = query.Where(e => e.AuthId == filter.AuthId);
             }
             return query;
         }
 
-        public List<Entity.Entities.AppLogin> GetAll()
+        public Entity.Entities.Response<List<Entity.Entities.AppUser>> Get(Entity.Filter.AppUser filter)
         {
-            using (var db = GetDbContext())
-            {
-                return ConvertTo(db.AppLogin);
-            }
-        }
-
-        public Entity.Entities.Response<List<Entity.Entities.AppLogin>> Get(Entity.Filter.AppLogin filter)
-        {
-            var responseData = new Entity.Entities.Response<List<Entity.Entities.AppLogin>>()
+            var responseData = new Entity.Entities.Response<List<Entity.Entities.AppUser>>()
             {
                 Errors = new List<Entity.Entities.Error>(),
             };
@@ -58,31 +50,31 @@ namespace WMSAdmin.Repository
             }
         }
 
-        public void Save(Entity.Entities.AppLogin item)
+        public void Save(Entity.Entities.AppUser item)
         {
             using (var dbContext = GetDbContext())
             {
-                POCO.AppLogin dbItem = null;
+                POCO.AppUser dbItem = null;
 
                 if (item.Id.HasValue)
                 {
-                    dbItem = dbContext.AppLogin.First(e => e.Id == item.Id.Value);
+                    dbItem = dbContext.AppUser.First(e => e.Id == item.Id.Value);
                     ConvertTo(item, dbItem);
                     dbContext.SaveChanges();
                     return;
                 }
 
                 dbItem = ConvertTo(item, dbItem);
-                dbContext.AppLogin.Add(dbItem);
+                dbContext.AppUser.Add(dbItem);
                 dbContext.SaveChanges();
                 item.Id = dbItem.Id;
                 return;
             }
         }
 
-        internal static List<Entity.Entities.AppLogin> ConvertTo(IEnumerable<POCO.AppLogin> fromList)
+        internal static List<Entity.Entities.AppUser> ConvertTo(IEnumerable<POCO.AppUser> fromList)
         {
-            var toList = new List<Entity.Entities.AppLogin>();
+            var toList = new List<Entity.Entities.AppUser>();
             foreach (var from in fromList)
             {
                 toList.Add(ConvertTo(from));
@@ -90,39 +82,37 @@ namespace WMSAdmin.Repository
             return toList;
         }
 
-        internal static Entity.Entities.AppLogin ConvertTo(POCO.AppLogin from)
+        internal static Entity.Entities.AppUser ConvertTo(POCO.AppUser from)
         {
-            var to = new Entity.Entities.AppLogin
+            var to = new Entity.Entities.AppUser
             {
                 Id = from.Id,
-                LoginId = from.LoginId,
-                LoginSecret = from.LoginSecret,
+                AppCustomerId = from.AppCustomerId,
+                AppUserTypeId = from.AppUserTypeId,
+                AuthId = from.AuthId,
+                AuthSecret = from.AuthSecret,
                 SecretKey = from.SecretKey,
                 DisplayName = from.DisplayName,
-                FirstName = from.FirstName,
-                LastName = from.LastName,
-                Email = from.Email,
-                Phone = from.Phone,
                 ValidTill = from.ValidTill,
                 LastLoginTime = from.LastLoginTime,
+                RefreshToken = from.RefreshToken,
                 TimeStamp = from.TimeStamp,
             };
             return to;
         }
 
-        internal static POCO.AppLogin ConvertTo(Entity.Entities.AppLogin from, POCO.AppLogin to)
+        internal static POCO.AppUser ConvertTo(Entity.Entities.AppUser from, POCO.AppUser to)
         {
-            if (to == null) to = new POCO.AppLogin();
-            to.LoginId = from.LoginId;
-            to.LoginSecret = from.LoginSecret;
+            if (to == null) to = new POCO.AppUser();
+            to.AppCustomerId = from.AppCustomerId;
+            to.AppUserTypeId = from.AppUserTypeId;
+            to.AuthId = from.AuthId;
+            to.AuthSecret = from.AuthSecret;
             to.SecretKey = from.SecretKey;
             to.DisplayName = from.DisplayName;
-            to.FirstName = from.FirstName;
-            to.LastName = from.LastName;
-            to.Email = from.Email;
-            to.Phone = from.Phone;
             to.ValidTill = from.ValidTill;
             to.LastLoginTime = from.LastLoginTime;
+            to.RefreshToken = from.RefreshToken;
             to.TimeStamp = from.TimeStamp;
             return to;
         }

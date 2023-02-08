@@ -17,7 +17,7 @@ export class Locale {
 
         return await Utility.GetData<LanguageCulture[]>(APIParts.LANGUAGE + "GetUICulture", undefined, { data: null }).then(response => {
             if ((response.errors?.length > 0) === true) return response;
-
+            
             let languageCodes: string[] = [];
             languageCodes.push(LocaleCodeConstants.en_SE);
             languageCodes.push(LocaleCodeConstants.sv_SE);

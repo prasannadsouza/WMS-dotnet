@@ -25,7 +25,10 @@ namespace WMSAdmin.Repository.Context
             modelBuilder.Entity<POCO.LanguageText>().ToTable(nameof(POCO.LanguageText));
             modelBuilder.Entity<POCO.WMSApplication>().ToTable(nameof(POCO.WMSApplication));
             modelBuilder.Entity<POCO.ConfigTimeStamp>().ToTable(nameof(POCO.ConfigTimeStamp));
-            modelBuilder.Entity<POCO.AppLogin>().ToTable(nameof(POCO.AppLogin));
+            modelBuilder.Entity<POCO.AppUser>().ToTable(nameof(POCO.AppUser));
+            modelBuilder.Entity<POCO.AppUserType>().ToTable(nameof(POCO.AppUserType));
+            modelBuilder.Entity<POCO.AppCustomer>().ToTable(nameof(POCO.AppCustomer));
+            modelBuilder.Entity<POCO.AppCustomerUser>().ToTable(nameof(POCO.AppCustomerUser));
             //modelBuilder.Entity<POCO.DBColumn>().ToView("INFORMATION_SCHEMA.COLUMNS));
         }
         public DbSet<POCO.AppConfig> AppConfig {get; set;}
@@ -35,7 +38,10 @@ namespace WMSAdmin.Repository.Context
         public DbSet<POCO.LanguageText> LanguageText { get; set; }
         public DbSet<POCO.WMSApplication> WMSApplication { get; set; }
         public DbSet<POCO.ConfigTimeStamp> ConfigTimeStamp { get; set; }
-        public DbSet<POCO.AppLogin> AppLogin { get; set; }
+        public DbSet<POCO.AppUser> AppUser { get; set; }
+        public DbSet<POCO.AppUserType> AppUserType { get; set; }
+        public DbSet<POCO.AppCustomer> AppCustomer { get; set; }
+        public DbSet<POCO.AppCustomerUser> AppCustomerUser { get; set; }
         //public DbSet<POCO.DBColumn> DBColumn { get; set; }
     }
 }

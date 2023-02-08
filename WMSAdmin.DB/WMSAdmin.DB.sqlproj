@@ -75,9 +75,12 @@
     <Build Include="dbo\Tables\LanguageGroup.sql" />
     <Build Include="dbo\Tables\LanguageText.sql" />
     <Build Include="dbo\Tables\ConfigTimestamp.sql" />
-    <Build Include="dbo\Tables\AppLogin.sql" />
     <Build Include="dbo\Tables\APIUser.sql" />
-    <None Include="Script\MasterData\AppLogin.sql" />
+    <Build Include="dbo\Tables\AppCustomer.sql" />
+    <Build Include="dbo\Tables\AppCustomerUser.sql" />
+    <Build Include="dbo\Tables\AppUserType.sql" />
+    <Build Include="dbo\Tables\AppUser.sql" />
+    <None Include="Script\MasterData\AppUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\Deploy\MasterData.sql" />
@@ -92,5 +95,6 @@
     <None Include="Script\MasterData\Language\WMSAdmin\General.sql" />
     <None Include="Script\MasterData\Language\WMSAdmin\Login.sql" />
     <None Include="Script\MasterData\Language\LanguageCulture.sql" />
+    <None Include="Script\MasterData\AppUserType.sql" />
   </ItemGroup>
 </Project>

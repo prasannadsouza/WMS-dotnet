@@ -14,7 +14,7 @@ namespace WMSAdmin.WebApp.Controllers
         public OkObjectResult Login(Entity.Entities.UserAuthenticateRequest request)
         {
             var authService = AppUtility.GetBusinessService<BusinessService.AuthenticationService>();
-            return Ok(authService.AuthenticateAppUser(request));
+            return Ok(authService.AuthenticateAppCustomerUser(request));
         }
     }
 }
