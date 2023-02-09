@@ -11,10 +11,22 @@ namespace WMSAdmin.WebApp.Controllers
 
         [HttpGet]
         [Route(WebAppUtility.WebAppUtility.APIRoute)]
-        public OkObjectResult Login(Entity.Entities.UserAuthenticateRequest request)
+        public OkObjectResult Login(Entity.Entities.AuthenticationRequest request)
         {
+            var response = new Entity.Entities.Response<bool> { Errors = new List<Entity.Entities.Error>() };
+            request.AppUserType = Entity.Constants.AppUserType.APPUSER;
             var authService = AppUtility.GetBusinessService<BusinessService.AuthenticationService>();
-            return Ok(authService.AuthenticateAppCustomerUser(request));
+            var authResponse = authService.AuthenticateAppUser(request);
+
+            if (authResponse.Errors?.Any() == true)
+            {
+                response.Errors.AddRange(authResponse.Errors);
+                return Ok(response);
+            }
+
+            Response.Cookies.Append(Entity.Constants.WebAppSetting.XAccessToken, authResponse.Data.JwtToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            Response.Cookies.Append(Entity.Constants.WebAppSetting.XRefreshToken, authResponse.Data.RefreshToken!.Value.ToString(),new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            return Ok(response);
         }
     }
 }

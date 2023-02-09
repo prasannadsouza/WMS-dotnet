@@ -1,5 +1,5 @@
 ﻿use WMSAdmin
-declare @tableName varchar(200) = 'AppUser'
+declare @tableName varchar(200) = 'AppUserRefreshToken'
 declare @columnName varchar(200)
 declare @nullable varchar(50)
 declare @datatype varchar(50)
@@ -39,6 +39,8 @@ print ''
     BEGIN
 
 	select @assignmentText = @assignmentText + @columnName + ' = from.' +  @columnName + ',' + CHAR(13)+CHAR(10)
+
+	if (@columnName ! = 'Id')
 	select @assignmentText1 = @assignmentText1 + + 'to.' + @columnName + ' = from.' +  @columnName + ';' + CHAR(13)+CHAR(10)
 	
 	-- datatype

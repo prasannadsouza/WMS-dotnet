@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace WMSAdmin.Entity.Entities
 {
-    public class UserAuthenticateResponse
+    public class AuthenticationResponse
     {
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Username { get; set; }
-        public string Token { get; set; }
+        public string CustomerName { get; set; }
+        public string DisplayName { get; set; }
+        public Guid? RefreshToken { get; set; }
+        public string JwtToken { get; set; }
     }
 }

@@ -8,6 +8,6 @@ namespace WMSAdmin.Entity.Constants
 {
     public class ErrorCode
     {
-        public const int InvalidUserNameOrPassword = 200001;
+        public const int InvalidCredentials = 200001;
     }
 }

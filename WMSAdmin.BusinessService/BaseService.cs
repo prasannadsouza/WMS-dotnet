@@ -12,7 +12,7 @@ namespace WMSAdmin.BusinessService
         private Dictionary<System.Type, Repository.BaseRepository> _repositories;
         private Dictionary<System.Type, BaseService> _businessServices;
         private Dictionary<Type, Language.ResourceManager.BaseResourceManager> _resourceManagers;
-
+        protected Repository.Context.RepoContext RepoContext { get; private set; }
 
         protected Utility.Cache CacheUtility { get; private set; }
 
@@ -24,6 +24,7 @@ namespace WMSAdmin.BusinessService
             _repositories = new Dictionary<Type, Repository.BaseRepository>();
             _businessServices = new Dictionary<Type, BaseService>();
             _resourceManagers = new Dictionary<Type, Language.ResourceManager.BaseResourceManager>();
+            RepoContext = GetRepository<Repository.AppConfig>().GetDbContext();
         }
 
         protected T GetRepository<T>() where T : Repository.BaseRepository

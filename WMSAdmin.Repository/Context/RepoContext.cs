@@ -29,6 +29,7 @@ namespace WMSAdmin.Repository.Context
             modelBuilder.Entity<POCO.AppUserType>().ToTable(nameof(POCO.AppUserType));
             modelBuilder.Entity<POCO.AppCustomer>().ToTable(nameof(POCO.AppCustomer));
             modelBuilder.Entity<POCO.AppCustomerUser>().ToTable(nameof(POCO.AppCustomerUser));
+            modelBuilder.Entity<POCO.AppUserRefreshToken>().ToTable(nameof(POCO.AppUserRefreshToken));
             //modelBuilder.Entity<POCO.DBColumn>().ToView("INFORMATION_SCHEMA.COLUMNS));
         }
         public DbSet<POCO.AppConfig> AppConfig {get; set;}
@@ -42,6 +43,7 @@ namespace WMSAdmin.Repository.Context
         public DbSet<POCO.AppUserType> AppUserType { get; set; }
         public DbSet<POCO.AppCustomer> AppCustomer { get; set; }
         public DbSet<POCO.AppCustomerUser> AppCustomerUser { get; set; }
+        public DbSet<POCO.AppUserRefreshToken> AppUserRefreshToken { get; set; }
         //public DbSet<POCO.DBColumn> DBColumn { get; set; }
     }
 }

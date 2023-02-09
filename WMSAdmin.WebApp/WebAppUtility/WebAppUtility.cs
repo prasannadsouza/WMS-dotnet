@@ -51,6 +51,7 @@ namespace WMSAdmin.WebApp.WebAppUtility
             
             var configService = new BusinessService.ConfigService(configuration);
             var setting = configService.GetConfigSetting();
+            setting.Application.SessionId = _httpContext.Session.Id;
             return setting;
         }
 

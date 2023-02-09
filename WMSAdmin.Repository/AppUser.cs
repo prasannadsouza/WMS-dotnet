@@ -9,9 +9,9 @@ using WMSAdmin.Entity.Entities.Config;
 
 namespace WMSAdmin.Repository
 {
-    public class AppLogin : BaseRepository
+    public class AppUser : BaseRepository
     {
-        public AppLogin(Utility.Configuration configuration) : base(configuration)
+        public AppUser(Utility.Configuration configuration) : base(configuration)
         {
         }
 
@@ -93,9 +93,7 @@ namespace WMSAdmin.Repository
                 AuthSecret = from.AuthSecret,
                 SecretKey = from.SecretKey,
                 DisplayName = from.DisplayName,
-                ValidTill = from.ValidTill,
-                LastLoginTime = from.LastLoginTime,
-                RefreshToken = from.RefreshToken,
+                LoginTime = from.LoginTime,
                 TimeStamp = from.TimeStamp,
             };
             return to;
@@ -110,9 +108,7 @@ namespace WMSAdmin.Repository
             to.AuthSecret = from.AuthSecret;
             to.SecretKey = from.SecretKey;
             to.DisplayName = from.DisplayName;
-            to.ValidTill = from.ValidTill;
-            to.LastLoginTime = from.LastLoginTime;
-            to.RefreshToken = from.RefreshToken;
+            to.LoginTime = from.LoginTime;
             to.TimeStamp = from.TimeStamp;
             return to;
         }

@@ -20,8 +20,8 @@ END
 select @AppUserTypeId = (select [Id] FROM [dbo].[AppUserType] WHERE [Code] = 'APPUSER')
 IF Not EXISTS (SELECT * FROM [dbo].[AppUser] WHERE [AuthId] = 'LU')
 BEGIN
-INSERT INTO [dbo].[AppUser] ([AppCustomerId], [AppUserTypeId], [AuthId],[AuthSecret], [DisplayName], [TimeStamp]) 
-VALUES (@AppCustomerId, @AppUserTypeId, 'LU', '1234', 'LoginUser', GETDATE())
+INSERT INTO [dbo].[AppUser] ([AppCustomerId], [AppUserTypeId], [AuthId],[AuthSecret], [SecretKey], [DisplayName], [TimeStamp]) 
+VALUES (@AppCustomerId, @AppUserTypeId, 'LU', '1234', NEWID(), 'LoginUser', GETDATE())
 END
 
 select @AppUserId = (SELECT [Id] FROM [dbo].[AppUser] WHERE [AuthId] = 'LU')

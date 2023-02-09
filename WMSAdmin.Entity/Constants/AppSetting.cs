@@ -10,4 +10,20 @@ namespace WMSAdmin.Entity.Constants
     {
         public const string ConnectionStrings_BaseConnection = "BaseConnection";
     }
+
+    public static class AppUserType
+    {
+        public const string APPUSER = nameof(APPUSER);
+        public const string APIUSER = nameof(APIUSER);
+        public const string SYSTEMUSER = nameof(SYSTEMUSER);
+        public const string REMOTEAPPADMIN = nameof(REMOTEAPPADMIN);
+    }
+
+
+    public static class WebAppSetting
+    {
+        public const string XAccessToken = "X-Access-Token";
+        public const string XRefreshToken = "X-Refresh-Token";
+        public const string ContextItemAppUser = "AppUser";
+    }
 }

@@ -20,7 +20,7 @@ namespace WMSAdmin.Repository
             Configuration = configuration;
         }
 
-        protected Context.RepoContext GetDbContext()
+        public Context.RepoContext GetDbContext()
         {
             var configuration = Configuration.ServiceProvider.GetService<IConfiguration>();
             var connectionString = configuration.GetConnectionString(Entity.Constants.AppSetting.ConnectionStrings_BaseConnection);

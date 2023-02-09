@@ -19,7 +19,7 @@ namespace WMSAdmin.WebApp
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
+          
             var app = builder.Build();
             app.Logger.LogInformation("Starting App");
 
