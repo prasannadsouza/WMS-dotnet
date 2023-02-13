@@ -10,6 +10,8 @@ GO
 GO
 :r ../MasterData/AppConfig/Pagination.sql
 GO
+:r ../MasterData/AppConfig/JwtToken.sql
+GO
 PRINT 'Executing Role'
 :r ../MasterData/Role.sql
 GO

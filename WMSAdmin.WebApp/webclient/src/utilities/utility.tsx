@@ -1,11 +1,10 @@
 import LocalizedStrings from "react-localization";
-import App from "../App";
 import { AppData, ApplicationConfig, AppState, ConfigTimeStamp, PaginationConfig, SessionData } from "../entities/configs";
 import { APIParts, CacheConstants, ErrorConstants, LinkConstants } from "../entities/constants";
-import { ErrorData, ResponseData, UserAuthenticateResponse } from "../entities/entities";
-import { ConfirmModel, MessageModel } from "../entities/models";
+import { ErrorData, ResponseData, AuthenticateAppUserResponse } from "../entities/entities";
 import { Locale } from "./locale";
 import { UIHelper } from "./uihelper";
+import _ from "lodash"; 
 
 export class Utility {
 
@@ -26,19 +25,21 @@ export class Utility {
 
     static async PostData<T>(urlPart: string, searchParams: URLSearchParams, data:object, defaultData: ResponseData<T>): Promise<ResponseData<T>> {
         const url: URL = new URL(window.origin + "/" + urlPart);
-
         const search = searchParams?.toString();
         if ((search?.length > 0) === true) url.search = search;
+
+        const payLoad = JSON.stringify(data);
+
         return await fetch(url, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: payLoad
         }).then(response => {
             if (!response.ok) {
-                defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
+                defaultData.errors = [{ errorCode: ErrorConstants.FETCH_POST, message: response.statusText }];
                 return defaultData;
             }
             defaultData = response.json() as ResponseData<T>;
@@ -85,42 +86,39 @@ export class Utility {
         let responseData: AppData = {
             appInitErrrors: [], sessionData: {} }; 
 
-        await Utility.GetApplicationConfig().then(x => {
-            if ((x.errors?.length > 0) === true) {
-                responseData.appInitErrrors.push(...x.errors);
-                return responseData;
-            }
-            responseData.applicationConfig = x.data;
+        let appConfigResponse = await await Utility.GetApplicationConfig();
+        
+        if ((appConfigResponse.errors?.length > 0) === true) {
+            responseData.appInitErrrors.push(...appConfigResponse.errors);
             return responseData;
-        }).then(async (response) => {
-            if ((response.appInitErrrors?.length > 0) === true) return;
+        }
 
-            await Locale.getLanguages().then(x => {
-                if ((x.errors?.length > 0) === true) {
-                    responseData.appInitErrrors.push(...x.errors);
-                    return;
-                }
-                responseData.languageCultures = x.data;
-                responseData.sessionData.language = x.data.filter((item) => { return item.code == responseData.applicationConfig.localeCode })[0];
-            });
-        });
+        responseData.applicationConfig = appConfigResponse.data;
 
-        await Utility.GetPaginationConfig().then(x => {
-            if ((x.errors?.length > 0) === true) {
-                responseData.appInitErrrors.push(...x.errors);
-                return;
-            }
-            responseData.paginationConfig = x.data;
-        });
+        let languageResponse = await Locale.getLanguages();
 
-        await Locale.getGeneralString().then(x => {
-            if ((x.errors?.length > 0) === true) {
-                responseData.appInitErrrors.push(...x.errors);
-                return;
-            }
-            responseData.generalLocaleString = x.data;
-        });
+        if ((languageResponse.errors?.length > 0) === true) {
+            responseData.appInitErrrors.push(...languageResponse.errors);
+            return responseData;
+        }
 
+        responseData.languageCultures = languageResponse.data;
+        responseData.sessionData.language = languageResponse.data.filter((item) => { return item.code === responseData.applicationConfig.localeCode })[0];
+
+        let paginationResponse = await Utility.GetPaginationConfig();
+        if ((paginationResponse.errors?.length > 0) === true) {
+            responseData.appInitErrrors.push(...paginationResponse.errors);
+            return responseData;
+        }
+
+        responseData.paginationConfig = paginationResponse.data;
+
+        let generalStringResponse = await Locale.getGeneralString();
+        if ((generalStringResponse.errors?.length > 0) === true) {
+            responseData.appInitErrrors.push(...generalStringResponse.errors);
+            return responseData;
+        }
+        responseData.generalLocaleString = generalStringResponse.data;
         return await Promise.resolve(responseData);
     };
 
@@ -143,32 +141,23 @@ export class Utility {
     static showLoader = (updateAppConfig: (value: React.SetStateAction<AppState>) => void, show: boolean) => {
         updateAppConfig((prev) => ({ ...prev, showLoader: show, }));
     }
-
     
-    static getSessionConfig(appData:AppData, data: UserAuthenticateResponse): SessionData {
+    static getSessionConfig(appData:AppData, data: AuthenticateAppUserResponse): SessionData {
         const sessionData: SessionData = {
-            customer: {
-                name: data.customerName,
-                localeCode: data.customerLocale,
-            },
-            user: {
-                firstName: data.firstName,
-                lastName: data.lastName,
-                localeCode: data.locale,
-                token: data.token,
-            },
+            appCustomer: data.appCustomer,
+            appCustomerUser: data.appCustomerUser,
             language: appData.sessionData.language, 
         };
+       
+        let languageCode = Locale.getLocalizedLocaleCode(sessionData.appCustomerUser.localeCode);
+        if ((languageCode?.length > 0) === false) languageCode = sessionData.appCustomer.localeCode;
+        if ((languageCode?.length > 0) === false) languageCode = sessionData.language.code;
 
+        sessionData.language = appData.languageCultures.filter(x => x.code === languageCode)[0];
         return sessionData;
     };
 
     
-
-
-
-    
-
     static getLink(key: string) {
         switch (key) {
             case LinkConstants.HOME:
@@ -185,8 +174,8 @@ export class Utility {
     }
 
     static isUserLoggedIn = (appData: AppData): boolean => {
-        if (appData?.sessionData?.customer === undefined || appData?.sessionData?.customer === null) return false;
-        if (appData?.sessionData?.user === undefined || appData?.sessionData?.user === null) return false;
+        if (appData?.sessionData?.appCustomer === undefined || appData?.sessionData?.appCustomer === null) return false;
+        if (appData?.sessionData?.appCustomerUser === undefined || appData?.sessionData?.appCustomerUser === null) return false;
         return true;
     }
 
@@ -196,14 +185,10 @@ export class Utility {
 
         if (Utility.isUserLoggedIn(appData) !== true) return appData.sessionData.language.name;
 
-        let title = appData.sessionData!.user!.firstName!;
+        let title = appData.sessionData!.appCustomerUser!.displayName!;
 
         if (title!.length > 0) {
-            title = title + " " + appData.sessionData!.user!.lastName!;
-        }
-
-        if (title!.length > 0) {
-            title = title + " (" + appData.sessionData!.customer!.name! + ")"
+            title = title + " (" + appData.sessionData!.appCustomer!.customerName! + ")"
         }
 
         return title;
@@ -308,5 +293,9 @@ export class Utility {
 
     static copyObjectData = <T,>(theObject: T) => {
         return JSON.parse(JSON.stringify(theObject)) as T;
+    }
+
+    static cloneDeep = <T,>(theObject: T) => {
+        return _.cloneDeep(theObject);
     }
 }

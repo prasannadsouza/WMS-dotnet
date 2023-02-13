@@ -83,6 +83,7 @@ namespace WMSAdmin.Repository
                 Email = from.Email,
                 Phone = from.Phone,
                 AppUserId = from.AppUserId,
+                LocaleCode= from.LocaleCode,
                 TimeStamp = from.TimeStamp,
             };
             return to;
@@ -96,6 +97,7 @@ namespace WMSAdmin.Repository
             to.Email = from.Email;
             to.Phone = from.Phone;
             to.AppUserId = from.AppUserId;
+            to.LocaleCode = from.LocaleCode;
             to.TimeStamp = from.TimeStamp;
             return to;
         }

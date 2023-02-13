@@ -12,6 +12,7 @@ namespace WMSAdmin.Entity.Entities.Config
         public Email Email { get; set; }
         public DebugTest DebugTest { get; set; }
         public Pagination Pagination { get; set; }
+        public JwtToken JwtToken { get; set; }
         public DateTime Config_TimeStamp { get; set; }
     }
 }

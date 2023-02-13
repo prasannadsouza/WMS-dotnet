@@ -22,9 +22,9 @@ namespace WMSAdmin.WebApp.WebAppUtility
        
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            if (_appUtility == null) _appUtility = new WebAppUtility(context.HttpContext, _serviceProvider);
+            if (_appUtility == null) _appUtility = new WebAppUtility(context.HttpContext, _serviceProvider!);
            
-            var user = context.HttpContext.Items["User"];
+            var user = context.HttpContext.Items[Entity.Constants.WebAppSetting.ContextItemAppUserProfile];
             if (user == null)
             {
                 // user not logged in

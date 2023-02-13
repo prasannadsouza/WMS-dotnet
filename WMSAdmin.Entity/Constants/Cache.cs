@@ -13,6 +13,7 @@ namespace WMSAdmin.Entity.Constants
         public const string CONFIGSETTING_APPLICATION = "CONFIGSETTING_APPLICATION";
         public const string CONFIGSETTING_DEBUGTEST = "CONFIGSETTING_DEBUGTEST";
         public const string CONFIGSETTING_EMAIL = "CONFIGSETTING_EMAIL";
+        public const string CONFIGSETTING_JWTTOKEN = "CONFIGSETTING_JWTTOKEN";
         public const string LANGUAGETEXT = "LANGUAGETEXT";
         public const string CONFIGTIMESTAMPLIST = "CONFIGTIMESTAMPLIST";
         public const string APPCONFIGROUP_CONFIGTIMESTAMP = "APPCONFIGROUP_CONFIGTIMESTAMP";

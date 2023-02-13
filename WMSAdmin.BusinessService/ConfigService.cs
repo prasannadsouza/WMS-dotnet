@@ -27,6 +27,7 @@ namespace WMSAdmin.BusinessService
             setting.Pagination = GetPagination();
             setting.DebugTest = GetDebugTest();
             setting.Email = GetEmail();
+            setting.JwtToken = GetJwtToken();
             return setting;
         }
 
@@ -119,7 +120,6 @@ namespace WMSAdmin.BusinessService
                     Id = appConfigGroup.Id,
                 },
             };
-
 
             do
             {
@@ -238,7 +238,6 @@ namespace WMSAdmin.BusinessService
                 },
             };
 
-
             do
             {
                 var items = _repoService.Get(filter).Data;
@@ -311,16 +310,6 @@ namespace WMSAdmin.BusinessService
                                 to.SystemUserCode = from.Value;
                                 break;
                             }
-                        case Entity.Constants.Config.APPLICATION_JWTKEY:
-                            {
-                                to.JWTKey = from.Value;
-                                break;
-                            }
-                        case Entity.Constants.Config.APPLICATION_JWTVALIDITYINMINUTES:
-                            {
-                                to.JWTValiditiyInMinutes = int.Parse(from.Value);
-                                break;
-                            }
                         default:
                             {
                                 var loginfo = new
@@ -339,6 +328,79 @@ namespace WMSAdmin.BusinessService
             }
             while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
             Configuration.Setting.Application = to;
+            CacheUtility.SaveToCache(key, to, true);
+            return to;
+        }
+
+        private Entity.Entities.Config.JwtToken GetJwtToken()
+        {
+            var key = Entity.Constants.Cache.CONFIGSETTING_JWTTOKEN;
+
+            var to = CacheUtility.GetFromCache<Entity.Entities.Config.JwtToken>(key, out bool isCached);
+            if (isCached && _cacheService.IsCacheChanged(key) == false) return to;
+
+            to = new Entity.Entities.Config.JwtToken();
+            var appConfigGroup = GetAppConfigGroup(Entity.Constants.Config.GROUP_JWTTOKEN);
+
+            var filter = new Entity.Filter.AppConfig
+            {
+                AppConfigGroup = new Entity.Filter.AppConfigGroup
+                {
+                    Id = appConfigGroup.Id,
+                },
+            };
+
+
+            do
+            {
+                var items = _repoService.Get(filter).Data;
+                foreach (var from in items)
+                {
+                    switch (from.Code)
+                    {
+                        case Entity.Constants.Config.JWTTOKEN_ISSUER:
+                            {
+                                to.Issuer = from.Value;
+                                break;
+                            }
+                        case Entity.Constants.Config.JWTTOKEN_SECURITYKEY:
+                            {
+                                to.SecurityKey = from.Value;
+                                break;
+                            }
+                        case Entity.Constants.Config.JWTTOKEN_VALIDITYINMINUTES:
+                            {
+                                to.ValiditiyInMinutes = int.Parse(from.Value);
+                                break;
+                            }
+                        case Entity.Constants.Config.JWTTOKEN_MAXRENEWALS:
+                            {
+                                to.MaxRenewals = int.Parse(from.Value);
+                                break;
+                            }
+                        case Entity.Constants.Config.JWTTOKEN_MAXIDLETIMEINMINUTES:
+                            {
+                                to.MaxIdleTimeInMinutes = int.Parse(from.Value);
+                                break;
+                            }
+                        default:
+                            {
+                                var loginfo = new
+                                {
+                                    SesssionId = Configuration.Setting.Application.SessionId,
+                                    Method = nameof(GetJwtToken),
+                                    AppConfigId = from.Id,
+                                };
+
+                                _logger.LogError($"AppConfig {from.Code} is not handled", new { LogInfo = loginfo });
+                                break;
+                            }
+                    }
+                }
+                filter.Pagination.CurrentPage++;
+            }
+            while (filter.Pagination.CurrentPage <= filter.Pagination.TotalPages);
+            Configuration.Setting.JwtToken = to;
             CacheUtility.SaveToCache(key, to, true);
             return to;
         }

@@ -1,5 +1,5 @@
 import { LocalizedStrings } from "react-localization";
-import { Customer, ErrorData, User } from "../entities/entities"
+import { AppCustomer, ErrorData, AppCustomerUser } from "../entities/entities"
 import { ConfirmModel, LoginModel, MessageModel } from "../entities/models"
 import { LanguageCulture, GeneralString, GeneralLocaleString } from "./locales"
 
@@ -13,8 +13,8 @@ export type ApplicationConfig = {
 }
 
 export type SessionData = {
-    user?: User
-    customer?: Customer;
+    appCustomerUser?: AppCustomerUser
+    appCustomer?: AppCustomer;
     language?: LanguageCulture;
 } 
 

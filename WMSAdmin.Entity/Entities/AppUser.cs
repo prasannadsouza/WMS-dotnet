@@ -15,6 +15,7 @@ namespace WMSAdmin.Entity.Entities
         public string AuthSecret { get; set; }
         public Guid? SecretKey { get; set; }
         public string DisplayName { get; set; }
+        public string Locale { get; set; }
         public DateTime? LoginTime { get; set; }
         public DateTime? TimeStamp { get; set; }
     }

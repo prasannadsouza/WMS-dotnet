@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WMSAdmin.WebApp.WebAppUtility;
 
 namespace WMSAdmin.WebApp.Controllers
 {
@@ -19,6 +20,7 @@ namespace WMSAdmin.WebApp.Controllers
 
         [HttpGet]
         [Route(WebAppUtility.WebAppUtility.APIRoute)]
+        [JwtAuthorizeAttribute]
         public OkObjectResult UpdateAllTimeStamp()
         {
             //var keys = new List<string>
@@ -27,6 +29,7 @@ namespace WMSAdmin.WebApp.Controllers
             //    Entity.Constants.Cache.CONFIGSETTING_DEBUGTEST,
             //    Entity.Constants.Cache.CONFIGSETTING_EMAIL,
             //    Entity.Constants.Cache.CONFIGSETTING_PAGINATION,
+            //     Entity.Constants.Cache.CONFIGSETTING_JWTTOKEN,
             //    $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_GENERAL}_sv-SE",
             //    $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_GENERAL}_en-SE",
             //    $"{Entity.Constants.Cache.LANGUAGETEXT}_WMSAdmin_{Entity.Constants.Language.LANGUAGEGROUP_LOGIN}_sv-SE",
@@ -45,6 +48,7 @@ namespace WMSAdmin.WebApp.Controllers
 
         [HttpGet]
         [Route(WebAppUtility.WebAppUtility.APIRoute)]
+        [JwtAuthorizeAttribute]
         public OkObjectResult ClearCache()
         {
             _cacheService.ClearCache();

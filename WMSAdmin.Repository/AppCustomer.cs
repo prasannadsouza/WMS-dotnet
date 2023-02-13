@@ -81,6 +81,8 @@ namespace WMSAdmin.Repository
                 CustomerName = from.CustomerName,
                 Email = from.Email,
                 Phone = from.Phone,
+                LocaleCode= from.LocaleCode,
+                OrganizationNumber= from.OrganizationNumber,
                 TimeStamp = from.TimeStamp,
             };
             return to;
@@ -92,6 +94,8 @@ namespace WMSAdmin.Repository
             to.CustomerName = from.CustomerName;
             to.Email = from.Email;
             to.Phone = from.Phone;
+            to.LocaleCode = from.LocaleCode;
+            to.OrganizationNumber = from.OrganizationNumber;
             to.TimeStamp = from.TimeStamp;
 
             return to;

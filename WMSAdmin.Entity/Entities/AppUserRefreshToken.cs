@@ -10,9 +10,12 @@ namespace WMSAdmin.Entity.Entities
     {
         public long? Id { get; set; }
         public long? AppUserId { get; set; }
+        public DateTime? IssuedTime { get; set; }
         public DateTime? ExpiryTime { get; set; }
         public Guid? SessionKey { get; set; }
         public Guid? RefreshToken { get; set; }
+        public DateTime? LastAccessedTime { get; set; }
+        public int? TotalRenewals { get; set; }
         public DateTime? TimeStamp { get; set; }
     }
 }

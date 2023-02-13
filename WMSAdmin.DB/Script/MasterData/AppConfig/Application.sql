@@ -84,15 +84,3 @@ BEGIN
 INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
 VALUES (GETDATE(), @AppConfigGroupId,  N'SYSTEMUSER_CODE', N'SU', N'The system user code')
 END
-
-IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'JWTKEY')
-BEGIN
-INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
-VALUES (GETDATE(), @AppConfigGroupId,  N'JWTKEY', N'RüZ%Ü¡yóöIc¸òñtÕqa7ð¢ÖZ#ÍNÂ9È|â¹ºïs!¥EìÜËÂh¡~üÕ"7O×EJ²CMüëªÖ', N'The Jwt key')
-END
-
-IF Not EXISTS (SELECT * FROM [dbo].[AppConfig] WHERE [AppConfigGroupId] = @AppConfigGroupId and [Code] = 'JWTISSUER')
-BEGIN
-INSERT [dbo].[AppConfig] ([TimeStamp], [AppConfigGroupId],[Code],[Value], [Description])  
-VALUES (GETDATE(), @AppConfigGroupId,  N'JWTISSUER', N'WMS Admin', N'The JWT Issuer')
-END

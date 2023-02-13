@@ -61,7 +61,7 @@ namespace WMSAdmin.Utility
                 cacheValue.Add(configTimeStamp);
             }
             
-            configTimeStamp.TimeStamp = DateTime.Now;
+            configTimeStamp.TimeStamp = DateTime.UtcNow;
             MemoryCache.Set(key, cacheValue);
         }
 

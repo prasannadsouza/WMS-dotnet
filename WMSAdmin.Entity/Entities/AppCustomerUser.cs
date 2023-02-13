@@ -15,6 +15,7 @@ namespace WMSAdmin.Entity.Entities
         public string Email { get; set; }
         public string Phone { get; set; }
         public long? AppUserId { get; set; }
+        public string LocaleCode { get; set; }
         public DateTime? TimeStamp { get; set; }
     }
 }

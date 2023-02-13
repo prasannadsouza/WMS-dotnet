@@ -19,11 +19,17 @@ namespace WMSAdmin.Entity.Constants
         public const string REMOTEAPPADMIN = nameof(REMOTEAPPADMIN);
     }
 
+    public static class AppAccessType
+    {
+        public const string WEB = nameof(WEB);
+        public const string API = nameof(API);
+    }
+
 
     public static class WebAppSetting
     {
         public const string XAccessToken = "X-Access-Token";
         public const string XRefreshToken = "X-Refresh-Token";
-        public const string ContextItemAppUser = "AppUser";
+        public const string ContextItemAppUserProfile = "AppUserProfile";
     }
 }

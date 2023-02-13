@@ -20,7 +20,7 @@ namespace WMSAdmin.Utility
 
         public static Entity.Entities.Config.Application GetDefaultApplicationConfig(string sessionId = null)
         {
-            if (string.IsNullOrWhiteSpace(sessionId)) sessionId = $"{DateTime.Now.Ticks}";
+            if (string.IsNullOrWhiteSpace(sessionId)) sessionId = $"{DateTime.UtcNow.Ticks}";
             return new Entity.Entities.Config.Application
             {
                 SessionId = sessionId,

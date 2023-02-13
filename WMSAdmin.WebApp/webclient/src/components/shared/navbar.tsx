@@ -122,8 +122,8 @@ export const NavBar = () => {
             return (
                 <div className="row m-0 p-0 ">
                     <div className="d-none d-sm-table col-10 small m-0 p-0">
-                        <div className="text-nowrap">{appData.sessionData.user.firstName + " " + appData.sessionData.user.lastName }</div>
-                        <div><small>{appData.sessionData.customer.name}</small></div>
+                        <div className="text-nowrap">{appData.sessionData.appCustomerUser.displayName }</div>
+                        <div><small>{appData.sessionData.appCustomer.customerName}</small></div>
                     </div>
                     <span className="col-2 m-0 p-0 ps-1 ms-auto me-2 me-sm-0"><i className="bi bi-person-lines-fill"></i><i className="bi bi-caret-down-fill"></i></span>
                 </div>

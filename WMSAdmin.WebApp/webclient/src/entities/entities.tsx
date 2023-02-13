@@ -1,17 +1,17 @@
-export type Customer = {
+export type AppCustomer = {
     id?: number;
-    name?: string;
-    number?: string;
+    customerName?: string;
+    customerNumber?: string;
+    email?: string;
+    phone?: string;
     organizationNumber?: string;
     localeCode?: string;
 }
 
-export type User = {
+export type AppCustomerUser = {
     id?: number
-    firstName?: string;
-    lastName?: string;
+    displayName: string
     localeCode?: string;
-    token?: string;
 }
 
 export type ErrorData = {
@@ -43,13 +43,8 @@ export type Error = {
     message?: string;
 }
 
-export type UserAuthenticateResponse = {
-    firstName?: string,
-    lastName?: string,
-    userName?: string,
-    locale?: string,
-    customerName?: string,
-    customerLocale?: string,
-    token?: string,
+export type AuthenticateAppUserResponse = {
+    appCustomer?: AppCustomer;
+    appCustomerUser?: AppCustomerUser;
 }
 

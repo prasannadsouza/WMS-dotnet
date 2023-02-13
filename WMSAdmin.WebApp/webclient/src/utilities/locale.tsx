@@ -102,5 +102,6 @@ export class Locale {
     static getLocalizedLocaleCode = (localeCode: string) => {
         if (localeCode === LocaleCodeConstants.en_SE) return "en_SE";
         if (localeCode === LocaleCodeConstants.sv_SE) return "sv_SE";
+        return null;
     }
 }

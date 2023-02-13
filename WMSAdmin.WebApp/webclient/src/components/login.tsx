@@ -4,7 +4,7 @@ import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
 import { APIParts, ErrorConstants, LinkConstants } from '../entities/constants';
 import { useNavigate, Navigate } from "react-router-dom";
-import { ErrorData, ResponseData, UserAuthenticateResponse } from '../entities/entities';
+import { ErrorData, ResponseData, AuthenticateAppUserResponse } from '../entities/entities';
 import { LoginModel } from "../entities/models";
 import LocalizedStrings from 'react-localization';
 import { Locale } from '../utilities/locale';
@@ -159,9 +159,9 @@ export const Login = () => {
         performUserLogin();
     }
 
-    const validateUserLogin = async (): Promise<ResponseData<UserAuthenticateResponse>> => {
+    const validateUserLogin = async (): Promise<ResponseData<AuthenticateAppUserResponse>> => {
 
-        let response: ResponseData<UserAuthenticateResponse> = {
+        let response: ResponseData<AuthenticateAppUserResponse> = {
             errors: []
         }
 
@@ -181,7 +181,7 @@ export const Login = () => {
 
         if ((response.errors!.length > 0) === true) return response;
 
-        const loginResponse = await Utility.PostData<UserAuthenticateResponse>(APIParts.APP + "Login", undefined
+        const loginResponse = await Utility.PostData<AuthenticateAppUserResponse>(APIParts.APP + "Login", undefined
             , { UserName: model.username, Password: model.password }, { data: null });
 
         return loginResponse;

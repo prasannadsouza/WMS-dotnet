@@ -97,5 +97,6 @@
     <None Include="Script\MasterData\Language\WMSAdmin\Login.sql" />
     <None Include="Script\MasterData\Language\LanguageCulture.sql" />
     <None Include="Script\MasterData\AppUserType.sql" />
+    <None Include="Script\MasterData\AppConfig\JwtToken.sql" />
   </ItemGroup>
 </Project>

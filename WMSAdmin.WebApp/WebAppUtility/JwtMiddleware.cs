@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using WMSAdmin.BusinessService;
+﻿using Microsoft.Extensions.Primitives;
 
 namespace WMSAdmin.WebApp.WebAppUtility
 {
@@ -54,29 +49,20 @@ namespace WMSAdmin.WebApp.WebAppUtility
             if (string.IsNullOrWhiteSpace(jwtTokenValue)) return;
 
             var authService = _appUtility!.GetBusinessService<BusinessService.AuthenticationService>();
-            var repoService = _appUtility.GetBusinessService<BusinessService.RepoService>();
-
+            
             try
             {
-                var tokenResponse = authService.ValidateJwtToken(jwtTokenValue);
+                var tokenResponse = authService.ValidateJwtToken(new BusinessService.Model.ValidateJwtTokenRequest
+                {
+                    AppAccessType = Entity.Constants.AppAccessType.API,
+                    RefreshOnExpiry = true,
+                    JwtTokenValue = jwtTokenValue,
+                });
+
                 if (tokenResponse.Errors?.Any() == true) return;
+                if (tokenResponse.IsValid == false) return;
+                _httpContext.Items[Entity.Constants.WebAppSetting.ContextItemAppUserProfile] = tokenResponse.AppUserProfile;
 
-                var sessionKeyClaim = tokenResponse.Data.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti);
-                if (sessionKeyClaim?.Value == null) return;
-                if (Guid.TryParse(sessionKeyClaim.Value, out Guid sessionKey) == false) return;
-
-                var appUserToken = repoService.Get(new Entity.Filter.AppUserRefreshToken { SessionKey = sessionKey }).Data.FirstOrDefault();
-                if (appUserToken == null) return;
-
-                if (appUserToken.ExpiryTime < DateTime.UtcNow) return;
-
-                var appUser = repoService.Get(new Entity.Filter.AppUser { Id = appUserToken!.AppUserId!.Value }).Data.FirstOrDefault();
-                if (appUser == null) return;
-
-                var appUserType = repoService.Get(new Entity.Filter.AppUserType { Id = appUser!.AppUserTypeId!.Value }).Data.First();
-                if (appUserType.Code != Entity.Constants.AppUserType.APPUSER) return;
-
-                _httpContext.Items[Entity.Constants.WebAppSetting.ContextItemAppUser] = appUser;
             }
             catch (Exception ex)
             {
@@ -98,37 +84,29 @@ namespace WMSAdmin.WebApp.WebAppUtility
             if (string.IsNullOrWhiteSpace(jwtTokenValue)) return;
             if (string.IsNullOrWhiteSpace(refreshTokenValue)) return;
             if (Guid.TryParse(refreshTokenValue, out Guid refreshToken) == false) return;
-
+            if (refreshToken == Guid.Empty) return;
             var authService = _appUtility!.GetBusinessService<BusinessService.AuthenticationService>();
-            var repoService = _appUtility.GetBusinessService<BusinessService.RepoService>();
 
             try
             {
-                var tokenResponse = authService.ValidateJwtToken(jwtTokenValue);
+                var tokenResponse = authService.ValidateJwtToken(new BusinessService.Model.ValidateJwtTokenRequest
+                {
+                    AppAccessType = Entity.Constants.AppAccessType.WEB,
+                    RefreshOnExpiry = true,
+                    RefreshToken = refreshToken,
+                    JwtTokenValue = jwtTokenValue,
+                });
 
                 if (tokenResponse.Errors?.Any() == true) return;
+                if (tokenResponse.IsValid == false) return;
 
-                var sessionKeyClaim = tokenResponse.Data.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti);
-                if (sessionKeyClaim?.Value == null) return;
-                if (Guid.TryParse(sessionKeyClaim.Value, out Guid sessionKey) == false) return;
-
-                var appUserToken = repoService.Get(new Entity.Filter.AppUserRefreshToken { SessionKey = sessionKey, RefreshToken = refreshToken }).Data.FirstOrDefault();
-                if (appUserToken == null) return;
-
-                var appUser = repoService.Get(new Entity.Filter.AppUser { Id = appUserToken!.AppUserId!.Value }).Data.FirstOrDefault();
-                if (appUser == null) return;
-
-                var appUserType = repoService.Get(new Entity.Filter.AppUserType { Id = appUser!.AppUserTypeId!.Value }).Data.First();
-                if (appUserType.Code != Entity.Constants.AppUserType.APIUSER) return;
-
-                if (appUserToken.ExpiryTime < DateTime.UtcNow)
+                if (tokenResponse.IsRefreshed)
                 {
-                    var refreshResponse = authService.RefreshJWTToken(appUserToken);
-                    _httpContext.Response.Cookies.Append(Entity.Constants.WebAppSetting.XAccessToken, refreshResponse.Data.JwtToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
-                    _httpContext.Response.Cookies.Append(Entity.Constants.WebAppSetting.XRefreshToken, refreshResponse.Data.RefreshToken!.Value.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+                    _httpContext.Response.Cookies.Append(Entity.Constants.WebAppSetting.XAccessToken, tokenResponse.JwtTokenValue, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+                    _httpContext.Response.Cookies.Append(Entity.Constants.WebAppSetting.XRefreshToken, tokenResponse.RefreshToken!.Value.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
                 }
 
-                _httpContext.Items[Entity.Constants.WebAppSetting.ContextItemAppUser] = appUser;
+                _httpContext.Items[Entity.Constants.WebAppSetting.ContextItemAppUserProfile] = tokenResponse.AppUserProfile;
             }
             catch (Exception ex)
             {

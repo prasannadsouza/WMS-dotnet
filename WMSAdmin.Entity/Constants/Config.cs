@@ -23,9 +23,13 @@ namespace WMSAdmin.Entity.Constants
         public const string APPLICATION_BASEURL_INTERNAL = "BASEURL_INTERNAL";
         public const string APPLICATION_CACHEEXPIRY_INMINUTES = "CACHEEXPIRY_INMINUTES";
         public const string APPLICATION_SYSTEMUSER_CODE = "SYSTEMUSER_CODE";
-        public const string APPLICATION_JWTKEY = "JWTKEY";
-        public const string APPLICATION_JWTISSUER = "JWTISSUER";
-        public const string APPLICATION_JWTVALIDITYINMINUTES = "JWTVALIDITYINMINUTES";
+
+        public const string GROUP_JWTTOKEN = "JWTTOKEN";
+        public const string JWTTOKEN_SECURITYKEY = "SECURITYKEY";
+        public const string JWTTOKEN_ISSUER = "ISSUER";
+        public const string JWTTOKEN_VALIDITYINMINUTES = "VALIDITYINMINUTES";
+        public const string JWTTOKEN_MAXRENEWALS = "MAXRENEWALS";
+        public const string JWTTOKEN_MAXIDLETIMEINMINUTES = "MAXIDLETIMEINMINUTES";
 
         public const string GROUP_PAGINATION = "PAGINATION";
         public const string PAGINATION_RECORDSPERPAGE = "RECORDSPERPAGE";

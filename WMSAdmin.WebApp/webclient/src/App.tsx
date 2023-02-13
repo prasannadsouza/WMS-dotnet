@@ -17,7 +17,15 @@ import { FetchData } from './components/FetchData';
 
 const OnBeforeLift = async () => {
     const { setAppModel } = AppSlice.actions;
+
+    let state = appStore.getState();
+      
     await Utility.getAppData().then(appData => {
+
+        if (state?.sessionData !== null && state?.sessionData !== undefined) {
+            appData.sessionData = Utility.copyObjectData(state.sessionData)
+        }
+
         appStore.dispatch(setAppModel(appData));
     });
 }

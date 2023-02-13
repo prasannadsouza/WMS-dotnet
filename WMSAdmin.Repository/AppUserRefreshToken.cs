@@ -86,9 +86,12 @@ namespace WMSAdmin.Repository
             {
                 Id = from.Id,
                 AppUserId = from.AppUserId,
+                IssuedTime= from.IssuedTime,
                 ExpiryTime = from.ExpiryTime,
                 SessionKey = from.SessionKey,
                 RefreshToken = from.RefreshToken,
+                LastAccessedTime = from.LastAccessedTime,
+                TotalRenewals= from.TotalRenewals,
                 TimeStamp = from.TimeStamp,
             };
             return to;
@@ -97,9 +100,12 @@ namespace WMSAdmin.Repository
         {
             if (to == null) to = new POCO.AppUserRefreshToken();
             to.AppUserId = from.AppUserId;
+            to.IssuedTime = from.IssuedTime;
             to.ExpiryTime = from.ExpiryTime;
             to.SessionKey = from.SessionKey;
             to.RefreshToken = from.RefreshToken;
+            to.LastAccessedTime = from.LastAccessedTime;
+            to.TotalRenewals = from.TotalRenewals;
             to.TimeStamp = from.TimeStamp;
             return to;
         }

@@ -78,7 +78,7 @@ namespace WMSAdmin.BusinessService
             var configTimestamp = _reposervice.Get(new Entity.Filter.ConfigTimeStamp { Code = cacheKey,}).Data.FirstOrDefault();
 
             if (configTimestamp == null) configTimestamp = new Entity.Entities.ConfigTimeStamp { Code = cacheKey, };
-            configTimestamp.TimeStamp = DateTime.Now;
+            configTimestamp.TimeStamp = DateTime.UtcNow;
             _reposervice.Save(configTimestamp);
 
             var timestampList = GetCacheTimestampList();

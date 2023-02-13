@@ -51,7 +51,7 @@ namespace WMSAdmin.WebApp.WebAppUtility
             
             var configService = new BusinessService.ConfigService(configuration);
             var setting = configService.GetConfigSetting();
-            setting.Application.SessionId = _httpContext.Session.Id;
+            setting.Application.SessionId = GetSessionId();
             return setting;
         }
 
@@ -69,6 +69,22 @@ namespace WMSAdmin.WebApp.WebAppUtility
         public Entity.Entities.Pagination GetDefaultPagination(bool forMaxRecordsPerPage = false)
         {
             return GetBusinessService<BusinessService.RepoService>().GetDefaultPagination(forMaxRecordsPerPage);
+        }
+
+        public string GetSessionId(bool getUniqueId = true) {
+
+            string sessionId = null; 
+            if (getUniqueId) sessionId = Guid.NewGuid().ToString();
+            if (_httpContext == null) return sessionId;
+            try
+            {
+                sessionId = _httpContext.Session.Id;
+            }
+            catch
+            {
+            }
+
+            return sessionId;
         }
 
     }

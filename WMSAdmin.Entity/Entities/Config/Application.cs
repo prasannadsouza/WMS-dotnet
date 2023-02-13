@@ -22,9 +22,7 @@ namespace WMSAdmin.Entity.Entities.Config
         public string BaseUrl { get; set; }
         public int CacheExpiryInMinutes { get; set; }
         public string SystemUserCode { get; set; }
-        public string JWTKey { get; set; }
-        public string JWTIssuer { get; set; }
-        public int JWTValiditiyInMinutes { get; set; }
+        
 
 
     }

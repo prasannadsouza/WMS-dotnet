@@ -16,6 +16,7 @@ namespace WMSAdmin.Language.ResourceManager
         public string Username => GetResourceString(nameof(Username));
         public string UsernameCannotBeBlank => GetResourceString(nameof(UsernameCannotBeBlank));
         public string UsernameOrPasswordIsInvalid => GetResourceString(nameof(UsernameOrPasswordIsInvalid));
+        public string UnableToValidateToken => GetResourceString(nameof(UnableToValidateToken));
 
         public Entity.Entities.LanguageStrings.LoginString GetString()
         {
@@ -32,6 +33,7 @@ namespace WMSAdmin.Language.ResourceManager
                 Username = Username,
                 UsernameCannotBeBlank = UsernameCannotBeBlank,
                 UsernameOrPasswordIsInvalid = UsernameOrPasswordIsInvalid,
+                UnableToValidateToken = UnableToValidateToken,
             };
         }
     }

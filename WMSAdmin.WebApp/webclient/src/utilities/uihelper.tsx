@@ -36,10 +36,10 @@ export class UIHelper {
 
     static showConfirmationModal = (updateAppConfig: (value: React.SetStateAction<AppState>) => void, appState: AppState, onClose: (confirmed: boolean) => void = undefined,
         title: string = undefined, cancelTitle: string = undefined, confirmTitle: string = undefined, message: string = undefined) => {
-        if ((title?.length > 0) == false) title = appState.generalString?.confirmTitle;
-        if ((cancelTitle?.length > 0) == false) title = appState.generalString?.no;
-        if ((message?.length > 0) == false) title = appState.generalString?.confirmMessage;
-        if ((confirmTitle?.length > 0) == false) title = appState.generalString?.confirmTitle;
+        if ((title?.length > 0) === false) title = appState.generalString?.confirmTitle;
+        if ((cancelTitle?.length > 0) === false) title = appState.generalString?.no;
+        if ((message?.length > 0) === false) title = appState.generalString?.confirmMessage;
+        if ((confirmTitle?.length > 0) === false) title = appState.generalString?.confirmTitle;
 
         let model: ConfirmModel = {
             title: title,

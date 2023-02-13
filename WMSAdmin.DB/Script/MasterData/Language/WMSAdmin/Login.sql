@@ -47,4 +47,7 @@ select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'LoginTitle','Login' 
 select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'LoginTitle','Logga in' union 
 
 select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'Unauthorized','Unauthorized' union
-select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Unauthorized','Inte behörig' 
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Unauthorized','Inte behörig' union 
+
+select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'UnableToValidateToken','Unable to validate token' union
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'UnableToValidateToken','Kan inte validera token' 

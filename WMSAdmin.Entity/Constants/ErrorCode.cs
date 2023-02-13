@@ -9,5 +9,6 @@ namespace WMSAdmin.Entity.Constants
     public class ErrorCode
     {
         public const int InvalidCredentials = 200001;
+        public const int UnableToValidateToken = 200002;
     }
 }
