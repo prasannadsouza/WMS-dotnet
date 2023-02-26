@@ -46,8 +46,11 @@ select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'ResetEmailLinkSent',
 select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'LoginTitle','Login' union
 select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'LoginTitle','Logga in' union 
 
-select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'Unauthorized','Unauthorized' union
-select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'Unauthorized','Inte behörig' union 
+select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'UnAuthorized','Unauthorized' union
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'UnAuthorized','Inte behörig' union 
 
 select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'UnableToValidateToken','Unable to validate token' union
-select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'UnableToValidateToken','Kan inte validera token' 
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'UnableToValidateToken','Kan inte validera token' union 
+
+select @Timestamp,@LanguageCultureEnglish,@LanguageGroupId,'AuthRevalidationRequired','Your Credentials needs to be authenticated again' union
+select @Timestamp,@LanguageCultureSwedish,@LanguageGroupId,'AuthRevalidationRequired','Dina inloggningsuppgifter måste autentiseras igen' 

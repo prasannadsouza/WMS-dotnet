@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -93,16 +94,37 @@ namespace WMSAdmin.BusinessService
 
         public Model.ValidateJwtTokenResponse ValidateJwtToken(Model.ValidateJwtTokenRequest request)
         {
-            var response = new Model.ValidateJwtTokenResponse();
+            var response = new Model.ValidateJwtTokenResponse { Errors = new List<Entity.Entities.Error>() };
             var tokenHandler = new JwtSecurityTokenHandler();
+
+            var loginStrings = GetResourceManager<Language.ResourceManager.LoginString>();
+            var authRevalidationRequiredError = new Entity.Entities.Error
+            {
+                ErrorCode = Entity.Constants.ErrorCode.AuthRevalidationRequired,
+                Message = loginStrings.AuthRevalidationRequired
+            };
+
+            var unauthorizedError = new Entity.Entities.Error
+            {
+                ErrorCode = Entity.Constants.ErrorCode.UnAuthorized,
+                Message = loginStrings.UnAuthorized
+            };
+
+            Model.ValidateJwtTokenResponse GetErrorResponse(Entity.Entities.Error error)
+            { 
+                response.Errors.Add(error);
+                return response;
+            }
+
+            if (string.IsNullOrWhiteSpace(request.JwtTokenValue)) return GetErrorResponse(unauthorizedError);
 
             if (request.AppAccessType == AppAccessType.WEB)
             {
-                if (request.RefreshToken == null) return response;
-                if (request.RefreshToken == Guid.Empty) return response;
+                if (request.RefreshToken == null) return GetErrorResponse(unauthorizedError);
+                if (request.RefreshToken == Guid.Empty) return GetErrorResponse(unauthorizedError);
             }
 
-            if (!tokenHandler.CanReadToken(request.JwtTokenValue)) return response;
+            if (!tokenHandler.CanReadToken(request.JwtTokenValue)) return GetErrorResponse(unauthorizedError);
             var readToken = tokenHandler.ReadToken(request.JwtTokenValue);
 
             var appSetting = Configuration.Setting.JwtToken;
@@ -125,22 +147,27 @@ namespace WMSAdmin.BusinessService
                 var jwtSecurityToken = (JwtSecurityToken)validatedToken;
 
                 var sessionKeyClaim = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti);
-                if (sessionKeyClaim?.Value == null) return response;
-                if (Guid.TryParse(sessionKeyClaim.Value, out Guid sessionKey) == false) return response;
+                if (sessionKeyClaim?.Value == null) return GetErrorResponse(unauthorizedError);
+                if (Guid.TryParse(sessionKeyClaim.Value, out Guid sessionKey) == false) return GetErrorResponse(unauthorizedError);
+                if (sessionKey == Guid.Empty) return GetErrorResponse(unauthorizedError);
 
                 var appUserRefreshToken = repoService.Get(new Entity.Filter.AppUserRefreshToken { SessionKey = sessionKey, RefreshToken = request.RefreshToken }).Data.FirstOrDefault();
-                if (appUserRefreshToken == null) return response;
+                if (appUserRefreshToken == null) return GetErrorResponse(unauthorizedError);
 
                 var appUser = repoService.Get(new Entity.Filter.AppUser { Id = appUserRefreshToken!.AppUserId!.Value }).Data.FirstOrDefault();
-                if (appUser == null) return response;
+                if (appUser == null) return GetErrorResponse(unauthorizedError);
 
                 var appUserType = repoService.Get(new Entity.Filter.AppUserType { Id = appUser!.AppUserTypeId!.Value }).Data.First();
 
-                if (IsAppAccessValid(appUserType.Code, request.AppAccessType) == false) return response;
+                if (IsAppAccessValid(appUserType.Code, request.AppAccessType) == false) return GetErrorResponse(unauthorizedError);
 
-                if (appUserRefreshToken.ExpiryTime < DateTime.UtcNow || jwtSecurityToken.ValidTo < DateTime.UtcNow)
+                var utcNow = DateTime.UtcNow;
+                if (appUserRefreshToken.ExpiryTime < utcNow || jwtSecurityToken.ValidTo < utcNow)
                 {
-                    if (request.RefreshOnExpiry == false) return response;
+                    if ((utcNow - appUserRefreshToken.ExpiryTime).Value.TotalMinutes > appSetting.MaxIdleTimeInMinutes) return GetErrorResponse(authRevalidationRequiredError);
+                    if (request.RefreshOnExpiry == false) return GetErrorResponse(authRevalidationRequiredError);
+                    if (appUserRefreshToken.TotalRenewals >= appSetting.MaxRenewals) return GetErrorResponse(authRevalidationRequiredError);
+                    
                     var refreshResponse = RefreshJwtToken(appUserRefreshToken);
                     response.IsRefreshed = true;
                     response.JwtTokenValue = refreshResponse.JwtTokenValue;
@@ -179,6 +206,88 @@ namespace WMSAdmin.BusinessService
                 });
                 _logger!.LogError(ex, $"Error Validating JwtToken", new { LogInfo = loginfo });
                 return response;
+            }
+
+        }
+
+        public void ExpireJWTToken(string jwtTokenValue, string refreshToken)
+        {
+            var repoService = GetBusinessService<RepoService>();
+           
+
+            Guid? GetSessionKey()
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(jwtTokenValue)) return null;
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var appSetting = Configuration.Setting.JwtToken;
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSetting.SecurityKey));
+                    var reply = tokenHandler.ValidateToken(jwtTokenValue, new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = false,
+                        IssuerSigningKey = key,
+                        ValidIssuer = appSetting.Issuer,
+                        ValidAudience = appSetting.Issuer,
+                        ClockSkew = TimeSpan.Zero
+                    }, out SecurityToken validatedToken);
+                    var jwtSecurityToken = (JwtSecurityToken)validatedToken;
+                    var sessionKeyClaim = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti);
+                    if (sessionKeyClaim?.Value == null) return null;
+                    if (Guid.TryParse(sessionKeyClaim.Value, out Guid sessionKey) == false) return null;
+                    if (sessionKey == Guid.Empty) return null;
+                    return sessionKey;
+                }
+                catch(Exception ex)
+                {
+                    var loginfo = new
+                    {
+                        SesssionId = Configuration.Setting.Application.SessionId,
+                        Method = nameof(ValidateJwtToken),
+                        JwtSecurityToken = jwtTokenValue,
+                        ErrorCode = Entity.Constants.ErrorCode.UnableToValidateToken
+                    };
+
+
+
+                    _logger!.LogError(ex, $"Error Validating JwtToken", new { LogInfo = loginfo });
+                    return null;
+                }
+            }
+
+            Guid? GetRefreshToken()
+            {
+                if (string.IsNullOrWhiteSpace(refreshToken)) return null;
+                if (Guid.TryParse(refreshToken, out Guid parsedRefreshToken) == false) return null;
+                if (parsedRefreshToken == Guid.Empty) return null;
+                return parsedRefreshToken;
+            }
+           
+
+            var sessionKey = GetSessionKey();
+            if (sessionKey != null)
+            {
+                var dbAppUserRefreshToken = RepoContext.AppUserRefreshToken.FirstOrDefault(e => e.SessionKey == sessionKey);
+                if (dbAppUserRefreshToken != null)
+                {
+                    dbAppUserRefreshToken.ExpiryTime = DateTime.UtcNow;
+                    dbAppUserRefreshToken.TimeStamp = DateTime.UtcNow;
+                    RepoContext.SaveChanges();
+                }
+            }
+
+            var refreshTokenToCheck = GetRefreshToken();
+            if (refreshTokenToCheck != null)
+            {
+                var dbAppUserRefreshToken = RepoContext.AppUserRefreshToken.FirstOrDefault(e => e.RefreshToken == refreshTokenToCheck);
+                if (dbAppUserRefreshToken != null)
+                {
+                    dbAppUserRefreshToken.ExpiryTime = DateTime.UtcNow;
+                    dbAppUserRefreshToken.TimeStamp = DateTime.UtcNow;
+                    RepoContext.SaveChanges();
+                }
             }
 
         }

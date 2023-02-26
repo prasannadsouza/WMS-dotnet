@@ -1,7 +1,18 @@
-import { useTrackedGlobalState, useUpdateGlobalState } from '../utilities/store';
+import { AppSlice, useAppDispatch, useTrackedGlobalState, useUpdateGlobalState } from '../utilities/store';
 import { useEffect, useState } from 'react';
+import { ResponseData } from '../entities/entities';
+import { APIParts } from '../entities/constants';
+import { Utility } from '../utilities/utility';
+import { useNavigate } from 'react-router-dom';
 
 export const FetchData = () => {
+
+    const appConfig = useTrackedGlobalState();
+    const updateAppConfig = useUpdateGlobalState();
+    const appState = useTrackedGlobalState();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { setSessionIsAuthenticated } = AppSlice.actions;
 
     type forecast = {
         date: Date,
@@ -13,14 +24,17 @@ export const FetchData = () => {
     const [model, setModel] = useState({ forecasts: [], loading: true});
     
     const populateWeatherData = async () => {
-        const response = await fetch('weatherforecast');
-        const response1 = await fetch('weatherforecast/GetConfigSetting');
-        const data = await response.json();
-        setModel({ forecasts: data, loading: false })
+
+        const response = await Utility.GetData<forecast[]>(APIParts.TEST , undefined, { data: null });
+        if (Utility.handleAllErrors(appState, response.errors, dispatch, setSessionIsAuthenticated, updateAppConfig)) return;
+        
+        
+        const response1 = await Utility.GetData<forecast[]>(APIParts.TEST + "GetConfigSetting", undefined, { data: null });
+        if (Utility.handleAllErrors(appState, response1.errors, dispatch, setSessionIsAuthenticated, updateAppConfig)) return;
+        setModel({ forecasts: response as forecast[], loading: false })
     }
 
-    const updateAppConfig = useUpdateGlobalState();
-    const appConfig = useTrackedGlobalState();
+    
     let title = appConfig.generalString!.fetchData;
         
 

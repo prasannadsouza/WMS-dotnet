@@ -1,5 +1,6 @@
 import { useTrackedGlobalState, useUpdateGlobalState } from '../utilities/store';
 import { useEffect } from 'react';
+import { Utility } from '../utilities/utility';
 
 export const Home = () => {
     const updateAppConfig = useUpdateGlobalState();
@@ -9,7 +10,6 @@ export const Home = () => {
     useEffect(() => {
         updateAppConfig((prev) => ({ ...prev, currentTitle: title }));
     }, [appConfig.currentTitle]);
-
 
     return (
         <div>

@@ -51,7 +51,10 @@ export const AppSlice = createSlice({
             return { ...state, sessionData: action.payload };
         },
         setSessionLocale: (state, action: PayloadAction<LanguageCulture>) => {
-            return { ...state, appConfig: { ...state.sessionData, language: action.payload } };
+            return { ...state, sessionData: { ...state.sessionData, language: action.payload } };
+        },
+        setSessionIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+            return { ...state, sessionData: { ...state.sessionData, isAuthenticated: action.payload } };
         },
     },
 });

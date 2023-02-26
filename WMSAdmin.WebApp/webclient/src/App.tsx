@@ -37,14 +37,16 @@ const App = () => {
                 <GlobalStateProvider  >
                     <div className="App">
                         <NavBar />
+                        <div>
                         <Routes>
                             <Route path={Utility.getLink(LinkConstants.LOGIN)} element={<Login />} />
-                            <Route path={Utility.getLink(LinkConstants.HOME)} element={<PrivateRoute />}>
+                            <Route path="/" element={<PrivateRoute />}>
                                 <Route path={Utility.getLink(LinkConstants.HOME)} element={<Home />} />
                                 <Route path={Utility.getLink(LinkConstants.SETTINGS)} element={<Settings />} />
                                 <Route path={Utility.getLink(LinkConstants.FETCHDATA)} element={<FetchData />} />
                             </Route>
-                        </Routes>
+                            </Routes>
+                        </div>
                     </div>
                     <Confirm></Confirm>
                     <Message></Message>

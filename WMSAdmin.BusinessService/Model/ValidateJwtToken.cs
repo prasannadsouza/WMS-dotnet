@@ -21,7 +21,6 @@ namespace WMSAdmin.BusinessService.Model
         public Guid? RefreshToken { get; set; }
         public Entity.Entities.AppUserProfile AppUserProfile { get; set; }
         public bool IsRefreshed { get; set; }
-        public bool IsValid { get; set; }
         public List<Entity.Entities.Error> Errors { get; set; }
     }
 }

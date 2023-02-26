@@ -14,7 +14,7 @@ export const NavBar = () => {
     const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    const { setAppModel, setSessionData, setSessionLocale } = AppSlice.actions;
+    const { setAppModel, setSessionData, setSessionLocale,setSessionIsAuthenticated } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
 
@@ -24,7 +24,7 @@ export const NavBar = () => {
         let userLanguage = appData.languageCultures.filter(
             (language) => language.code === code
         )[0];
-        
+
         dispatch(setSessionLocale(userLanguage));
 
         var generalString = new LocalizedStrings(appData.generalLocaleString);
@@ -37,44 +37,44 @@ export const NavBar = () => {
             }));
     };
 
-    const performUserLogout = () => {
+    const performUserLogout = async () => {
         dispatch(setSessionData({ language: appData.sessionData.language }));
+        await Utility.GetData<boolean>(APIParts.APP + "Logout", undefined, { data: false });
     }
 
     const reloadApp = async () => {
         Utility.clearConfigCache();
-        await Utility.getAppData().then(newAppData => {
+        const newAppData = await Utility.getAppData();
 
-            if (Utility.handleErrors(appState, newAppData.appInitErrrors, updateAppConfig)) return;
+        if (Utility.handleAllErrors(appState, newAppData.appInitErrrors,dispatch,setSessionIsAuthenticated,updateAppConfig)) return;
 
-            newAppData.sessionData = Utility.copyObjectData(appData.sessionData);
-            dispatch(setAppModel(newAppData));
+        newAppData.sessionData = Utility.copyObjectData(appData.sessionData);
+        dispatch(setAppModel(newAppData));
 
-            const newAppState = Utility.getAppState(newAppData);
-            updateAppConfig(() => (newAppState));
-            navigate(Utility.getLink(LinkConstants.HOME));
-        });
+        const newAppState = Utility.getAppState(newAppData);
+        updateAppConfig(() => (newAppState));
+        Utility.showLoader(updateAppConfig, false);
+        navigate(Utility.getLink(LinkConstants.HOME));
     }
 
     const performReloadApp = async () => {
         Utility.showLoader(updateAppConfig, true);
-        await reloadApp().then(() => Utility.showLoader(updateAppConfig, false));
+        await reloadApp();
     }
 
     const clearServerCache = async () => {
         Utility.showLoader(updateAppConfig, true);
-        await Utility.GetData<ResponseData<boolean>>(APIParts.CONFIG + "ClearCache", undefined, { data: null }).then(async (response) => {
-            if (Utility.handleErrors(appState, response.errors, updateAppConfig)) return;
-            await reloadApp().then(() => Utility.showLoader(updateAppConfig, false));
-        });
+        const response = await Utility.GetData<ResponseData<boolean>>(APIParts.CONFIG + "ClearCache", undefined, { data: null });
+        if (Utility.handleAllErrors(appState, response.errors,dispatch,setSessionIsAuthenticated,updateAppConfig)) return;
+        await reloadApp();
+
     }
 
     const updateServerData = async () => {
         Utility.showLoader(updateAppConfig, true);
-        await Utility.GetData<ResponseData<boolean>>(APIParts.CONFIG + "UpdateAllTimeStamp", undefined, { data: null }).then(async (response) => {
-            if (Utility.handleErrors(appState, response.errors, updateAppConfig)) return;
-            await reloadApp().then(() => Utility.showLoader(updateAppConfig, false));
-        });
+        const response = await Utility.GetData<ResponseData<boolean>>(APIParts.CONFIG + "UpdateAllTimeStamp", undefined, { data: null });
+        if (Utility.handleAllErrors(appState, response.errors, dispatch, setSessionIsAuthenticated, updateAppConfig)) return;
+        await reloadApp();
     }
 
     const getNavBrand = () => {
@@ -85,7 +85,7 @@ export const NavBar = () => {
         }
         return (<Link className={(isUserLoggedIn ? "d-none d-xs-none d-sm-flex " : "") + "btn navbar-brand m-0 p-0"} to={Utility.getLink(appLink)}>
             <img src={logo} className="App-logo" style={{ height: '45px' }} alt="logo" />
-            <strong className={(isUserLoggedIn ? "d-none d-xs-none d-sm-inline " : "") +  "pt-1"}>{appData.applicationConfig.applicationTitle}</strong>
+            <strong className={(isUserLoggedIn ? "d-none d-xs-none d-sm-inline " : "") + "pt-1"}>{appData.applicationConfig.applicationTitle}</strong>
         </Link>);
     }
 
@@ -103,7 +103,7 @@ export const NavBar = () => {
 
     const OtherMenu = () => {
 
-        const getRemainingMenu = () => {
+        const getLogoutMenu = () => {
             if (isUserLoggedIn !== true) return null;
             return (
                 <li className="nav-item">
@@ -114,15 +114,40 @@ export const NavBar = () => {
             );
         };
 
+        const getProfileNameMenuSmall = () => {
+            if (isUserLoggedIn !== true) return null;
+            return (
+                <li className="nav-item d-sm-none">
+                    <button className="nav-link bg-secondary text-center text-white border-0 m-0 w-100 p-1">
+                    <div className="d-table col-10 m-0 p-0 text-center fw-bold">
+                        <div className="text-nowrap">{appData.sessionData.appCustomerUser.displayName}</div>
+                        <div>{appData.sessionData.appCustomer.customerName}</div>
+                        </div>
+                    </button>
+                </li>
+            );
+        }
+
+        const getProfileNameMenuBig = () => {
+            if (isUserLoggedIn !== true) return null;
+            return (
+                <li className="nav-item d-none d-sm-block">
+                    <button className="nav-link bg-secondary text-start text-white border-0 m-0 w-100 ps-2">
+                        {appState.generalString?.myProfile}
+                    </button>
+                </li>
+            );
+        }
+
         const getOtherMenuTitle = () => {
             if (isUserLoggedIn !== true) {
                 return (<span> {appData.sessionData.language.name} <i className="bi bi-caret-down-fill"></i></span>);
             }
-            
+
             return (
                 <div className="row m-0 p-0 ">
-                    <div className="d-none d-sm-table col-10 small m-0 p-0">
-                        <div className="text-nowrap">{appData.sessionData.appCustomerUser.displayName }</div>
+                    <div className="d-none d-sm-table col-10 fw-bold m-0 p-0">
+                        <div className="text-nowrap">{appData.sessionData.appCustomerUser.displayName}</div>
                         <div><small>{appData.sessionData.appCustomer.customerName}</small></div>
                     </div>
                     <span className="col-2 m-0 p-0 ps-1 ms-auto me-2 me-sm-0"><i className="bi bi-person-lines-fill"></i><i className="bi bi-caret-down-fill"></i></span>
@@ -138,6 +163,8 @@ export const NavBar = () => {
                 <ul
                     className="dropdown-menu dropdown-menu-end p-0"
                     aria-labelledby="navbarLanguageDropdown">
+                    {getProfileNameMenuSmall()}
+                    {getProfileNameMenuBig()}
                     {appData.languageCultures?.map((languageCulture) => {
                         return (
                             <li className="nav-item" key={languageCulture.code.toString()}>
@@ -152,7 +179,8 @@ export const NavBar = () => {
                             {appState.generalString?.reloadApp}
                         </button>
                     </li>
-                    {getRemainingMenu()}
+                    
+                    {getLogoutMenu()}
                 </ul>
             </div>
         )
@@ -168,8 +196,7 @@ export const NavBar = () => {
                     className="navbar-toggler"
                     type="button"
                     data-bs-toggle="dropdown"
-                    id="navbarDropdown"
-                >
+                    id="navbarDropdown">
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <ul
@@ -208,5 +235,5 @@ export const NavBar = () => {
             </section>
         </nav>
     );
-}; 
+};
 

@@ -16,6 +16,7 @@ export type SessionData = {
     appCustomerUser?: AppCustomerUser
     appCustomer?: AppCustomer;
     language?: LanguageCulture;
+    isAuthenticated?: boolean;
 } 
 
 export type AppData = {
@@ -46,5 +47,4 @@ export type ConfigTimeStamp = {
     timeStamp?: Date,
     Code?: string
 }
-
 

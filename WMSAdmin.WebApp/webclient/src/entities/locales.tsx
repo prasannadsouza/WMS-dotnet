@@ -28,10 +28,12 @@ export type GeneralString = {
     to: string;
     yes: string;
     logout: string;
+    myProfile: string;
     loadingMessage: string;
     reloadApp: string;
     clearServerCache: string;
-    updateServerData: string
+    updateServerData: string;
+    
 }
 
 export type LoginLocaleString = {
@@ -52,6 +54,9 @@ export type LoginString = {
     username: string;
     usernameCannotBeBlank: string;
     usernameOrPasswordIsInvalid: string;
+    unAuthorized: string;
+    unableToValidateToken: string;
+    authRevalidationRequired: string;
 }
 
 

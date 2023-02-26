@@ -23,6 +23,6 @@ namespace WMSAdmin.Entity.Entities.LanguageStrings
         public string ReloadApp { get; set; }
         public string ClearServerCache { get; set; }
         public string UpdateServerData { get; set; }
-        public string Unauthorized { get; set; }
+        public string MyProfile { get; set; }
     }
 }

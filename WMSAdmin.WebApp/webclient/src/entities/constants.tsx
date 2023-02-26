@@ -6,14 +6,19 @@ export const LinkConstants = {
     LOGOUT: "LOGOUT",
 };
 
-export const ErrorConstants = {
+export const ClientErrorConstants = {
     FETCH_GET: 10001,
     USERNAME_CANNOTBE_BLANK: 10101,
     PASSWORD_CANNOTBE_BLANK: 10102,
     USERNAME_OR_PASSWORD_ISINVALID: 10103,
     EMAIL_CANNOTBE_BLANK: 10104,
     FETCH_POST: 10005,
+    
 
+}
+
+export const ServerErrorConstants = {
+    AUTHREVALIDATIONREQUIRED: 200005,
 }
 
 export const AppConstants = {
@@ -46,5 +51,6 @@ export const LocaleCodeConstants = {
 export const APIParts = {
     CONFIG: "api/Config/",
     LANGUAGE: "api/Language/",
-    APP: "api/App/"
+    APP: "api/App/",
+    TEST: "weatherforecast/"
 }

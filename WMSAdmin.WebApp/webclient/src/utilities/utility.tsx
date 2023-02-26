@@ -1,10 +1,11 @@
 import LocalizedStrings from "react-localization";
 import { AppData, ApplicationConfig, AppState, ConfigTimeStamp, PaginationConfig, SessionData } from "../entities/configs";
-import { APIParts, CacheConstants, ErrorConstants, LinkConstants } from "../entities/constants";
+import { APIParts, CacheConstants, ClientErrorConstants, LinkConstants, ServerErrorConstants } from "../entities/constants";
 import { ErrorData, ResponseData, AuthenticateAppUserResponse } from "../entities/entities";
 import { Locale } from "./locale";
 import { UIHelper } from "./uihelper";
 import _ from "lodash"; 
+import { ActionCreatorWithOptionalPayload, AnyAction, Dispatch } from "@reduxjs/toolkit";
 
 export class Utility {
 
@@ -13,38 +14,43 @@ export class Utility {
 
         const search = searchParams?.toString();
         if ((search?.length > 0) === true) url.search = search;
-        return await fetch(url).then(response => {
-            if (!response.ok) {
-                defaultData.errors = [{ errorCode: ErrorConstants.FETCH_GET, message: response.statusText }];
-                return defaultData;
-            }
-            defaultData = response.json() as ResponseData<T>;
+
+        let response = await fetch(url);
+
+        if (!response.ok) {
+            defaultData.errors = [{ errorCode: ClientErrorConstants.FETCH_GET, message: response.statusText }];
             return defaultData;
-        });
+        }
+
+        defaultData = response.json() as ResponseData<T>;
+        return defaultData;
+
     }
 
-    static async PostData<T>(urlPart: string, searchParams: URLSearchParams, data:object, defaultData: ResponseData<T>): Promise<ResponseData<T>> {
+    static async PostData<T>(urlPart: string, searchParams: URLSearchParams, data: object, defaultData: ResponseData<T>): Promise<ResponseData<T>> {
         const url: URL = new URL(window.origin + "/" + urlPart);
         const search = searchParams?.toString();
         if ((search?.length > 0) === true) url.search = search;
 
         const payLoad = JSON.stringify(data);
 
-        return await fetch(url, {
+        let response = await fetch(url, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
             },
             body: payLoad
-        }).then(response => {
-            if (!response.ok) {
-                defaultData.errors = [{ errorCode: ErrorConstants.FETCH_POST, message: response.statusText }];
-                return defaultData;
-            }
-            defaultData = response.json() as ResponseData<T>;
-            return defaultData;
         });
+
+        if (!response.ok) {
+            defaultData.errors = [{ errorCode: ClientErrorConstants.FETCH_POST, message: response.statusText }];
+            return defaultData;
+        }
+
+        defaultData = response.json() as ResponseData<T>;
+        return defaultData;
+
     }
 
     static async GetApplicationConfig(): Promise<ResponseData<ApplicationConfig>> {
@@ -56,12 +62,12 @@ export class Utility {
             }
             return await Promise.resolve(response);
         };
-        
-        return await Utility.GetData<ApplicationConfig>(APIParts.CONFIG + "GetApplicationConfig", undefined, { data: null }).then(response => {
-            if ((response.errors?.length > 0) === true) return response;
-            Utility.saveToLocalStorage(CacheConstants.APPLICATIONCONFIG, response.data);
-            return response;
-        });
+
+        let response = await Utility.GetData<ApplicationConfig>(APIParts.CONFIG + "GetApplicationConfig", undefined, { data: null });
+        if ((response.errors?.length > 0) === true) return response;
+
+        Utility.saveToLocalStorage(CacheConstants.APPLICATIONCONFIG, response.data);
+        return response;
     }
 
     static async GetPaginationConfig(): Promise<ResponseData<PaginationConfig>> {
@@ -74,11 +80,11 @@ export class Utility {
             return await Promise.resolve(response);
         };
 
-        return await Utility.GetData<PaginationConfig>(APIParts.CONFIG +  "GetPaginationConfig", undefined, { data: null }).then(response => {
-            if ((response.errors?.length > 0) === true) return response;
-            Utility.saveToLocalStorage(CacheConstants.PAGINATIONCONFIG, response.data);
-            return response;
-        });
+        let response = await Utility.GetData<PaginationConfig>(APIParts.CONFIG + "GetPaginationConfig", undefined, { data: null });
+        if ((response.errors?.length > 0) === true) return response;
+
+        Utility.saveToLocalStorage(CacheConstants.PAGINATIONCONFIG, response.data);
+        return await Promise.resolve(response);
     }
 
     static async getAppData(): Promise<AppData> {
@@ -134,9 +140,28 @@ export class Utility {
 
     static handleErrors = (appState: AppState, errors: ErrorData[], updateAppConfig: (value: React.SetStateAction<AppState>) => void, onClose: () => void = undefined): boolean => {
         if ((errors?.length > 0) === false) return false;
-        UIHelper.showMessageModal(updateAppConfig,appState, true, errors[0].message, onClose);
+        UIHelper.showMessageModal(updateAppConfig, appState, true, errors[0].message, onClose);
+        Utility.showLoader(updateAppConfig, false);
         return true;
     };
+
+    static handleAuthRevalidation = (errors: ErrorData[], dispatch: Dispatch<AnyAction>, setAuthenticated: ActionCreatorWithOptionalPayload<boolean, string>, updateAppConfig: (value: React.SetStateAction<AppState>) => void, onClose: () => void = undefined): boolean => {
+        if ((errors?.length > 0) === false) return false;
+        const authReValidationErrors = errors?.filter((item) => item.errorCode == ServerErrorConstants.AUTHREVALIDATIONREQUIRED);
+        if (authReValidationErrors?.length > 0 === true) {
+            dispatch(setAuthenticated(false));
+            Utility.showLoader(updateAppConfig, false);
+            return true;
+        }
+        return false;
+    }
+
+    static handleAllErrors = (appState: AppState, errors: ErrorData[], dispatch: Dispatch<AnyAction>, setAuthenticated: ActionCreatorWithOptionalPayload<boolean, string>, updateAppConfig: (value: React.SetStateAction<AppState>) => void, onClose: () => void = undefined): boolean => {
+        if ((errors?.length > 0) === false) return false;
+        if (Utility.handleAuthRevalidation(errors, dispatch, setAuthenticated, updateAppConfig) === true) return true;
+        return Utility.handleErrors(appState, errors, updateAppConfig, onClose);
+    }
+
 
     static showLoader = (updateAppConfig: (value: React.SetStateAction<AppState>) => void, show: boolean) => {
         updateAppConfig((prev) => ({ ...prev, showLoader: show, }));
@@ -161,7 +186,7 @@ export class Utility {
     static getLink(key: string) {
         switch (key) {
             case LinkConstants.HOME:
-                return "/";
+                return "/home";
             case LinkConstants.SETTINGS:
                 return "/settings";
             case LinkConstants.LOGIN:
@@ -174,12 +199,11 @@ export class Utility {
     }
 
     static isUserLoggedIn = (appData: AppData): boolean => {
+        if (appData?.sessionData?.isAuthenticated !== true) return false;
         if (appData?.sessionData?.appCustomer === undefined || appData?.sessionData?.appCustomer === null) return false;
         if (appData?.sessionData?.appCustomerUser === undefined || appData?.sessionData?.appCustomerUser === null) return false;
         return true;
     }
-
-    
 
     static getOtherMenuTitle = (appData: AppData) => {
 

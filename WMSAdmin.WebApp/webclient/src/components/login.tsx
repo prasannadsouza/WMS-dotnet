@@ -2,20 +2,27 @@ import { useAppTrackedSelector, useAppDispatch, useTrackedGlobalState, AppSlice,
 import React, { useEffect, useRef } from 'react';
 import { Utility } from '../utilities/utility';
 import { UIHelper } from '../utilities/uihelper';
-import { APIParts, ErrorConstants, LinkConstants } from '../entities/constants';
-import { useNavigate, Navigate } from "react-router-dom";
+import { APIParts, ClientErrorConstants, LinkConstants } from '../entities/constants';
+import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { ErrorData, ResponseData, AuthenticateAppUserResponse } from '../entities/entities';
 import { LoginModel } from "../entities/models";
 import LocalizedStrings from 'react-localization';
 import { Locale } from '../utilities/locale';
 import { LoadingScreen } from './shared/loadingScreen';
 
+
 export const Login = () => {
+
+    type LocationState = {
+        from: Location;
+    };
+
     const updateAppConfig = useUpdateGlobalState();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const dispatch = useAppDispatch();
-    const { setSessionData, setLoginModel } = AppSlice.actions;
+    const { setSessionData, setLoginModel,setSessionIsAuthenticated } = AppSlice.actions;
 
     const appData = useAppTrackedSelector();
     const model: LoginModel = appData.loginModel;
@@ -42,6 +49,7 @@ export const Login = () => {
     }
 
     let title = loginString?.loginTitle;
+
     if (model?.showForgotPassword === true) title = loginString?.forgotPassword
 
     const getCurrentModel = (): LoginModel => {
@@ -65,7 +73,7 @@ export const Login = () => {
         for (var error of errors!) {
 
             switch (error.errorCode) {
-                case ErrorConstants.EMAIL_CANNOTBE_BLANK:
+                case ClientErrorConstants.EMAIL_CANNOTBE_BLANK:
                     {
                         const currentModel = getCurrentModel();
                         currentModel.emailFeedback = error.message;
@@ -91,7 +99,7 @@ export const Login = () => {
         for (var error of errors!) {
 
             switch (error.errorCode) {
-                case ErrorConstants.USERNAME_CANNOTBE_BLANK:
+                case ClientErrorConstants.USERNAME_CANNOTBE_BLANK:
                     {
                         usernameInput.current?.focus();
                         let currentModel = getCurrentModel();
@@ -99,7 +107,7 @@ export const Login = () => {
                         dispatch(setLoginModel(currentModel));
                         break;
                     }
-                case ErrorConstants.PASSWORD_CANNOTBE_BLANK:
+                case ClientErrorConstants.PASSWORD_CANNOTBE_BLANK:
                     {
                         passwordInput.current?.focus();
                         let currentModel = getCurrentModel();
@@ -167,14 +175,14 @@ export const Login = () => {
 
         if ((model.username?.trim()?.length > 0) !== true) {
             response.errors?.push({
-                errorCode: ErrorConstants.USERNAME_CANNOTBE_BLANK,
+                errorCode: ClientErrorConstants.USERNAME_CANNOTBE_BLANK,
                 message: model.loginString?.usernameCannotBeBlank,
             });
         }
 
         if ((model.password?.trim()?.length > 0) !== true) {
             response.errors?.push({
-                errorCode: ErrorConstants.PASSWORD_CANNOTBE_BLANK,
+                errorCode: ClientErrorConstants.PASSWORD_CANNOTBE_BLANK,
                 message: model.loginString?.passwordCannotBeBlank,
             });
         }
@@ -187,7 +195,6 @@ export const Login = () => {
         return loginResponse;
     }
 
-
     const validateResetPassword = (): ResponseData<boolean> => {
         let response: ResponseData<boolean> = {
             data: false,
@@ -196,7 +203,7 @@ export const Login = () => {
 
         if ((model.email?.trim()?.length > 0) !== true) {
             response.errors?.push({
-                errorCode: ErrorConstants.EMAIL_CANNOTBE_BLANK,
+                errorCode: ClientErrorConstants.EMAIL_CANNOTBE_BLANK,
                 message: model.loginString?.emailCannotBeBlank,
             });
         }
@@ -206,6 +213,14 @@ export const Login = () => {
 
     }
 
+    const naviagateOnSuccess = (): string => {
+        let newPath = Utility.getLink(LinkConstants.HOME);
+        const fromPath = (location.state as LocationState)?.from?.pathname;
+
+        if ((fromPath?.length > 0) === true) newPath = fromPath;
+        return newPath;
+    }
+
     const performUserLogin = async () => {
 
         let newModel = getCurrentModel();
@@ -213,17 +228,22 @@ export const Login = () => {
         newModel.usernameFeedBack = "";
         dispatch(setLoginModel(newModel));
 
+        Utility.showLoader(updateAppConfig, true);
         const response = await validateUserLogin();
-        if (loginHasErrors(response?.errors)) return;
+        if (loginHasErrors(response?.errors)) {
+            Utility.showLoader(updateAppConfig, false);
+            return;
+        }
 
         let sessionData = Utility.getSessionConfig(appData, response.data);
+        sessionData.isAuthenticated = true;
         dispatch(setSessionData(sessionData));
         newModel = getInitialLoginModel();
         newModel.loginString = model.loginString;
         dispatch(setLoginModel(newModel));
+        updateAppConfig(() => Utility.getAppState(appData));
+        navigate(naviagateOnSuccess());
 
-        updateAppConfig(() => (Utility.getAppState(appData)));
-        navigate(Utility.getLink(LinkConstants.HOME));
     }
 
     const handleLoginKeyEvent = (event: React.KeyboardEvent) => {
@@ -295,7 +315,7 @@ export const Login = () => {
         }
 
         if (Utility.isUserLoggedIn(appData)) {
-            navigate(Utility.getLink(LinkConstants.HOME), { replace: true });
+            navigate(naviagateOnSuccess());
             return;
         }
 
@@ -434,7 +454,7 @@ export const Login = () => {
     const renderForm = () => {
 
         if (Utility.isUserLoggedIn(appData)) {
-            return (<Navigate to={Utility.getLink(LinkConstants.HOME)} />);
+            return (<Navigate to={naviagateOnSuccess()} />);
         }
 
         const renderContent = () => {

@@ -14,5 +14,8 @@ namespace WMSAdmin.Entity.Entities.LanguageStrings
         public string UsernameCannotBeBlank { get; set; }
         public string UsernameOrPasswordIsInvalid { get; set; }
         public string UnableToValidateToken { get; set; }
+        public string LoginTitle { get; set; }
+        public string UnAuthorized { get; set; }
+        public string AuthRevalidationRequired { get; set; }
     }
 }
